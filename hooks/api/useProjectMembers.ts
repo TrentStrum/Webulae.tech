@@ -2,10 +2,12 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { queryKeys } from '@/lib/api/queryKeys';
 
-export function useProjectMembers(projectId: string) {
+export function useProjectMembers(projectId?: string) {
   return useQuery({
     queryKey: queryKeys.projects.members(projectId),
     queryFn: async () => {
+      if (!projectId) throw new Error('Project ID is required');
+      
       const { data, error } = await supabase
         .from('project_members')
         .select(`
@@ -22,6 +24,7 @@ export function useProjectMembers(projectId: string) {
       if (error) throw error;
       return data;
     },
+    enabled: !!projectId,
   });
 }
 

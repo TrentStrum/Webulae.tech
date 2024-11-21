@@ -20,7 +20,7 @@ import {
   Link as LinkIcon,
   Image as ImageIcon,
 } from 'lucide-react';
-import { Toolbar } from '@/components/ui/toolbar';
+import { Toolbar } from '@radix-ui/react-toolbar';
 
 interface RichTextEditorProps {
   content: string;
