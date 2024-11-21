@@ -1,6 +1,6 @@
 import Image from 'next/image';
 
-// test this is the correct version in GH
+// test this is the correct version in GH, try again
 export default function About() {
   return (
     <div className="container mx-auto px-4 py-16">
