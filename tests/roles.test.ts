@@ -1,9 +1,9 @@
-import { supabase } from '@/lib/supabase';
+import { supabaseClient } from '@/src/lib/supabaseClient';
 
 describe('Role System', () => {
   it('should create a new user with client role by default', async () => {
     const email = `test-${Date.now()}@example.com`;
-    const { data: { user }, error: signUpError } = await supabase.auth.signUp({
+    const { data: { user }, error: signUpError } = await supabaseClient.auth.signUp({
       email,
       password: 'testpassword123'
     });
@@ -14,7 +14,7 @@ describe('Role System', () => {
     // Wait for profile creation
     await new Promise(resolve => setTimeout(resolve, 1000));
 
-    const { data: profile, error: profileError } = await supabase
+    const { data: profile, error: profileError } = await supabaseClient
       .from('profiles')
       .select('role')
       .eq('id', user!.id)
@@ -24,12 +24,12 @@ describe('Role System', () => {
     expect(profile?.role).toBe('client');
 
     // Cleanup
-    await supabase.auth.admin.deleteUser(user!.id);
+    await supabaseClient.auth.admin.deleteUser(user!.id);
   });
 
   it('should prevent clients from becoming admins', async () => {
     const email = `test-${Date.now()}@example.com`;
-    const { data: { user } } = await supabase.auth.signUp({
+    const { data: { user } } = await supabaseClient.auth.signUp({
       email,
       password: 'testpassword123'
     });
@@ -37,7 +37,7 @@ describe('Role System', () => {
     // Wait for profile creation
     await new Promise(resolve => setTimeout(resolve, 1000));
 
-    const { error: upgradeError } = await supabase
+    const { error: upgradeError } = await supabaseClient
       .from('profiles')
       .update({ role: 'admin' })
       .eq('id', user!.id);
@@ -45,6 +45,6 @@ describe('Role System', () => {
     expect(upgradeError).toBeTruthy();
 
     // Cleanup
-    await supabase.auth.admin.deleteUser(user!.id);
+    await supabaseClient.auth.admin.deleteUser(user!.id);
   });
 });
