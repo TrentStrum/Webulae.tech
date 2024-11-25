@@ -1,59 +1,140 @@
-'use client';
+"use client";
 
-import { Search, SlidersHorizontal } from 'lucide-react';
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import { formatDistanceToNow } from "date-fns";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/src/components/ui/card";
+import { supabaseClient } from "@/src/lib/supabaseClient";
+// import { supabase } from "@/src/lib/supabaseClient";
 
-export default function ArticlesPage() {
-	const [searchTerm, setSearchTerm] = useState('');
-	const [sortBy, setSortBy] = useState('newest');
-	const [showFilters, setShowFilters] = useState(false);
+interface Article {
+  id: string;
+  title: string;
+  content: string;
+  published_at: string;
+  profiles: {
+    username: string;
+    full_name: string;
+  };
+}
 
-	const { articles, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage, refetch } =
-		useArticles({ searchTerm, sortBy });
+export default function ArticlePage() {
+  const { slug } = useParams();
+  const [article, setArticle] = useState<Article | null>(null);
+  const [loading, setLoading] = useState(true);
 
-	const handleSearch = (value: string) => {
-		setSearchTerm(value);
-		refetch();
-	};
+  useEffect(() => {
+    async function loadArticle() {
+      try {
+        const { data, error } = await supabaseClient
+          .from("blog_posts")
+          .select(
+            `
+            id,
+            title,
+            content,
+            published_at,
+            profiles (
+              username,
+              full_name
+            )
+          `
+          )
+          .eq("slug", slug)
+          .single();
 
-	return (
-		<div className="container py-8">
-			<div className="max-w-4xl mx-auto">
-				<div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-					<h1 className="text-4xl font-bold">Articles</h1>
-					<div className="flex items-center gap-2 w-full sm:w-auto">
-						<div className="relative flex-1 sm:flex-initial">
-							<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-							<Input
-								placeholder="Search articles..."
-								className="pl-9 w-full"
-								value={searchTerm}
-								onChange={(e) => handleSearch(e.target.value)}
-							/>
-						</div>
-						<Button variant="outline" size="icon" onClick={() => setShowFilters(!showFilters)}>
-							<SlidersHorizontal className="h-4 w-4" />
-						</Button>
-					</div>
-				</div>
+        if (error) throw error;
 
-				{showFilters && <Filters sortBy={sortBy} setSortBy={setSortBy} />}
+        // @ts-ignore
+        setArticle(data);
 
-				{isLoading ? (
-					<ArticleSkeleton />
-				) : articles.length === 0 ? (
-					<p className="text-center text-muted-foreground py-8">No articles found.</p>
-				) : (
-					<>
-						<div className="space-y-6">
-							{articles.map((article) => (
-								<ArticleCard key={article.id} article={article} />
-							))}
-						</div>
-						<div id="scroll-sentinel" className="h-4 mt-6" />
-						{isFetchingNextPage && <p className="text-center py-4">Loading more articles...</p>}
-					</>
-				)}
-			</div>
-		</div>
-	);
+        // Record view if article exists
+        if (data?.id) {
+          const {
+            data: { session },
+          } = await supabaseClient.auth.getSession();
+          await supabaseClient.from("blog_post_views").insert({
+            post_id: data.id,
+            viewer_id: session?.user?.id || null,
+          });
+        }
+      } catch (error) {
+        console.error("Error loading article:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    if (slug) {
+      loadArticle();
+    }
+  }, [slug]);
+
+  if (loading) {
+    return (
+      <div className="container py-8">
+        <div className="max-w-4xl mx-auto">
+          <Card className="animate-pulse">
+            <CardHeader>
+              <div className="h-8 bg-muted rounded w-3/4"></div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="h-4 bg-muted rounded w-full"></div>
+                <div className="h-4 bg-muted rounded w-5/6"></div>
+                <div className="h-4 bg-muted rounded w-4/6"></div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
+  if (!article) {
+    return (
+      <div className="container py-8">
+        <div className="max-w-4xl mx-auto">
+          <Card>
+            <CardContent className="py-8 text-center text-muted-foreground">
+              Article not found.
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="container py-8">
+      <div className="max-w-4xl mx-auto">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-3xl">{article.title}</CardTitle>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground mt-4">
+              <span>
+                By {article.profiles.full_name || article.profiles.username}
+              </span>
+              <span>•</span>
+              <time dateTime={article.published_at}>
+                {formatDistanceToNow(new Date(article.published_at), {
+                  addSuffix: true,
+                })}
+              </time>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="prose prose-neutral dark:prose-invert max-w-none">
+              {article.content}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
 }

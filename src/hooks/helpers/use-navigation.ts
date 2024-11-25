@@ -5,32 +5,32 @@ import { useAuthState } from '../../hooks/auth/useAuthState';
 
 // Public navigation items shown to non-authenticated users
 const publicNavigation = [
-	{ name: 'About', href: '/about' },
-	{ name: 'Articles', href: '/articles' },
-	{ name: 'Services', href: '/services' },
-	{ name: 'Contact', href: '/contact' },
+	{ name: 'About', href: '/features/about' },
+	{ name: 'Articles', href: '/features/articles' },
+	{ name: 'Services', href: '/features/services' },
+	{ name: 'Contact', href: '/features/contact' },
 ] as const;
 
 // Navigation items for authenticated clients
 const clientNavigation = [
-	{ name: 'Projects', href: '/projects' },
-	{ name: 'Articles', href: '/articles' },
-	{ name: 'Messages', href: '/messages' },
+	{ name: 'Projects', href: '/features/projects' },
+	{ name: 'Articles', href: '/features/articles' },
+	{ name: 'Messages', href: '/features/messages' },
 ] as const;
 
 // Navigation items for developers
 const developerNavigation = [
-	{ name: 'Projects', href: '/projects' },
-	{ name: 'Tasks', href: '/tasks' },
-	{ name: 'Documentation', href: '/docs' },
+	{ name: 'Projects', href: '/features/projects' },
+	{ name: 'Tasks', href: '/features/tasks' },
+	{ name: 'Documentation', href: '/features/docs' },
 ] as const;
 
 // Navigation items for admins
 const adminNavigation = [
-	{ name: 'Dashboard', href: '/admin' },
-	{ name: 'Projects', href: '/admin/projects' },
-	{ name: 'Users', href: '/admin/users' },
-	{ name: 'Blog', href: '/blog/admin' },
+	{ name: 'Dashboard', href: '/features/admin' },
+	{ name: 'Projects', href: '/features/admin/projects' },
+	{ name: 'Users', href: '/features/admin/users' },
+	{ name: 'Blog', href: '/features/blog/admin' },
 ] as const;
 
 export function useNavigation() {
