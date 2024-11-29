@@ -46,3 +46,14 @@ export const useToggleUserRole = () => {
 		},
 	});
 };
+
+export const useCurrentUser = () => {
+	return useQuery({
+		queryKey: ['currentUser'],
+		queryFn: async () => {
+			const { data: { user }, error } = await supabaseClient.auth.getUser();
+			if (error) throw error;
+			return user;
+		}
+	});
+};
