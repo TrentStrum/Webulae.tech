@@ -1,56 +1,87 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { apiClient } from '@/src/lib/apiClient';
+import { supabaseClient } from '@/src/lib/supabaseClient';
 import { Project } from '@/src/types/project.types';
-import { DataAccessInterface } from '@/src/contracts/DataAccess';
+import { Message } from '@/src/types/message.types';
 
-// Use Dependency Injection for the data access implementation
-export const createProjectHooks = (dataAccess: DataAccessInterface<Project>) => {
+export const useProjects = () => {
+	const queryClient = useQueryClient();
+
 	const useGetProjects = () =>
 		useQuery({
 			queryKey: ['projects'],
-			queryFn: () => dataAccess.getAll(),
+			queryFn: async () => {
+				const response = await apiClient.get<{ data: Project[] }>('/projects');
+				return response.data;
+			},
 			staleTime: 5 * 60 * 1000, // Cache for 5 minutes
 		});
 
-	const useGetProjectById = (id: string) =>
+	const useGetProjectById = (projectId: string) =>
 		useQuery({
-			queryKey: ['projects', id],
-			queryFn: () => dataAccess.getById(id),
-			enabled: !!id, // Fetch only if id is provided
+			queryKey: ['projects', projectId],
+			queryFn: async () => {
+				const response = await apiClient.get<Project>(`/projects/${projectId}`);
+				return response;
+			},
+			enabled: !!projectId,
 		});
 
-	const useCreateProject = () => {
-		const queryClient = useQueryClient();
+	const useProjectMembers = (projectId?: string) =>
+		useQuery({
+			queryKey: ['project-members', projectId],
+			queryFn: async () => {
+				if (!projectId) throw new Error('Project ID is required');
+				
+				const { data, error } = await supabaseClient
+					.from('project_members')
+					.select(`
+						user_id,
+						role,
+						profiles (
+							username,
+							full_name,
+							role
+						)
+					`)
+					.eq('project_id', projectId);
 
-		return useMutation({
-			mutationFn: (data: Partial<Project>) => dataAccess.create(data),
-			onSuccess: () => {
-				queryClient.invalidateQueries({ queryKey: ['projects'] });
+				if (error) throw error;
+				return data;
+			},
+			enabled: !!projectId,
+		});
+
+	const useProjectMessages = (projectId: string) =>
+		useQuery({
+			queryKey: ['project-messages', projectId],
+			queryFn: async () => {
+				const response = await apiClient.get<{ data: Message[] }>(`/projects/${projectId}/messages`);
+				return response.data;
+			},
+			enabled: !!projectId,
+		});
+
+	// Mutations
+	const useAddProjectMember = () =>
+		useMutation({
+			mutationFn: async ({ projectId, userId, role }: { projectId: string; userId: string; role: string }) => {
+				const { error } = await supabaseClient
+					.from('project_members')
+					.insert([{ project_id: projectId, user_id: userId, role }]);
+
+				if (error) throw error;
+			},
+			onSuccess: (_, variables) => {
+				queryClient.invalidateQueries({ queryKey: ['project-members', variables.projectId] });
 			},
 		});
-	};
-
-	const useUpdateProject = () => {
-		const queryClient = useQueryClient();
-		return useMutation({
-			mutationFn: ({ id, data }: { id: string; data: Partial<Project> }) =>
-				dataAccess.update(id, data),
-			onSuccess: () => queryClient.invalidateQueries({ queryKey: ['projects'] }),
-		});
-	};
-
-	const useDeleteProject = () => {
-		const queryClient = useQueryClient();
-		return useMutation({
-			mutationFn: ({ id }: { id: string }) => dataAccess.delete(id),
-			onSuccess: () => queryClient.invalidateQueries({ queryKey: ['projects'] }),
-		});
-	};
 
 	return {
 		useGetProjects,
 		useGetProjectById,
-		useCreateProject,
-		useUpdateProject,
-		useDeleteProject,
+		useProjectMembers,
+		useProjectMessages,
+		useAddProjectMember,
 	};
 };

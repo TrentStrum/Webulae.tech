@@ -1,28 +1,34 @@
+import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-export function middleware(request: NextRequest) {
-  const path = request.nextUrl.pathname;
-  const userRole = request.headers.get('x-user-role');
+export async function middleware(req: NextRequest) {
+    const res = NextResponse.next();
+    const supabase = createMiddlewareClient({ req, res });
+    const {
+        data: { session },
+    } = await supabase.auth.getSession();
 
-  // Admin routes protection
-  if (path.startsWith('/admin') && userRole !== 'admin') {
-    return NextResponse.redirect(new URL('/login', request.url));
-  }
+    // Protected routes
+    if (req.nextUrl.pathname.startsWith('/admin')) {
+        if (!session) {
+            return NextResponse.redirect(new URL('/login', req.url));
+        }
 
-  // Developer routes protection
-  if (path.startsWith('/developer') && userRole !== 'developer') {
-    return NextResponse.redirect(new URL('/login', request.url));
-  }
+        const { data: profile } = await supabase
+            .from('profiles')
+            .select('role')
+            .eq('id', session.user.id)
+            .single();
 
-  // Client routes protection
-  if (path.startsWith('/client') && userRole !== 'client') {
-    return NextResponse.redirect(new URL('/login', request.url));
-  }
+        if (!profile || profile.role !== 'admin') {
+            return NextResponse.redirect(new URL('/', req.url));
+        }
+    }
 
-  return NextResponse.next();
+    return res;
 }
 
 export const config = {
-  matcher: ['/admin/:path*', '/developer/:path*', '/client/:path*'],
-};
+    matcher: ['/admin/:path*']
+}; 

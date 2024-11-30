@@ -4,9 +4,9 @@ import { Card, CardHeader, CardTitle } from '@/src/components/ui/card';
 import { useToast } from '@/src/hooks';
 import { ProjectFormData } from '@/src/schemas/projectSchema';
 import { useRouter } from 'next/navigation';
-import ProjectForm from '../projects/components/ProjectForm';
 import { createProjectHooks } from '@/src/hooks/react-query/useProjects';
 import { SupabaseProjectDataAccess } from '@/src/dataAccess/supabaseProjectDataAccess';
+import ProjectForm from '../(admin)/projects/components/ProjectForm';
 
 export default function NewProjectPage() {
 	const { mutateAsync: createProject, isPending } = createProjectHooks(new SupabaseProjectDataAccess()).useCreateProject();
@@ -43,3 +43,5 @@ export default function NewProjectPage() {
 		</div>
 	);
 }
+
+

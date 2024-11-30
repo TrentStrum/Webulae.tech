@@ -4,9 +4,11 @@ import { useForm } from 'react-hook-form';
 import { Button } from '@/src/components/ui/button';
 import { Input } from '@/src/components/ui/input';
 import { Textarea } from '@/src/components/ui/textarea';
+import { BlogPost } from '@/src/types/blog.types';
 
 interface BlogFormProps {
 	action: 'create' | 'edit';
+	initialData?: BlogPost;
 }
 
 export function BlogForm({ action }: BlogFormProps) {

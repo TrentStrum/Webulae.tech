@@ -3,6 +3,10 @@ export type BlogPost = {
 	id: string;
 	title: string;
 	slug: string;
+	profiles: {
+		full_name: string | null;
+		username: string | null;
+	} | null;
 	content: string;
 	excerpt: string | null;
 	author_id: string;
@@ -14,6 +18,7 @@ export type BlogPost = {
 // Input type for creating or editing blog posts
 export type BlogFormData = {
 	title: string;
+	author_id: string;
 	slug?: string;
 	content: string;
 	excerpt: string;
