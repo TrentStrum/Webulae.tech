@@ -34,7 +34,7 @@ export default function DeveloperDashboard() {
   const checkDeveloperAccess = async () => {
     const { data: { session } } = await supabaseClient.auth.getSession();
     if (!session) {
-      router.push('/login');
+      router.push('/auth/login');
       return;
     }
 

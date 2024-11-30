@@ -36,7 +36,7 @@ export default function DeveloperDashboard() {
 			data: { session },
 		} = await supabaseClient.auth.getSession();
 		if (!session) {
-			router.push('/login');
+			router.push('/auth/login');
 			return;
 		}
 

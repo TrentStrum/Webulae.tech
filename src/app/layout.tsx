@@ -26,19 +26,21 @@ function ErrorFallback({ error }: { error: Error }) {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
 	return (
-		<html lang="en">
-			<body className={`${inter.className} min-h-screen flex flex-col`}>
+		<html suppressHydrationWarning>
+			<body className={inter.className}>
 				<ErrorBoundary FallbackComponent={ErrorFallback}>
 					<ThemeProvider
 						attribute="class"
 						defaultTheme="system"
 						enableSystem
-						disableTransitionOnChange
+							disableTransitionOnChange
 					>
 						<QueryProvider>
 							<AuthProvider>
 								<Navbar />
-								{children}
+								<main className="min-h-screen">
+									{children}
+								</main>
 								<Footer />
 								<Toaster />
 							</AuthProvider>

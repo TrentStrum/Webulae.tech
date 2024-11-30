@@ -1,36 +1,29 @@
 'use client';
 
-import { QueryClient, useQuery, useQueryClient } from '@tanstack/react-query';
-import { authService } from '@/src/services/authService';
-import { useEffect } from 'react';
-import { AuthUser } from '@/src/types/authUser.types';
-
-function useAuthStateListener(queryClient: QueryClient) {
-	useEffect(() => {
-		const subscription = authService.onAuthStateChange((user) => {
-			queryClient.setQueryData(['auth', 'user'], user);
-		});
-
-		return () => {
-			subscription.data.subscription.unsubscribe();
-		};
-	}, [queryClient]);
-}
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/src/lib/supabase';
 
 export function useAuthState() {
-	const queryClient = useQueryClient();
-
-	useAuthStateListener(queryClient);
-
-	const { data: user, isLoading } = useQuery<AuthUser | null>({
+	return useQuery({
 		queryKey: ['auth', 'user'],
 		queryFn: async () => {
-			const session = await authService.getSession();
-			if (!session?.user) return null;
-			return authService.getUserProfile(session.user.id);
-		},
-		staleTime: Infinity,
-	});
+			const {
+				data: { session },
+				error,
+			} = await supabase.auth.getSession();
+			if (error || !session?.user?.email) return null;
 
-	return { user, isLoading };
+			const { data: profile, error: profileError } = await supabase
+				.from('profiles')
+				.select('*')
+				.eq('id', session.user.id)
+				.single();
+
+			if (profileError) throw profileError;
+			return {
+				...profile,
+				email: session.user.email,
+			};
+		},
+	});
 }

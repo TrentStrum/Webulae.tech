@@ -6,7 +6,7 @@ import { Code2, Menu, Moon, Sun, X } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/src/utils/utils';
 import { Button } from '@/src/components/ui/button';
-import { useAuthState } from '@/src/hooks/auth/useAuthState';
+import { useAuth } from '@/src/contexts/AuthContext';
 import { useMobileMenu } from '@/src/hooks/helpers/use-mobile-menu';
 import { useNavigation } from '@/src/hooks/helpers/use-navigation';
 import UserMenu from '@/src/components/menu/UserMenu';
@@ -15,7 +15,7 @@ import AuthButtons from '@/src/components/buttons/AuthButton';
 export function Navbar() {
 	const { theme, setTheme } = useTheme();
 	const [isMounted, setIsMounted] = useState(false);
-	const { user, isLoading } = useAuthState();
+	const { data: user, isLoading } = useAuth();
 	const { isOpen, setIsOpen } = useMobileMenu();
 	const { navigationItems, isActive } = useNavigation();
 	const mobileMenuRef = useRef<HTMLDivElement>(null);
@@ -78,13 +78,23 @@ export function Navbar() {
 							variant="ghost"
 							size="icon"
 							onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-							aria-label={isMounted ? `Switch to ${theme === 'dark' ? 'light' : 'dark'} theme` : 'Toggle theme'}
+							aria-label={
+								isMounted
+									? `Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`
+									: 'Toggle theme'
+							}
 						>
 							<Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
 							<Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
 						</Button>
 
-						{!isLoading && (user ? <UserMenu user={user} /> : <AuthButtons />)}
+						{isLoading ? (
+							<div className="w-8 h-8 animate-pulse bg-muted rounded-full" />
+						) : user ? (
+							<UserMenu user={{...user, role: user.role || 'client'}} />
+						) : (
+							<AuthButtons />
+						)}
 					</div>
 
 					<div className="flex items-center sm:hidden">

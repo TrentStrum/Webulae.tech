@@ -1,11 +1,11 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabaseClient } from '@/src/lib/supabaseClient';
+import { supabase } from '@/src/lib/supabase';
 
 export const useUsers = () => {
 	const { data, isLoading } = useQuery({
 		queryKey: ['users'],
 		queryFn: async () => {
-			const { data, error } = await supabaseClient
+			const { data, error } = await supabase
 				.from('profiles')
 				.select('id, role, username, full_name, auth_users(email)')
 				.order('role', { ascending: false });
@@ -34,7 +34,7 @@ export const useToggleUserRole = () => {
 	return useMutation<void, Error, { userId: string; currentRole: string }>({
 		mutationFn: async ({ userId, currentRole }) => {
 			const newRole = roles[currentRole as keyof typeof roles] || 'client';
-			const { error } = await supabaseClient
+			const { error } = await supabase
 				.from('profiles')
 				.update({ role: newRole })
 				.eq('id', userId);
@@ -51,7 +51,7 @@ export const useCurrentUser = () => {
 	return useQuery({
 		queryKey: ['currentUser'],
 		queryFn: async () => {
-			const { data: { user }, error } = await supabaseClient.auth.getUser();
+			const { data: { user }, error } = await supabase.auth.getUser();
 			if (error) throw error;
 			return user;
 		}

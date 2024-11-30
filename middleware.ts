@@ -5,9 +5,9 @@ import type { Database } from '@/src/types/database.types';
 
 // Routes that don't require authentication
 const PUBLIC_ROUTES = [
-	'/login',
-	'/register',
-	'/reset-password',
+	'/auth/login',
+	'/auth/register',
+	'/auth/reset-password',
 	'/auth',
 	'/',
 	'/blog',
@@ -17,9 +17,9 @@ const PUBLIC_ROUTES = [
 
 // Routes that require specific roles
 const ROLE_ROUTES = {
-	admin: ['/admin', '/admin/dashboard'],
-	developer: ['/developer', '/developer/dashboard', '/projects'],
-	client: ['/client', '/client/dashboard', '/projects'],
+	admin: ['/admin', '/admin/dashboard', '/admin/projects', '/admin/users', '/admin/blog'],
+	developer: ['/developer', '/developer/dashboard', '/developer/projects'],
+	client: ['/client', '/client/dashboard', '/client/projects'],
 } as const;
 
 // Add default redirects for each role
@@ -56,11 +56,11 @@ export async function middleware(req: NextRequest) {
 
 	// Redirect to login if no session and trying to access protected route
 	if (!session) {
-		return NextResponse.redirect(new URL('/login', req.url));
+		return NextResponse.redirect(new URL('/auth/login', req.url));
 	}
 
 	// After successful authentication, redirect to role-specific dashboard
-	if (path === '/login' && session) {
+	if (path === '/auth/login' && session) {
 		const { data: profile } = await supabase
 			.from('profiles')
 			.select('role')

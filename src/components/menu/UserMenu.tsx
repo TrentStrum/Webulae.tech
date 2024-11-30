@@ -1,4 +1,4 @@
-import { AuthUser } from "@/src/types/authUser.types";
+import { AuthUser } from '@/src/types/authUser.types';
 import Link from 'next/link';
 import {
 	DropdownMenu,
@@ -9,7 +9,7 @@ import {
 } from '@/src/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/src/components/ui/avatar';
 import { Button } from '@/src/components/ui/button';
-import { LogoutButton } from '@/src/components/auth/logout-button';
+import LogoutButton from '@/src/components/auth/logout-button';
 
 const renderDropdownMenuItems = (user: AuthUser) => {
 	const commonItems = [
@@ -22,16 +22,47 @@ const renderDropdownMenuItems = (user: AuthUser) => {
 	];
 
 	const roleSpecificItems = {
-		admin: [/* ... admin items ... */],
-		developer: [/* ... developer items ... */],
-		client: [/* ... client items ... */],
+		admin: [
+			<DropdownMenuItem key="admin-dashboard" asChild>
+				<Link href="/admin">Admin Dashboard</Link>
+			</DropdownMenuItem>,
+			<DropdownMenuItem key="users" asChild>
+				<Link href="/admin/users">Manage Users</Link>
+			</DropdownMenuItem>,
+			<DropdownMenuItem key="admin-settings" asChild>
+				<Link href="/admin/settings">System Settings</Link>
+			</DropdownMenuItem>,
+			<DropdownMenuSeparator key="admin-separator" />,
+		],
+		developer: [
+			<DropdownMenuItem key="developer-dashboard" asChild>
+				<Link href="/developer">Developer Dashboard</Link>
+			</DropdownMenuItem>,
+			<DropdownMenuItem key="developer-api-docs" asChild>
+				<Link href="/developer/api">API Documentation</Link>
+			</DropdownMenuItem>,
+			<DropdownMenuItem key="developer-tools" asChild>
+				<Link href="/developer/tools">Developer Tools</Link>
+			</DropdownMenuItem>,
+			<DropdownMenuItem key="developer-settings" asChild>
+				<Link href="/developer/settings">Developer Settings</Link>
+			</DropdownMenuItem>,
+			<DropdownMenuSeparator key="developer-separator" />,
+		],
+		client: [
+			<DropdownMenuItem key="client-dashboard" asChild>
+				<Link href="/client">Client Dashboard</Link>
+			</DropdownMenuItem>,
+		],
 	};
 
 	return [
 		...(roleSpecificItems[user.role] || []),
 		...commonItems,
 		<DropdownMenuSeparator key="separator" />,
-		<LogoutButton key="logout">Sign out</LogoutButton>,
+		<DropdownMenuItem key="logout" onSelect={(e) => e.preventDefault()}>
+			<LogoutButton />
+		</DropdownMenuItem>,
 	];
 };
 

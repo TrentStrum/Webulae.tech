@@ -1,23 +1,29 @@
 'use client';
 
-import { createContext, useContext } from 'react';
-import { AuthUser } from '@/src/types/authUser.types';
+import { createContext, useContext, useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useAuthState } from '@/src/hooks/auth/useAuthState';
+import { setupAuthListener } from '@/src/lib/supabase';
 
-interface AuthContextType {
-	user: AuthUser | null;
-	isLoading: boolean;
-}
-
-const AuthContext = createContext<AuthContextType>({
-	user: null,
-	isLoading: true,
-});
-
-export const useAuth = () => useContext(AuthContext);
+const AuthContext = createContext<ReturnType<typeof useAuthState> | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-	const { user = null, isLoading } = useAuthState();
+	const authState = useAuthState();
+	const queryClient = useQueryClient();
 
-	return <AuthContext.Provider value={{ user, isLoading }}>{children}</AuthContext.Provider>;
+	useEffect(() => {
+		return setupAuthListener((event, session) => {
+			queryClient.setQueryData(['auth', 'user'], session?.user || null);
+		});
+	}, [queryClient]);
+
+	return <AuthContext.Provider value={authState}>{children}</AuthContext.Provider>;
+}
+
+export function useAuth() {
+	const context = useContext(AuthContext);
+	if (context === undefined) {
+		throw new Error('useAuth must be used within an AuthProvider');
+	}
+	return context;
 }

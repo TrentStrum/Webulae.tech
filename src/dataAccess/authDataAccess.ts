@@ -1,11 +1,11 @@
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-import { Database } from '@/src/types/database.types';
+import { supabase } from '@/src/lib/supabase';
 import { AuthUser } from '@/src/types/authUser.types';
 
-const supabase = createClientComponentClient<Database>();
+let currentAuthListener: { unsubscribe: () => void } | null = null;
 
 export const AuthDataAccess = {
-	async getSession() {
+	getSession: async () => {
+		console.log('📡 AuthDataAccess: Fetching session');
 		const {
 			data: { session },
 			error,
@@ -14,48 +14,60 @@ export const AuthDataAccess = {
 		return session;
 	},
 
-	async getUserProfile(userId: string): Promise<AuthUser | null> {
-		const { data: { user }, error: userError } = await supabase.auth.getUser();
-		if (userError) throw userError;
-		if (!user) return null;
+	getUserProfile: async (userId: string) => {
+		console.log('📡 AuthDataAccess: Fetching user data for ID:', userId);
+		const [
+			{ data: profile, error },
+			{
+				data: { session },
+			},
+		] = await Promise.all([
+			supabase.from('profiles').select('*').eq('id', userId).single(),
+			supabase.auth.getSession(),
+		]);
 
-		const { data: profile, error: profileError } = await supabase
-			.from('profiles')
-			.select('role, avatar_url')
-			.eq('id', userId)
-			.single();
-
-		if (profileError && profileError.code !== 'PGRST116') throw profileError;
+		if (error) throw error;
 
 		return {
-			id: userId,
-			email: user.email!,
-			role: profile?.role ?? 'client',
-			avatar_url: profile?.avatar_url ?? null,
-		};
+			id: profile.id,
+			email: session?.user?.email ?? '',
+			role: profile.role ?? 'client',
+			avatar_url: profile.avatar_url,
+		} as AuthUser;
 	},
 
-	async login(email: string, password: string) {
-		const { error } = await supabase.auth.signInWithPassword({
-			email,
-			password,
-		});
-		if (error) throw error;
-	},
+	onAuthStateChange: (callback: (user: AuthUser | null) => void) => {
+		console.log('👂 AuthDataAccess: Setting up auth state listener');
 
-	async logout() {
-		const { error } = await supabase.auth.signOut();
-		if (error) throw error;
-	},
+		if (currentAuthListener) {
+			currentAuthListener.unsubscribe();
+		}
 
-	onAuthStateChange(callback: (user: AuthUser | null) => void) {
-		return supabase.auth.onAuthStateChange(async (event, session) => {
+		const {
+			data: { subscription },
+		} = supabase.auth.onAuthStateChange(async (event, session) => {
+			console.log('🔄 AuthDataAccess: Auth state changed:', event);
+
 			if (session?.user) {
-				const profile = await this.getUserProfile(session.user.id);
+				const profile = await AuthDataAccess.getUserProfile(session.user.id);
 				callback(profile);
 			} else {
 				callback(null);
 			}
 		});
+
+		currentAuthListener = subscription;
+		return { data: { subscription } };
+	},
+
+	login: async (email: string, password: string) => {
+		return await supabase.auth.signInWithPassword({
+			email,
+			password,
+		});
+	},
+
+	logout: async () => {
+		return await supabase.auth.signOut();
 	},
 };
