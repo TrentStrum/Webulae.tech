@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/ca
 import { Badge } from '@/src/components/ui/badge';
 import { ProjectCardSkeleton } from '@/src/components/skeletons/project-card-skeleton';
 import { useToast } from '@/src/hooks';
-import { supabaseClient } from '@/src/lib/supabaseClient';
+import { supabase } from '@/src/lib/supabase';
 
 interface Project {
 	id: string;
@@ -34,13 +34,13 @@ export default function DeveloperDashboard() {
 	const checkDeveloperAccess = async () => {
 		const {
 			data: { session },
-		} = await supabaseClient.auth.getSession();
+		} = await supabase.auth.getSession();
 		if (!session) {
 			router.push('/auth/login');
 			return;
 		}
 
-		const { data: profile } = await supabaseClient
+		const { data: profile } = await supabase
 			.from('profiles')
 			.select('role')
 			.eq('id', session.user.id)
@@ -60,10 +60,10 @@ export default function DeveloperDashboard() {
 		try {
 			const {
 				data: { session },
-			} = await supabaseClient.auth.getSession();
+			} = await supabase.auth.getSession();
 			if (!session) return;
 
-			const { data: projectMembers, error: memberError } = await supabaseClient
+			const { data: projectMembers, error: memberError } = await supabase
 				.from('project_members')
 				.select('project_id')
 				.eq('user_id', session.user.id)
@@ -74,7 +74,7 @@ export default function DeveloperDashboard() {
 			const projectIds = projectMembers?.map((pm) => pm.project_id) || [];
 
 			if (projectIds.length > 0) {
-				const { data: projects, error: projectsError } = await supabaseClient
+				const { data: projects, error: projectsError } = await supabase
 					.from('projects')
 					.select('*')
 					.in('id', projectIds)

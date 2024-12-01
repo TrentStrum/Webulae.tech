@@ -1,24 +1,24 @@
 'use client';
 
-import { Input } from "@/src/components/ui/input";
-import { useArticles } from "@/src/hooks";
+import { Input } from '@/src/components/ui/input';
+import { useBlogPosts } from '@/src/hooks/react-query/useBlog';
 
 import { Search, SlidersHorizontal } from 'lucide-react';
 
-import { useState } from "react";
-import { Filters } from "./[slug]/components/Filters";
-import { Button } from "@/src/components/ui/button";
-import { ArticleSkeleton } from "./[slug]/components/ArticleSkeleton";
-import { ArticleCard } from "./[slug]/components/ArticleCard";
-import { Article } from "@/src/types";
+import { useState } from 'react';
+import { Filters } from './[slug]/components/Filters';
+import { Button } from '@/src/components/ui/button';
+import { BlogPostSkeleton } from './[slug]/components/BlogPostSkeleton';
+import { BlogPostCard } from './[slug]/components/BlogPostCard';
+import { BlogPost } from '@/src/types/blog.types';
 
-export default function ArticlesPage() {
+export default function BlogPostsPage() {
 	const [searchTerm, setSearchTerm] = useState('');
 	const [sortBy, setSortBy] = useState('newest');
 	const [showFilters, setShowFilters] = useState(false);
 
-	const { articles, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage, refetch } =
-		useArticles({ searchTerm, sortBy });
+	const { data: blogPosts, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage, refetch } =
+		useBlogPosts({ searchTerm, sortBy });
 
 	const handleSearch = (value: string) => {
 		setSearchTerm(value);
@@ -49,14 +49,14 @@ export default function ArticlesPage() {
 				{showFilters && <Filters sortBy={sortBy} setSortBy={setSortBy} />}
 
 				{isLoading ? (
-					<ArticleSkeleton />
-				) : articles.length === 0 ? (
+					<BlogPostSkeleton />
+				) : blogPosts?.pages[0]?.length === 0 ? (
 					<p className="text-center text-muted-foreground py-8">No articles found.</p>
 				) : (
 					<>
 						<div className="space-y-6">
-							{articles.map((article: Article) => (
-								<ArticleCard key={article.id} article={article} />
+							{blogPosts?.pages[0]?.map((post: BlogPost) => (
+								<BlogPostCard key={post.id} post={post} />
 							))}
 						</div>
 						<div id="scroll-sentinel" className="h-4 mt-6" />

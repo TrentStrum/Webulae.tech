@@ -30,12 +30,12 @@ const adminNavigation = [
 	{ name: 'Dashboard', href: '/admin/dashboard' },
 	{ name: 'Projects', href: '/admin/projects' },
 	{ name: 'Users', href: '/admin/users' },
-	{ name: 'Blog', href: '/blog/admin' },
+	{ name: 'Blog', href: '/admin/blog' },
 ] as const;
 
 export function useNavigation() {
 	const pathname = usePathname();
-	const { user } = useAuthState();
+	const { data: user } = useAuthState();
 
 	const getNavigationItems = () => {
 		if (!user) return publicNavigation;

@@ -2,7 +2,7 @@
 
 import { useParams, useRouter } from 'next/navigation';
 import { useToast } from '@/src/hooks';
-import BlogEditor from '@/src/app/(admin)/blog/posts/components/BlogEditor';
+import { BlogForm } from '@/src/components/admin/blog/BlogForm';
 
 export default function BlogAdminActionPage() {
 	const { action } = useParams();
@@ -19,5 +19,5 @@ export default function BlogAdminActionPage() {
 		return null;
 	}
 
-	return <BlogEditor action={action as 'create' | 'edit'} />;
+	return <BlogForm action={action as 'create' | 'edit'} />;
 }

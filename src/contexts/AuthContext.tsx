@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAuthState } from '@/src/hooks/auth/useAuthState';
 import { setupAuthListener } from '@/src/lib/supabase';
+import { User } from '@/src/types/user.types';
 
 const AuthContext = createContext<ReturnType<typeof useAuthState> | undefined>(undefined);
 
@@ -13,7 +14,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 	useEffect(() => {
 		return setupAuthListener((event, session) => {
-			queryClient.setQueryData(['auth', 'user'], session?.user || null);
+			const user = session?.user as User | null;
+			queryClient.setQueryData(['auth', 'user'], user);
 		});
 	}, [queryClient]);
 

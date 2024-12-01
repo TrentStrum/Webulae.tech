@@ -1,4 +1,4 @@
-import { QueryProvider } from '@/src/context/QueryProvider';
+import { QueryProvider } from '@/src/contexts/QueryProvider';
 import { ThemeProvider } from '@/src/contexts/theme-provider';
 import { ReactNode } from 'react';
 

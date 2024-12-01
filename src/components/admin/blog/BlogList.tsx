@@ -4,7 +4,7 @@ import { useBlogPosts } from '@/src/hooks/react-query/useBlog';
 import { BlogPostCard } from './BlogPostCard';
 
 export default function BlogList() {
-	const { data: blogPosts, isLoading, isError } = useBlogPosts();
+	const { data: blogPosts, isLoading, isError } = useBlogPosts({});
 
 	if (isLoading) {
 		return (
@@ -26,7 +26,7 @@ export default function BlogList() {
 		<div className="container py-8">
 			<h1 className="text-3xl font-bold mb-8">Blog</h1>
 			<div className="space-y-4">
-				{blogPosts.map((post) => (
+				{blogPosts.pages.flatMap((page) => page).map((post) => (
 					<BlogPostCard key={post.id} post={post} />
 				))}
 			</div>

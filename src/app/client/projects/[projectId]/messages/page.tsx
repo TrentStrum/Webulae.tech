@@ -12,7 +12,7 @@ import { useToast } from '@/src/hooks';
 import { useSendMessage } from '@/src/hooks/react-query/useMessages';
 import { formatDistanceToNow } from 'date-fns';
 import { useQueryClient } from '@tanstack/react-query';
-import { useProjectMessages } from '@/src/hooks/react-query/useProjectMesages';
+import { useProjectMessages } from '@/src/hooks/react-query/useProjects/useProjectMesages';
 
 export default function ProjectMessagesPage() {
 	const { id: projectId } = useParams();

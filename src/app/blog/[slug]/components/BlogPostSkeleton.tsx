@@ -2,7 +2,7 @@
 
 import { Card, CardHeader, CardContent } from "@/src/components/ui/card";
 
-export function ArticleSkeleton() {
+export function BlogPostSkeleton() {
 	return (
 		<div className="space-y-6">
 			{[1, 2, 3].map((i) => (

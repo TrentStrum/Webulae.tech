@@ -1,31 +1,37 @@
 'use client';
 
-import { Table, TableHeader, TableRow, TableHead, TableBody } from "@/src/components/ui/table";
-import { User } from "@/src/types";
-import { UserRow } from "./UserRow";
+import { Table, TableHeader, TableRow, TableHead, TableBody } from '@/src/components/ui/table';
+import { User } from '@/src/types';
+import { UserRow } from './UserRow';
+import { useUsers } from '@/src/hooks/react-query/useUsers';
 
 type Props = {
-	users: User[];
 	onResetPassword: (email: string) => Promise<void>;
-	onToggleRole: (userId: string, currentRole: string) => Promise<void>;
+	onToggleRole: (userId: string, currentRole: User['role']) => Promise<void>;
 	isMutating: string | null;
-}
+};
 
-export function UserTable({ users, onResetPassword, onToggleRole, isMutating }: Props) {
+export function UserTable({ onResetPassword, onToggleRole, isMutating }: Props) {
+	const { data: usersData, isLoading, error } = useUsers();
+
+	if (isLoading) return <div>Loading...</div>;
+	if (error) return <div>Error: {error.message}</div>;
+	if (!usersData) return <div>No users found</div>;
+
 	return (
 		<div className="rounded-md border">
 			<Table>
 				<TableHeader>
 					<TableRow>
-						<TableHead>Name</TableHead>
-						<TableHead>Email</TableHead>
-						<TableHead>Username</TableHead>
-						<TableHead>Role</TableHead>
-						<TableHead>Actions</TableHead>
+						<TableHead className="w-1/6 text-center">Name</TableHead>
+						<TableHead className="w-1/6 text-center">Email</TableHead>
+						<TableHead className="w-1/6 text-center">Username</TableHead>
+						<TableHead className="w-1/6 text-center">Role</TableHead>
+						<TableHead className="w-1/6 text-center">Actions</TableHead>
 					</TableRow>
 				</TableHeader>
 				<TableBody>
-					{users.map((user) => (
+					{usersData.map((user: User) => (
 						<UserRow
 							key={user.id}
 							user={user}

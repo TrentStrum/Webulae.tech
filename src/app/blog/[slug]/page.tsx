@@ -9,8 +9,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/src/components/ui/card";
-import { supabaseClient } from "@/src/lib/supabaseClient";
-// import { supabase } from "@/src/lib/supabaseClient";
+import { supabase } from "@/src/lib/supabase";
+
 
 interface Article {
   id: string;
@@ -31,7 +31,7 @@ export default function ArticlePage() {
   useEffect(() => {
     async function loadArticle() {
       try {
-        const { data, error } = await supabaseClient
+        const { data, error } = await supabase
           .from("blog_posts")
           .select(
             `
@@ -56,12 +56,12 @@ export default function ArticlePage() {
         // Record view if article exists
         if (data?.id) {
           const {
-            data: { session },
-          } = await supabaseClient.auth.getSession();
-          await supabaseClient.from("blog_post_views").insert({
-            post_id: data.id,
-            viewer_id: session?.user?.id || null,
-          });
+						data: { session },
+					} = await supabase.auth.getSession();
+          await supabase.from('blog_post_views').insert({
+						post_id: data.id,
+						viewer_id: session?.user?.id || null,
+					});
         }
       } catch (error) {
         console.error("Error loading article:", error);

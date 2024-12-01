@@ -5,18 +5,17 @@ import { useResetPassword } from "@/src/hooks/react-query/useResetPassword";
 import { useState } from "react";
 import { useToggleUserRole, useUsers } from "@/src/hooks/react-query/useUsers";
 import { UserTable } from "./components/UserTable";
-
-
+import { User } from "@/src/types/user.types";
 
 export default function AdminUsersPage() {
-	const { users, isLoading } = useUsers();
+	const { data: users, isLoading } = useUsers();
 	const { mutate: resetPassword, isPending: isResetting } = useResetPassword();
 	const { mutate: toggleRole, isPending: isToggling } = useToggleUserRole();
 	const { toast } = useToast();
 	const [activeUserId, setActiveUserId] = useState<string | null>(null);
 
 	const handleResetPassword = async (email: string) => {
-		const userId = users.find((u) => u.email === email)?.id || null;
+		const userId = users?.find((u) => u.email === email)?.id || null;
 		setActiveUserId(userId);
 		try {
 			await resetPassword(email);
@@ -34,7 +33,7 @@ export default function AdminUsersPage() {
 		setActiveUserId(null);
 	};
 
-	const handleToggleRole = async (userId: string, currentRole: string) => {
+	const handleToggleRole = async (userId: string, currentRole: User['role']) => {
 		setActiveUserId(userId);
 		try {
 			await toggleRole({ userId, currentRole });
@@ -69,7 +68,6 @@ export default function AdminUsersPage() {
 		<div className="container py-8">
 			<h1 className="text-3xl font-bold mb-8">User Management</h1>
 			<UserTable
-				users={users}
 				onResetPassword={handleResetPassword}
 				onToggleRole={handleToggleRole}
 				isMutating={activeUserId}

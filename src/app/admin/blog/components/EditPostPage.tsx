@@ -1,5 +1,6 @@
 'use client';
 
+import { BlogForm } from '@/src/components/admin/blog/BlogForm';
 import { useParams } from 'next/navigation';
 
 export default function EditPostPage() {
@@ -15,5 +16,5 @@ export default function EditPostPage() {
 		);
 	}
 
-	return <BlogEditor onSubmit={() => {}} isLoading={false} />;
+	return <BlogForm action="edit"/>;
 }

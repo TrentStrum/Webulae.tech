@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import { supabaseClient } from '@/src/lib/supabaseClient';
+import { getSupabaseClient } from '@/src/lib/supabase';
 
 interface LoginPayload {
 	email: string;
@@ -15,7 +15,7 @@ export const useLogin = ({
 }) => {
 	return useMutation<void, Error, LoginPayload>({
 		mutationFn: async ({ email, password }: LoginPayload) => {
-			const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+			const { error } = await getSupabaseClient().auth.signInWithPassword({ email, password });
 			if (error) throw new Error(error.message);
 		},
 		onSuccess,

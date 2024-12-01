@@ -2,8 +2,8 @@
 
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { authService } from '@/src/services/authService';
-import { AuthUser } from '@/src/types/authUser.types';
 import { useEffect } from 'react';
+import { AuthUser } from '@/src/types/user.types';
 
 export function useAuth() {
 	const queryClient = useQueryClient();

@@ -2,12 +2,10 @@
 
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { useProjectDetails } from '@/src/hooks/react-query/useProjectDetails';
+import { useProjectDetails } from '@/src/hooks/react-query/useProjects/useProjectDetails';
 import { Card, CardHeader, CardContent, CardTitle } from '@/src/components/ui/card';
 import { Badge } from '@/src/components/ui/badge';
 import { Button } from '@/src/components/ui/button';
-
-
 
 export default function ProjectDashboard() {
 	const { id } = useParams();

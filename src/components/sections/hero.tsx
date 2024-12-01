@@ -4,9 +4,10 @@ import { useRouter } from 'next/navigation';
 import { ArrowRight } from 'lucide-react';
 import { Button } from '@/src/components/ui/button';
 import { useAuth } from '@/src/contexts/AuthContext';
+import { DashboardSkeleton } from '../skeletons/dashboard-skeleton';
 
 export function Hero() {
-	const { user, isLoading } = useAuth();
+	const { data: user, isLoading } = useAuth();
 	const router = useRouter();
 
 	const handleMainButtonClick = () => {
@@ -18,7 +19,7 @@ export function Hero() {
 	};
 
 	if (isLoading) {
-		return null; // Or a loading skeleton
+		return <DashboardSkeleton />;
 	}
 
 	return (

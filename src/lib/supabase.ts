@@ -14,5 +14,5 @@ export const supabase = getSupabaseClient();
 
 export function setupAuthListener(callback: (event: string, session: any) => void) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(callback);
-    return () => subscription.unsubscribe();
+	return () => subscription.unsubscribe();
 }

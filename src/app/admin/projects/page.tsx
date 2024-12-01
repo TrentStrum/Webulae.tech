@@ -4,13 +4,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/ca
 import { Button } from '@/src/components/ui/button';
 import Link from 'next/link';
 import { Plus } from 'lucide-react';
-import { useProjects } from '@/src/hooks/react-query/useProjects';
+import { useProjects } from '@/src/hooks/react-query/useProjects/useProjects';
 
 export default function AdminProjectsPage() {
-	const { useGetProjects } = useProjects();
-	const { data: projects, isLoading, isError } = useGetProjects();
+	const { data: projects, isPending, isError } = useProjects();
 
-	if (isLoading) {
+	if (isPending) {
 		return <div className="container py-8">Loading projects...</div>;
 	}
 
