@@ -6,23 +6,16 @@ import { Code2, Menu, Moon, Sun, X } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/src/utils/utils';
 import { Button } from '@/src/components/ui/button';
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
-} from '@/src/components/ui/dropdown-menu';
-import { Avatar, AvatarFallback, AvatarImage } from '@/src/components/ui/avatar';
-import { LogoutButton } from '@/src/components/auth/logout-button';
-import { useAuthState } from '@/src/hooks/use-auth-state';
+import { useAuth } from '@/src/contexts/AuthContext';
 import { useMobileMenu } from '@/src/hooks/helpers/use-mobile-menu';
 import { useNavigation } from '@/src/hooks/helpers/use-navigation';
+import UserMenu from '@/src/components/menu/UserMenu';
+import AuthButtons from '@/src/components/buttons/AuthButton';
 
 export function Navbar() {
 	const { theme, setTheme } = useTheme();
 	const [isMounted, setIsMounted] = useState(false);
-	const { user, loading } = useAuthState();
+	const { data: user, isLoading } = useAuth();
 	const { isOpen, setIsOpen } = useMobileMenu();
 	const { navigationItems, isActive } = useNavigation();
 	const mobileMenuRef = useRef<HTMLDivElement>(null);
@@ -47,66 +40,8 @@ export function Navbar() {
 		};
 	}, [isOpen, setIsOpen]);
 
-	const renderDropdownMenuItems = () => {
-		const commonItems = [
-			<DropdownMenuItem key="profile" asChild>
-				<Link href="/profile">Profile</Link>
-			</DropdownMenuItem>,
-			<DropdownMenuItem key="settings" asChild>
-				<Link href="/settings">Settings</Link>
-			</DropdownMenuItem>,
-		];
-
-		const roleSpecificItems = {
-			admin: [
-				<DropdownMenuItem key="admin-dashboard" asChild>
-					<Link href="/admin">Admin Dashboard</Link>
-				</DropdownMenuItem>,
-				<DropdownMenuItem key="projects" asChild>
-					<Link href="/admin/projects">Manage Projects</Link>
-				</DropdownMenuItem>,
-				<DropdownMenuItem key="users" asChild>
-					<Link href="/admin/users">Manage Users</Link>
-				</DropdownMenuItem>,
-				<DropdownMenuItem key="blog" asChild>
-					<Link href="/blog/admin">Manage Blog</Link>
-				</DropdownMenuItem>,
-			],
-			developer: [
-				<DropdownMenuItem key="dev-dashboard" asChild>
-					<Link href="/developer">Developer Dashboard</Link>
-				</DropdownMenuItem>,
-				<DropdownMenuItem key="tasks" asChild>
-					<Link href="/tasks">My Tasks</Link>
-				</DropdownMenuItem>,
-				<DropdownMenuItem key="docs" asChild>
-					<Link href="/docs">Documentation</Link>
-				</DropdownMenuItem>,
-			],
-			client: [
-				<DropdownMenuItem key="projects" asChild>
-					<Link href="/projects">My Projects</Link>
-				</DropdownMenuItem>,
-				<DropdownMenuItem key="messages" asChild>
-					<Link href="/messages">Messages</Link>
-				</DropdownMenuItem>,
-			],
-		};
-
-		return [
-			...(user ? roleSpecificItems[user.role] || [] : []),
-			...commonItems,
-			<DropdownMenuSeparator key="separator" />,
-			<LogoutButton key="logout">Sign out</LogoutButton>,
-		];
-	};
-
 	return (
-		<nav
-			className="bg-background/80 backdrop-blur-sm border-b border-border/40 sticky top-0 z-50"
-			role="navigation"
-			aria-label="Main navigation"
-		>
+		<nav className="bg-background/80 backdrop-blur-sm border-b border-border/40 sticky top-0 z-50">
 			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 				<div className="flex justify-between h-16">
 					<div className="flex">
@@ -153,40 +88,13 @@ export function Navbar() {
 							<Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
 						</Button>
 
-						{!loading &&
-							(user ? (
-								<DropdownMenu>
-									<DropdownMenuTrigger asChild>
-										<Button
-											variant="ghost"
-											className="relative h-8 w-8 rounded-full"
-											aria-label="User menu"
-										>
-											<Avatar className="h-8 w-8 ring-2 ring-primary/20">
-												<AvatarImage src={user.avatar_url || undefined} alt={user.email} />
-												<AvatarFallback className="bg-secondary text-secondary-foreground">
-													{user.email[0].toUpperCase()}
-												</AvatarFallback>
-											</Avatar>
-										</Button>
-									</DropdownMenuTrigger>
-									<DropdownMenuContent className="w-56" align="end" forceMount>
-										{renderDropdownMenuItems()}
-									</DropdownMenuContent>
-								</DropdownMenu>
-							) : (
-								<div className="space-x-2">
-									<Button variant="ghost" asChild>
-										<Link href="/login">Log in</Link>
-									</Button>
-									<Button
-										asChild
-										className="bg-primary text-primary-foreground hover:bg-primary/90"
-									>
-										<Link href="/signup">Sign up</Link>
-									</Button>
-								</div>
-							))}
+						{isLoading ? (
+							<div className="w-8 h-8 animate-pulse bg-muted rounded-full" />
+						) : user ? (
+							<UserMenu user={{...user, role: user.role || 'client'}} />
+						) : (
+							<AuthButtons />
+						)}
 					</div>
 
 					<div className="flex items-center sm:hidden">
@@ -232,21 +140,9 @@ export function Navbar() {
 							{item.name}
 						</Link>
 					))}
-					{!loading && !user && (
+					{!isLoading && !user && (
 						<div className="pt-4 pb-3 border-t border-border/40">
-							<Button variant="ghost" className="w-full justify-start" asChild>
-								<Link href="/login" onClick={() => setIsOpen(false)}>
-									Log in
-								</Link>
-							</Button>
-							<Button
-								className="mt-2 w-full bg-primary text-primary-foreground hover:bg-primary/90"
-								asChild
-							>
-								<Link href="/signup" onClick={() => setIsOpen(false)}>
-									Sign up
-								</Link>
-							</Button>
+							<AuthButtons />
 						</div>
 					)}
 				</div>

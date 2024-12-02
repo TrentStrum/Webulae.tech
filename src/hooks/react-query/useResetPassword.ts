@@ -1,10 +1,10 @@
 import { useMutation } from '@tanstack/react-query';
-import { supabaseClient } from '@/src/lib/supabaseClient';
+import { getSupabaseClient } from '@/src/lib/supabase';
 
 export const useResetPassword = () => {
 	return useMutation({
 		mutationFn: async (email: string) => {
-			const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+			const { error } = await getSupabaseClient().auth.resetPasswordForEmail(email, {
 				redirectTo: `${window.location.origin}/auth/reset-password`,
 			});
 

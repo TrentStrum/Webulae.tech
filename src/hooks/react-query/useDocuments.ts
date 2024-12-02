@@ -47,3 +47,14 @@ export const useUploadDocument = () => {
 
 	return { uploadDocument: mutateAsync, isUploading: isPending, error };
 };
+
+export const useProjectDocuments = (projectId: string) => {
+	return useQuery({
+		queryKey: ['documents', 'project', projectId],
+		queryFn: async () => {
+			const response = await apiClient.get<Document[]>(`/projects/${projectId}/documents`);
+			return response;
+		},
+		enabled: !!projectId,
+	});
+};

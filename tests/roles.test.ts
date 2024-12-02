@@ -1,9 +1,9 @@
-import { supabaseClient } from '@/src/lib/supabaseClient';
+import { supabase } from '@/src/lib/supabase';
 
 describe('Role System', () => {
   it('should create a new user with client role by default', async () => {
     const email = `test-${Date.now()}@example.com`;
-    const { data: { user }, error: signUpError } = await supabaseClient.auth.signUp({
+    const { data: { user }, error: signUpError } = await supabase.auth.signUp({
       email,
       password: 'testpassword123'
     });
@@ -14,37 +14,37 @@ describe('Role System', () => {
     // Wait for profile creation
     await new Promise(resolve => setTimeout(resolve, 1000));
 
-    const { data: profile, error: profileError } = await supabaseClient
+    const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('role')
-      .eq('id', user!.id)
-      .single();
+			.eq('id', user!.id)
+			.single();
 
-    expect(profileError).toBeNull();
-    expect(profile?.role).toBe('client');
+		expect(profileError).toBeNull();
+		expect(profile?.role).toBe('client');
 
-    // Cleanup
-    await supabaseClient.auth.admin.deleteUser(user!.id);
-  });
+		// Cleanup
+		await supabase.auth.admin.deleteUser(user!.id);
+	});
 
-  it('should prevent clients from becoming admins', async () => {
-    const email = `test-${Date.now()}@example.com`;
-    const { data: { user } } = await supabaseClient.auth.signUp({
-      email,
-      password: 'testpassword123'
-    });
+	it('should prevent clients from becoming admins', async () => {
+		const email = `test-${Date.now()}@example.com`;
+		const { data: { user } } = await supabase.auth.signUp({
+			email,
+			password: 'testpassword123'
+		});
 
-    // Wait for profile creation
-    await new Promise(resolve => setTimeout(resolve, 1000));
+		// Wait for profile creation
+		await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    const { error: upgradeError } = await supabaseClient
-      .from('profiles')
-      .update({ role: 'admin' })
-      .eq('id', user!.id);
+		const { error: upgradeError } = await supabase
+			.from('profiles')
+			.update({ role: 'admin' })
+			.eq('id', user!.id);
 
-    expect(upgradeError).toBeTruthy();
+		expect(upgradeError).toBeTruthy();
 
-    // Cleanup
-    await supabaseClient.auth.admin.deleteUser(user!.id);
-  });
+		// Cleanup
+		await supabase.auth.admin.deleteUser(user!.id);
+	});
 });
