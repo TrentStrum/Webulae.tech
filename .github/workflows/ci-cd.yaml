@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - bolt-update
   pull_request:
     branches:
       - '**'
