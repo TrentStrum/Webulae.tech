@@ -1,9 +1,11 @@
 'use client';
 
-import { Card, CardHeader, CardTitle, CardDescription } from "@/src/components/ui/card";
 import { FileText, Download } from "lucide-react";
+
 import { Button } from "@/src/components/ui/button";
-import { Document } from "@/src/types";
+import { Card, CardHeader, CardTitle, CardDescription } from "@/src/components/ui/card";
+
+import type { Document } from "@/src/types";
 
 type Props = {
 	document: Document;

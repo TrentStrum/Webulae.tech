@@ -3,6 +3,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { useState, type ReactNode } from 'react';
+
 import { ErrorBoundary } from '@/src/components/error/error-boundary';
 
 export function QueryProvider({ children }: { children: ReactNode }) {

@@ -1,5 +1,6 @@
-import { Database } from '@/src/types/database.types';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+
+import type { Database } from '@/src/types/database.types';
 
 
 export async function resetUserPassword(email: string) {

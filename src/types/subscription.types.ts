@@ -10,10 +10,25 @@ export type SubscriptionPlan = {
   stripePriceId: string;
 };
 
+export interface PaymentMethod {
+  id: string;
+  isDefault: boolean;
+  // Add other payment method fields
+}
+
 export type Subscription = {
+  nextBillingDate: string | number | Date;
+  projectsUsed: number;
+  projectsLimit: number;
+  storageUsed: number;
+  storageLimit: number;
+  apiCallsUsed: number;
+  apiCallsLimit: number;
+  paymentMethods: PaymentMethod[];
   id: string;
   userId: string;
   planId: string;
+  planName: string;
   status: SubscriptionStatus;
   currentPeriodStart: string;
   currentPeriodEnd: string;
@@ -30,18 +45,6 @@ export type SubscriptionEvent = {
   type: 'created' | 'renewed' | 'canceled' | 'updated' | 'payment_failed';
   data: Record<string, any>;
   createdAt: string;
-};
-
-export type PaymentMethod = {
-  id: string;
-  type: 'card';
-  card: {
-    brand: string;
-    last4: string;
-    expMonth: number;
-    expYear: number;
-  };
-  isDefault: boolean;
 };
 
 export type SubscriptionError = {

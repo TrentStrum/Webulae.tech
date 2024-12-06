@@ -1,13 +1,14 @@
 import '@testing-library/jest-dom';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { http } from 'msw';
 import { setupServer } from 'msw/node';
-import { QueryClientProvider } from '@tanstack/react-query';
-import { queryClient } from '@/src/lib/cache/queryCache';
+
 import Login from '@/src/app/auth/login/page';
 import { SignUpForm } from '@/src/app/auth/register/components/SignUpForm';
 import { ResetPasswordForm } from '@/src/app/auth/reset-password/components/ResetPasswordForm';
+import { queryClient } from '@/src/lib/cache/queryCache';
 
 type WrapperProps = {
 	children: React.ReactNode;

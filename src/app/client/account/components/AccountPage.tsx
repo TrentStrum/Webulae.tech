@@ -1,5 +1,5 @@
-import { useCurrentUser } from '@/src/hooks/react-query/useUsers';
 import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card';
+import { useCurrentUser } from '@/src/hooks/react-query/useUsers';
 
 export default function Account() {
 	const { data: user, isLoading } = useCurrentUser();
@@ -17,13 +17,17 @@ export default function Account() {
 					</CardHeader>
 					<CardContent>
 						<div className="space-y-4">
-							<div>
-								<label className="text-sm font-medium">Email</label>
-								<p className="mt-1">{user.email}</p>
+							<div className="mb-4">
+								<label htmlFor="email" className="block text-sm font-medium text-gray-700">
+									Email
+								</label>
+								<p id="email" className="mt-1">{user.email}</p>
 							</div>
-							<div>
-								<label className="text-sm font-medium">Last Sign In</label>
-								<p className="mt-1">
+							<div className="mb-4">
+								<label htmlFor="lastSignIn" className="block text-sm font-medium text-gray-700">
+									Last Sign In
+								</label>
+								<p id="lastSignIn" className="mt-1">
 									{user.last_sign_in_at ? new Date(user.last_sign_in_at).toLocaleString() : 'Never'}
 								</p>
 							</div>

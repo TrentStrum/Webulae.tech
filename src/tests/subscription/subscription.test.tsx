@@ -1,11 +1,12 @@
 import '@testing-library/jest-dom';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { http } from 'msw';
 import { setupServer } from 'msw/node';
-import { QueryClientProvider } from '@tanstack/react-query';
-import { queryClient } from '@/src/lib/cache/queryCache';
+
 import { SubscriptionDashboard } from '@/src/components/subscription/SubscriptionDashboard';
+import { queryClient } from '@/src/lib/cache/queryCache';
 
 type WrapperProps = {
 	children: React.ReactNode;

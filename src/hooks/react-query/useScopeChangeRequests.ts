@@ -1,6 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+
 import { apiClient } from '@/src/lib/apiClient';
-import { ScopeChangeRequest } from '@/src/types/scopeChange.types';
+
+import type { ScopeChangeRequest } from '@/src/types/scopeChange.types';
 
 export const useCreateScopeChangeRequest = (projectId: string) => {
 	const queryClient = useQueryClient();

@@ -1,5 +1,6 @@
-import { AuthUser } from '../types/authUser.types';
 import { supabaseClient } from '../lib/supabaseClient';
+
+import type { AuthUser } from '../types/authUser.types';
 
 // Get the current session
 export async function getSession() {

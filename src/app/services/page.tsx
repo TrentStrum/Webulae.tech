@@ -1,7 +1,9 @@
 'use client';
 
 import Image from 'next/image';
+
 import { Button } from '@/src/components/ui/button';
+
 import { services } from './constants/services';
 
 export default function ServicesPage() {

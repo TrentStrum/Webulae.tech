@@ -1,11 +1,13 @@
 'use client';
 
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Label } from '@radix-ui/react-label';
+import { useEffect } from "react";
+import { useForm } from 'react-hook-form';
+
 import { Button } from '@/src/components/ui/button';
 import { CardContent } from '@/src/components/ui/card';
 import { Input } from '@/src/components/ui/input';
-import { Textarea } from '@/src/components/ui/textarea';
-import { ProjectFormData, projectSchema } from '@/src/schemas/projectSchema';
-import { Label } from '@radix-ui/react-label';
 import {
 	Select,
 	SelectContent,
@@ -13,9 +15,11 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@/src/components/ui/select';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect } from "react";
+import { Textarea } from '@/src/components/ui/textarea';
+import { projectSchema } from '@/src/schemas/projectSchema';
+
+import type { ProjectFormData} from '@/src/schemas/projectSchema';
+
 
 type Props = {
 	onSubmit: (formData: ProjectFormData) => Promise<void>;

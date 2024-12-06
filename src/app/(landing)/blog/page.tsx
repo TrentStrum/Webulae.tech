@@ -1,14 +1,16 @@
 'use client';
 
-import { Input } from '@/src/components/ui/input';
-import { useBlogPosts } from '@/src/hooks/react-query/useBlog';
 import { Search, SlidersHorizontal } from 'lucide-react';
 import { useState } from 'react';
-import { Filters } from './components/Filters';
+
+import { BlogPostCard } from '@/src/components/blog/BlogPostCard';
+import { BlogPostSkeleton } from '@/src/components/blog/BlogPostSkeleton';
+import { Filters } from '@/src/components/blog/Filters';
 import { Button } from '@/src/components/ui/button';
-import { BlogPostSkeleton } from './components/BlogPostSkeleton';
-import { BlogPostCard } from './components/BlogPostCard';
-import { BlogPost } from '@/src/types/blog.types';
+import { Input } from '@/src/components/ui/input';
+import { useBlogPosts } from '@/src/hooks/react-query/useBlog';
+
+import type { BlogPost } from '@/src/types/blog.types';
 
 export default function BlogPage() {
   const [searchTerm, setSearchTerm] = useState('');

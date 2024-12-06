@@ -1,10 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import { cn } from '@/src/utils/utils';
-import { useNavigation } from '@/src/hooks/helpers/use-navigation';
+
 import { Button } from '@/src/components/ui/button';
-import { AuthUser } from '@/src/types/authUser.types';
+import { useNavigation } from '@/src/hooks/helpers/use-navigation';
+import { cn } from '@/src/utils/utils';
+
+import type { AuthUser } from '@/src/types/authUser.types';
 
 interface NavbarMobileContentProps {
   isOpen: boolean;

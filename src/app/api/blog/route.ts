@@ -1,7 +1,9 @@
-import { DataAccessInterface } from '@/src/contracts/DataAccess';
-import { supabase } from '@/src/lib/supabase';
-import { Database } from '@/src/types/database.types';
 import { NextResponse } from 'next/server';
+
+import { supabase } from '@/src/lib/supabase';
+
+import type { DataAccessInterface } from '@/src/contracts/DataAccess';
+import type { Database } from '@/src/types/database.types';
 
 type BlogPost = Database['public']['Tables']['blog_posts']['Row'];
 

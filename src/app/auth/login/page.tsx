@@ -1,14 +1,16 @@
 'use client';
 
-import { useState } from 'react';
-import Link from 'next/link';
 import { Mail, Eye, EyeOff, LogIn } from 'lucide-react';
+import Link from 'next/link';
+import { useState } from 'react';
+
 import { Button } from '@/src/components/ui/button';
 import { Input } from '@/src/components/ui/input';
 import { Label } from '@/src/components/ui/label';
-import { useToast } from '@/src/hooks/helpers/use-toast';
-import { AuthSideContent } from '../register/components/AuthSideContent';
 import { useLoginMutation } from '@/src/hooks/auth/useAuthMutations';
+import { useToast } from '@/src/hooks/helpers/use-toast';
+
+import { AuthSideContent } from '../register/components/AuthSideContent';
 
 export default function LoginPage() {
 	const [email, setEmail] = useState('');

@@ -2,7 +2,6 @@
 
 import { Button } from '@/src/components/ui/button';
 import { TableRow, TableCell } from '@/src/components/ui/table';
-import { User } from '@/src/types';
 
 type Props = {
 	user: User;

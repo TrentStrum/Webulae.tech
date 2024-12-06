@@ -1,6 +1,14 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+
 import { apiClient } from '@/src/lib/apiClient';
-import { Document } from '@/src/types/document.types';
+
+import type { Document } from '@/src/types/document.types';
+
+interface UploadDocumentParams {
+	file: File;
+	category: string;
+	projectId: string;
+}
 
 export const useDocuments = () => {
 	const { data, isLoading, error } = useQuery({
@@ -25,14 +33,15 @@ export const useUploadDocument = () => {
 	const queryClient = useQueryClient();
 
 	const { mutateAsync, isPending, error } = useMutation<
-		Document, // Response type
+		Document,
 		Error,
-		{ file: File; category: string }
+		UploadDocumentParams
 	>({
-		mutationFn: async ({ file, category }) => {
+		mutationFn: async ({ file, category, projectId }) => {
 			const formData = new FormData();
 			formData.append('file', file);
 			formData.append('category', category);
+			formData.append('projectId', projectId);
 
 			return await apiClient.post<FormData, Document>('/documents/upload', formData, {
 				headers: {

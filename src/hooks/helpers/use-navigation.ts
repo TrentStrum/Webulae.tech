@@ -1,7 +1,12 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+
 import { useAuthState } from '../../hooks/auth/useAuthState';
+
+import type { NavigationGuard, NavigationOptions } from '@/src/types/navigation.types';
+
+
 
 // Public navigation items shown to non-authenticated users
 const publicNavigation = [
@@ -33,7 +38,7 @@ const adminNavigation = [
 	{ name: 'Blog', href: '/admin/blog' },
 ] as const;
 
-export function useNavigation() {
+export function useNavigation(): NavigationOptions {
 	const pathname = usePathname();
 	const { data: user } = useAuthState();
 
@@ -86,4 +91,18 @@ export function useNavigation() {
 		navigationItems: getNavigationItems(),
 		isActive,
 	};
+}
+
+export function useNavigationGuard(path: string, guard: NavigationGuard): void {
+	const { data: user } = useAuthState();
+	const pathname = usePathname();
+	const router = useRouter();
+
+	// React Query will handle this automatically when the auth state changes
+	if (pathname === path) {
+		const canAccess = guard(user);
+		if (!canAccess) {
+			router.push('/');
+		}
+	}
 }

@@ -1,8 +1,10 @@
 'use client';
 
 import { LogOut } from 'lucide-react';
-import { useLogoutMutation } from '@/src/hooks/auth/useAuthMutations';
 import { forwardRef } from 'react';
+
+import { useLogoutMutation } from '@/src/hooks/auth/useAuthMutations';
+
 import { Button } from '../ui/button';
 
 const LogoutButton = forwardRef<HTMLButtonElement, React.ComponentPropsWithoutRef<'button'>>(

@@ -1,6 +1,8 @@
 import { Check } from 'lucide-react';
-import { Button } from '../ui/button';
+
 import { cn } from '@/src/utils/utils';
+
+import { Button } from '../ui/button';
 
 const tiers = [
   {

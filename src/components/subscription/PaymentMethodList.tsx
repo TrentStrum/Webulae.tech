@@ -1,10 +1,14 @@
 'use client';
 
-import { PaymentMethod } from '@/src/types/subscription.types';
-import { Button } from '@/src/components/ui/button';
 import { CreditCard, Trash2 } from 'lucide-react';
+
+import { Button } from '@/src/components/ui/button';
 import { useSubscriptionPayment } from '@/src/hooks/subscription/useSubscriptionPayment';
+
 import { Badge } from '../ui/badge';
+
+import type { PaymentMethod } from '@/src/types/subscription.types';
+
 
 interface Props {
 	paymentMethods: PaymentMethod[];

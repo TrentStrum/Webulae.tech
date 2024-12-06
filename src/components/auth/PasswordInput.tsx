@@ -1,11 +1,14 @@
 'use client';
 
-import { useState } from 'react';
 import { Eye, EyeOff, Check, X } from 'lucide-react';
-import { Input } from '../ui/input';
-import { Button } from '../ui/button';
-import { Progress } from '../ui/progress';
+import { useState } from 'react';
+
 import { usePasswordValidation } from '@/src/hooks/auth/usePasswordValidation';
+
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
+import { Progress } from '../ui/progress';
+
 
 interface PasswordInputProps {
   value: string;

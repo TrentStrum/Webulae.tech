@@ -1,11 +1,13 @@
 'use client';
 
-import Link from 'next/link';
 import { Moon, Sun } from 'lucide-react';
+import Link from 'next/link';
 import { useTheme } from 'next-themes';
-import { Button } from '@/src/components/ui/button';
+
 import UserMenu from '@/src/components/menu/UserMenu';
-import { AuthUser } from '@/src/types/authUser.types';
+import { Button } from '@/src/components/ui/button';
+
+import type { AuthUser } from '@/src/types/authUser.types';
 
 interface NavbarActionsProps {
   user: AuthUser | null;

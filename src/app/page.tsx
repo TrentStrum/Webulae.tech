@@ -1,12 +1,13 @@
 'use client';
 
-import { Hero } from '@/src/components/sections/hero';
 import { Features } from '@/src/components/sections/features';
+import { Hero } from '@/src/components/sections/hero';
 import { Pricing } from '@/src/components/sections/pricing';
-import AdminDashboard from './admin/dashboard/page';
-import DeveloperDashboard from './developer/dashboard/page';
-import ClientDashboard from './client/dashboard/page';
 import { useAuth } from '@/src/contexts/AuthContext';
+
+import AdminDashboard from './admin/dashboard/page';
+import ClientDashboard from './client/dashboard/page';
+import DeveloperDashboard from './developer/dashboard/page';
 
 export default function Home() {
 	const { data: session } = useAuth();

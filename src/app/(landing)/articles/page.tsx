@@ -1,35 +1,14 @@
 'use client';
 
-import { useBlogPosts } from '@/src/hooks/react-query/useBlog';
-import { BlogPostCard } from '@/src/components/blog/BlogPostCard';
-import { Filters } from '@/src/components/blog/Filters';
+import { SlidersHorizontal , Search } from 'lucide-react';
 import { useState } from 'react';
-import { Button } from '@/src/components/ui/button';
-import { SlidersHorizontal } from 'lucide-react';
-import { Input } from '@/src/components/ui/input';
-import { Search } from 'lucide-react';
+
+import { BlogPostCard } from '@/src/components/blog/BlogPostCard';
 import { BlogPostSkeleton } from '@/src/components/blog/BlogPostSkeleton';
-
-interface BlogPost {
-  id: string;
-  title: string;
-  slug: string;
-  excerpt: string;
-  content: string;
-  published_at: string;
-  author: string;
-  image_url?: string;
-  tags?: string[];
-  username: string;
-  full_name: string;
-  created_at: string;
-  updated_at: string;
-  author_id: string;
-}
-
-interface BlogPostsResponse {
-  pages: BlogPost[][];
-}
+import { Filters } from '@/src/components/blog/Filters';
+import { Button } from '@/src/components/ui/button';
+import { Input } from '@/src/components/ui/input';
+import { useBlogPosts } from '@/src/hooks/react-query/useBlog';
 
 export default function ArticlesPage() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -69,14 +48,14 @@ export default function ArticlesPage() {
 
         {isLoading ? (
           <BlogPostSkeleton />
-        ) : blogPosts?.pages[0]?.length === 0 ? (
+        ) : blogPosts?.pages[0]?.data.length === 0 ? (
           <p className="text-center text-muted-foreground py-8">No articles found.</p>
         ) : (
           <>
             <div className="space-y-6">
               {blogPosts?.pages.map((page, i) => (
                 <div key={i} className="space-y-6">
-                  {page.map((post) => (
+                  {page.data.map((post) => (
                     <BlogPostCard key={post.id} post={post} />
                   ))}
                 </div>

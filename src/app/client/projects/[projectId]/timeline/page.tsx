@@ -1,9 +1,10 @@
 'use client';
 
+import { useParams } from 'next/navigation';
+
+import { Badge } from '@/src/components/ui/badge';
 import { Card, CardHeader, CardTitle, CardContent } from '@/src/components/ui/card';
 import { useProjectTimeline } from '@/src/hooks/react-query/useTimeline';
-import { Badge } from '@/src/components/ui/badge';
-import { useParams } from 'next/navigation';
 
 
 const getStatusColor = (status: string) => {

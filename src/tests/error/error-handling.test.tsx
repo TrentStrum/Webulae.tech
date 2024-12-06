@@ -1,7 +1,8 @@
 import { render, screen, fireEvent } from '@testing-library/react';
+
 import { ErrorFallback } from '@/src/components/error/error-fallback';
-import { useErrorHandler } from '@/src/hooks/helpers/use-error-handler';
 import { ErrorMessage } from '@/src/components/forms/ErrorMessage';
+import { useErrorHandler } from '@/src/hooks/helpers/use-error-handler';
 
 jest.mock('next/navigation', () => ({
   useRouter: () => ({

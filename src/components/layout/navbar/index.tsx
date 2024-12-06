@@ -1,15 +1,17 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+
+import { LoadingSpinner } from '@/src/components/ui/loading-spinner';
 import { useAuth } from '@/src/contexts/AuthContext';
 import { useMobileMenu } from '@/src/hooks/helpers/use-mobile-menu';
 import { useNavigation } from '@/src/hooks/helpers/use-navigation';
-import { LoadingSpinner } from '@/src/components/ui/loading-spinner';
+
+import { NavbarActions } from './navbar-actions';
 import { NavbarBrand } from './navbar-brand';
 import { NavbarDesktopLinks } from './navbar-desktop-links';
-import { NavbarMobileMenu } from './navbar-mobile-menu';
-import { NavbarActions } from './navbar-actions';
 import { NavbarMobileContent } from './navbar-mobile-content';
+import { NavbarMobileMenu } from './navbar-mobile-menu';
 
 export function Navbar() {
   const [isMounted, setIsMounted] = useState(false);

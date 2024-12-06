@@ -1,6 +1,7 @@
-import { DataAccessInterface } from '@/src/contracts/DataAccess';
 import { supabase } from '@/src/lib/supabase';
-import { Database } from '@/src/types/database.types';
+
+import type { DataAccessInterface } from '@/src/contracts/DataAccess';
+import type { Database } from '@/src/types/database.types';
 
 type ProjectTimeline = Database['public']['Tables']['project_timeline']['Row'];
 

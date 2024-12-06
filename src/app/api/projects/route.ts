@@ -1,7 +1,9 @@
-import { DataAccessInterface } from '@/src/contracts/DataAccess';
-import { supabase } from '@/src/lib/supabase';
-import { Database } from '@/src/types/database.types';
 import { NextResponse } from 'next/server';
+
+import { supabase } from '@/src/lib/supabase';
+
+import type { DataAccessInterface } from '@/src/contracts/DataAccess';
+import type { Database } from '@/src/types/database.types';
 
 type Project = Database['public']['Tables']['projects']['Row'];
 
@@ -53,7 +55,7 @@ function isErrorWithMessage(error: unknown): error is { message: string } {
 }
 
 // Handler for GET requests to fetch all projects or a specific project by ID
-export async function GET(req: Request) {
+export async function GET(req: Request): Promise<NextResponse> {
 	try {
 		const { searchParams } = new URL(req.url);
 		const id = searchParams.get('id');
@@ -77,7 +79,7 @@ export async function GET(req: Request) {
 }
 
 // Handler for POST requests to create a new project
-export async function POST(req: Request) {
+export async function POST(req: Request): Promise<NextResponse> {
 	try {
 		const body = await req.json();
 		const newProject = await projectDataAccess.create?.(body);
@@ -96,7 +98,7 @@ export async function POST(req: Request) {
 }
 
 // Handler for PUT requests to update an existing project
-export async function PUT(req: Request) {
+export async function PUT(req: Request): Promise<NextResponse> {
 	try {
 		const body = await req.json();
 		const { id, ...updates } = body;
@@ -121,7 +123,7 @@ export async function PUT(req: Request) {
 }
 
 // Handler for DELETE requests to delete a project
-export async function DELETE(req: Request) {
+export async function DELETE(req: Request): Promise<NextResponse> {
 	try {
 		const { searchParams } = new URL(req.url);
 		const id = searchParams.get('id');

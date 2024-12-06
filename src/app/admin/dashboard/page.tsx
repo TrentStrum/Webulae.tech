@@ -1,14 +1,15 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import Link from 'next/link';
 import { Plus, Users } from 'lucide-react';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+
+import { DashboardSkeleton } from '@/src/components/skeletons/dashboard-skeleton';
+import { Badge } from '@/src/components/ui/badge';
 import { Button } from '@/src/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card';
-import { Badge } from '@/src/components/ui/badge';
-import { DashboardSkeleton } from '@/src/components/skeletons/dashboard-skeleton';
-import { useDashboardStats } from '@/src/hooks/helpers/use-dashboard-stats';
 import { useAuthState } from '@/src/hooks/auth/useAuthState';
+import { useDashboardStats } from '@/src/hooks/helpers/use-dashboard-stats';
 
 export default function AdminDashboard() {
 	const { projectStats, userStats, isLoading: isLoadingStats, error } = useDashboardStats();

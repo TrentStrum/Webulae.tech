@@ -1,7 +1,5 @@
 'use client';
-
-import { useEffect } from 'react';
-
+	
 export default function Profile() {
 	return (
 		<main className="p-4">
@@ -22,11 +20,11 @@ export default function Profile() {
 							<h3 className="text-lg font-medium mb-2">Personal Information</h3>
 							<div className="grid grid-cols-2 gap-4">
 								<div>
-									<label className="text-sm text-gray-600">Full Name</label>
+									<span className="text-sm text-gray-600">Full Name</span>
 									<p className="font-medium">John Doe</p>
 								</div>
 								<div>
-									<label className="text-sm text-gray-600">Email</label>
+									<span className="text-sm text-gray-600">Email</span>
 									<p className="font-medium">john.doe@example.com</p>
 								</div>
 							</div>

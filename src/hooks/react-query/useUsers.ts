@@ -1,7 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/src/lib/supabase';
-import { User } from '@/src/types/user.types';
+
 import { apiClient } from '@/src/lib/apiClient';
+import { supabase } from '@/src/lib/supabase';
+
+import type { User } from '@/src/types/user.types';
 
 export const useUsers = () => {
 	return useQuery<User[], Error>({

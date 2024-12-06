@@ -1,4 +1,4 @@
-import { Profile } from './profile.types';
+import type { Profile } from './profile.types';
 
 export type Project = {
 	projectId: string;

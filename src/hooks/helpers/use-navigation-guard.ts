@@ -1,8 +1,10 @@
 'use client';
 
-import { useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
+import { useEffect } from 'react';
+
 import { useAuth } from '@/src/contexts/AuthContext';
+
 import { useToast } from './use-toast';
 
 interface NavigationGuardProps {

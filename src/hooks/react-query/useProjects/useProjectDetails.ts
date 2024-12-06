@@ -1,6 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
+
 import { apiClient } from '@/src/lib/apiClient';
-import { Project } from '@/src/types/project.types';
+
+import type { Project } from '@/src/types/project.types';
 
 export const useProjectDetails = (projectId: string) =>
 	useQuery<Project>({

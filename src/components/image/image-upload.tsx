@@ -1,9 +1,11 @@
 'use client';
 
-import { useState } from 'react';
-import { ImageEditor } from './image-editor';
-import { Button } from '../ui/button';
 import { Upload } from 'lucide-react';
+import { useState } from 'react';
+
+import { Button } from '../ui/button';
+
+import { ImageEditor } from './image-editor';
 
 interface ImageUploadProps {
   onUpload: (file: File) => Promise<string>;

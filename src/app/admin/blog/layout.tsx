@@ -1,6 +1,8 @@
+
 import { QueryProvider } from '@/src/contexts/QueryProvider';
 import { ThemeProvider } from '@/src/contexts/theme-provider';
-import { ReactNode } from 'react';
+
+import type { ReactNode } from 'react';
 
 interface BlogLayoutProps {
 	children: ReactNode;

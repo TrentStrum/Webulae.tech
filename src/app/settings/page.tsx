@@ -1,9 +1,11 @@
 'use client';
 
+import { useState } from 'react';
+
+import { Button } from '@/src/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/src/components/ui/card';
 import { useToast } from '@/src/hooks';
-import { useState } from 'react';
-import { Button } from '@/src/components/ui/button';
+
 import { NotificationSetting } from './components/NotificationSettings';
 
 

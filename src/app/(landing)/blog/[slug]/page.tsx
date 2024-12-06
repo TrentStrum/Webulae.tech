@@ -1,7 +1,8 @@
 'use client';
 
-import { useParams } from 'next/navigation';
 import { formatDistanceToNow } from 'date-fns';
+import { useParams } from 'next/navigation';
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card';
 import { LoadingSpinner } from '@/src/components/ui/loading-spinner';
 import { useBlogPost } from '@/src/hooks/react-query/useBlog';

@@ -98,5 +98,6 @@
 				"jest/valid-expect": "error"
 			}
 		}
-	]
+	],
+	"root": true
 }

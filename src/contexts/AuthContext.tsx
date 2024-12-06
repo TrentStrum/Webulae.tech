@@ -1,10 +1,12 @@
 'use client';
 
-import { createContext, useContext, useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
+import { createContext, useContext, useEffect } from 'react';
+
 import { useAuthState } from '@/src/hooks/auth/useAuthState';
 import { setupAuthListener } from '@/src/lib/supabase';
-import { User } from '@/src/types/user.types';
+
+import type { User } from '@/src/types/user.types';
 
 const AuthContext = createContext<ReturnType<typeof useAuthState> | undefined>(undefined);
 

@@ -1,10 +1,13 @@
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card';
+import { formatDistanceToNow } from 'date-fns';
+
 import { Badge } from '@/src/components/ui/badge';
 import { Button } from '@/src/components/ui/button';
-import { formatDistanceToNow } from 'date-fns';
-import { Subscription } from '@/src/types/subscription.types';
+import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card';
+
+
+import type { Subscription } from '@/src/types/subscription.types';
 
 interface SubscriptionStatusProps {
   subscription: Subscription;

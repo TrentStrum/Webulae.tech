@@ -794,6 +794,93 @@ export type Database = {
 					},
 				];
 			};
+			subscriptions: {
+				Row: {
+					id: string;
+					user_id: string;
+					plan_id: string;
+					plan_name: string;
+					status: SubscriptionStatus;
+					next_billing_date: string;
+					projects_used: number;
+					projects_limit: number;
+					storage_used: number;
+					storage_limit: number;
+					api_calls_used: number;
+					api_calls_limit: number;
+					payment_methods: PaymentMethod[];
+					current_period_start: string;
+					current_period_end: string;
+					cancel_at_period_end: boolean;
+					stripe_subscription_id: string;
+					stripe_customer_id: string;
+					created_at: string;
+					updated_at: string;
+				};
+				Insert: {
+					id: string;
+					user_id: string;
+					plan_id: string;
+					plan_name: string;
+					status: SubscriptionStatus;
+					next_billing_date: string;
+					projects_used: number;
+					projects_limit: number;
+					storage_used: number;
+					storage_limit: number;
+					api_calls_used: number;
+					api_calls_limit: number;
+					payment_methods: PaymentMethod[];
+					current_period_start: string;
+					current_period_end: string;
+					cancel_at_period_end: boolean;
+					stripe_subscription_id: string;
+					stripe_customer_id: string;
+					created_at?: string;
+					updated_at?: string;
+				};
+				Update: {
+					id?: string;
+					user_id?: string;
+					plan_id?: string;
+					plan_name?: string;
+					status?: SubscriptionStatus;
+					next_billing_date?: string;
+					projects_used?: number;
+					projects_limit?: number;
+					storage_used?: number;
+					storage_limit?: number;
+					api_calls_used?: number;
+					api_calls_limit?: number;
+					payment_methods?: PaymentMethod[];
+					current_period_start?: string;
+					current_period_end?: string;
+					cancel_at_period_end?: boolean;
+					stripe_subscription_id?: string;
+					stripe_customer_id?: string;
+					created_at?: string;
+					updated_at?: string;
+				};
+				Relationships: [];
+			};
+			payment_methods: {
+				Row: {
+					id: string;
+					user_id: string;
+					isDefault: boolean;
+				};
+				Insert: {
+					id?: string;
+					user_id: string;
+					isDefault: boolean;
+				};
+				Update: {
+					id?: string;
+					user_id?: string;
+					isDefault?: boolean;
+				};
+				Relationships: [];
+			};
 		};
 		Views: {
 			admin_users: {
@@ -803,10 +890,10 @@ export type Database = {
 				Relationships: [
 					{
 						foreignKeyName: 'profiles_id_fkey';
-						columns: ['id'];
-						isOneToOne: true;
-						referencedRelation: 'auth_users';
-						referencedColumns: ['id'];
+								columns: ['id'];
+								isOneToOne: true;
+								referencedRelation: 'auth_users';
+								referencedColumns: ['id'];
 					},
 				];
 			};

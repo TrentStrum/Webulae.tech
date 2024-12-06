@@ -1,12 +1,13 @@
 'use client';
 
+import { useState } from "react";
+
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/src/components/ui/card";
-import { useToast } from "@/src/hooks";
-import { useUploadDocument } from "@/src/hooks/react-query/useDocuments";
+import { Input } from "@/src/components/ui/input";
 import { Label } from "@/src/components/ui/label";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/src/components/ui/select";
-import { Input } from "@/src/components/ui/input";
-import { useState } from "react";
+import { useToast } from "@/src/hooks";
+import { useUploadDocument } from "@/src/hooks/react-query/useDocuments";
 
 interface DocumentUploaderProps {
 	projectId: string;
@@ -29,7 +30,7 @@ export default function DocumentUploader({ projectId }: DocumentUploaderProps) {
 				return;
 			}
 
-			await uploadDocument({ file, category });
+			await uploadDocument({ file, category, projectId });
 
 			toast({
 				title: 'Success',

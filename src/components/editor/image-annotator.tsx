@@ -1,12 +1,12 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import { fabric } from 'fabric';
 
-
+import fabric from 'fabric/fabric-impl';
 import { Circle, MousePointer, Pencil, Square, Type, X } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '../ui/dialog';
+import { useEffect, useRef, useState } from 'react';
+
 import { Button } from '../ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '../ui/dialog';
 
 type Props = {
 	imageUrl: string;
@@ -32,7 +32,7 @@ export function ImageAnnotator({ imageUrl, onSave, onClose }: Props) {
 		fabricCanvasRef.current = canvas;
 
 		// Load image
-		fabric.Image.fromURL(imageUrl, (img) => {
+		fabric.Image.fromURL(imageUrl, (img: fabric.Image) => {
 			// Scale image to fit canvas while maintaining aspect ratio
 			const scale = Math.min(canvas.width! / img.width!, canvas.height! / img.height!);
 			img.scale(scale);
@@ -75,7 +75,7 @@ export function ImageAnnotator({ imageUrl, onSave, onClose }: Props) {
 			let startY = 0;
 			let shape: fabric.Object | null = null;
 
-			canvas.on('mouse:down', (o) => {
+			canvas.on('mouse:down', (o: fabric.IEvent<MouseEvent>) => {
 				const pointer = canvas.getPointer(o.e);
 				isDrawing = true;
 				startX = pointer.x;
@@ -139,7 +139,7 @@ export function ImageAnnotator({ imageUrl, onSave, onClose }: Props) {
 		}
 
 		if (tool === 'text') {
-			canvas.on('mouse:down', (o) => {
+			canvas.on('mouse:down', (o: fabric.IEvent<MouseEvent>) => {
 				const pointer = canvas.getPointer(o.e);
 				const text = new fabric.IText('Click to edit', {
 					left: pointer.x,

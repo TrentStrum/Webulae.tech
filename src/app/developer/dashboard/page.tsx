@@ -1,11 +1,14 @@
 'use client';
 
+import { formatDistanceToNow } from 'date-fns';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { formatDistanceToNow } from 'date-fns';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/src/components/ui/tabs';
-import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card';
+import { useEffect, useState } from 'react';
+
+import { ProjectCardSkeleton } from '@/src/components/skeletons/project-card-skeleton';
 import { Badge } from '@/src/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/src/components/ui/tabs';
 import { useToast } from '@/src/hooks';
 import { supabase } from '@/src/lib/supabase';
 
@@ -30,6 +33,7 @@ export default function DeveloperDashboard() {
 	}, []);
 
 	const checkDeveloperAccess = async () => {
+		if (!supabase) throw new Error('Could not initialize Supabase client');
 		const {
 			data: { session },
 		} = await supabase.auth.getSession();
@@ -56,6 +60,7 @@ export default function DeveloperDashboard() {
 
 	const loadProjects = async () => {
 		try {
+			if (!supabase) throw new Error('Could not initialize Supabase client');
 			const {
 				data: { session },
 			} = await supabase.auth.getSession();

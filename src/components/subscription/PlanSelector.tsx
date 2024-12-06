@@ -1,12 +1,13 @@
 'use client';
 
+import { Check } from 'lucide-react';
 import { useState } from 'react';
+
 import { Button } from '@/src/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/src/components/ui/radio-group';
-import { Label } from '@/src/components/ui/label';
-import { Check } from 'lucide-react';
-import { SubscriptionPlan } from '@/src/types/subscription.types';
+
+import type { SubscriptionPlan } from '@/src/types/subscription.types';
 
 interface PlanSelectorProps {
   plans: SubscriptionPlan[];

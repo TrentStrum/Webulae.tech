@@ -1,15 +1,19 @@
 'use client';
 
+import { Code2, Menu, Moon, Sun, X } from 'lucide-react';
 import Link from 'next/link';
-import { Code2 } from 'lucide-react';
 import { useTheme } from 'next-themes';
-import { cn } from '@/src/utils/utils';
+import { useState, useRef, useEffect } from 'react';
+
+import AuthButtons from '@/src/components/buttons/AuthButton';
+import UserMenu from '@/src/components/menu/UserMenu';
 import { Button } from '@/src/components/ui/button';
 import { useAuth } from '@/src/contexts/AuthContext';
 import { useMobileMenu } from '@/src/hooks/helpers/use-mobile-menu';
 import { useNavigation } from '@/src/hooks/helpers/use-navigation';
-import UserMenu from '@/src/components/menu/UserMenu';
-import AuthButtons from '@/src/components/buttons/AuthButton';
+import { cn } from '@/src/utils/utils';
+
+import { LoadingSpinner } from '../ui/loading-spinner';
 
 export function Navbar() {
   const { theme, setTheme } = useTheme();

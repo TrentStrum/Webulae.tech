@@ -1,14 +1,15 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { supabaseClient } from '@/src/lib/supabaseClient';
-import { useToast } from '@/src/hooks';
-import { Label } from '@/src/components/ui/label';
-import { Input } from '@/src/components/ui/input';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+
 import { AuthForm } from '@/src/components/auth/auth-form';
 import { Button } from '@/src/components/ui/button';
+import { Input } from '@/src/components/ui/input';
+import { Label } from '@/src/components/ui/label';
+import { useToast } from '@/src/hooks';
+import { supabaseClient } from '@/src/lib/supabaseClient';
 
 interface SignUpFormState {
 	email: string;

@@ -1,10 +1,12 @@
 'use client';
 
-import { Card, CardHeader, CardTitle } from '@/src/components/ui/card';
-import DocumentUploader from '@/src/components/documents/DocumentUploader';
-import DocumentCard from '@/src/components/documents/DocumentCard';
-import { useProjectDocuments } from '@/src/hooks/react-query/useDocuments';
 import { useParams } from 'next/navigation';
+
+import DocumentCard from '@/src/components/documents/DocumentCard';
+import DocumentUploader from '@/src/components/documents/DocumentUploader';
+import { Card, CardHeader, CardTitle } from '@/src/components/ui/card';
+import { useProjectDocuments } from '@/src/hooks/react-query/useDocuments';
+
 
 export default function ProjectDocumentsPage() {
 	const { projectId } = useParams();

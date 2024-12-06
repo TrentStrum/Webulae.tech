@@ -1,7 +1,10 @@
 'use client';
 
-import { AuthUser } from '@/src/types/authUser.types';
 import Link from 'next/link';
+
+import LogoutButton from '@/src/components/auth/logout-button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/src/components/ui/avatar';
+import { Button } from '@/src/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,9 +12,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/src/components/ui/dropdown-menu';
-import { Avatar, AvatarFallback, AvatarImage } from '@/src/components/ui/avatar';
-import { Button } from '@/src/components/ui/button';
-import LogoutButton from '@/src/components/auth/logout-button';
+
+import type { AuthUser } from '@/src/types/authUser.types';
 
 const renderDropdownMenuItems = (user: AuthUser) => {
   const commonItems = [

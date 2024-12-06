@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
-import { cachePrefetch } from '@/src/lib/cache/queryCache';
+
 import { useAuth } from '@/src/contexts/AuthContext';
+import { cachePrefetch } from '@/src/lib/cache/queryCache';
 
 export function usePrefetch() {
   const { data: user } = useAuth();

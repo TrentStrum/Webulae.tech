@@ -1,8 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { cn } from '@/src/utils/utils';
+
 import { useNavigation } from '@/src/hooks/helpers/use-navigation';
+import { cn } from '@/src/utils/utils';
 
 interface NavbarDesktopLinksProps {
   items: Array<{ name: string; href: string; }>;

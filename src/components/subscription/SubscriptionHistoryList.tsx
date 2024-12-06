@@ -1,8 +1,10 @@
 'use client';
 
-import { SubscriptionEvent } from '@/src/types/subscription.types';
 import { formatDistanceToNow } from 'date-fns';
+
 import { Badge } from '@/src/components/ui/badge';
+
+import type { SubscriptionEvent } from '@/src/types/subscription.types';
 
 interface Props {
   events: SubscriptionEvent[];

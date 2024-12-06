@@ -1,10 +1,14 @@
 'use client';
 
-import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/src/components/ui/tabs';
-import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card';
+import Link from 'next/link';
+
+import { ProjectCardSkeleton } from '@/src/components/skeletons/project-card-skeleton';
 import { Badge } from '@/src/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/src/components/ui/tabs';
+import { useDeveloperProjects } from '@/src/hooks/react-query/useProjects/useDeveloperProjects';
+import { getStatusColor } from '@/src/utils/statusColors';
 
 export default function DeveloperDashboard() {
 	// Fetch projects

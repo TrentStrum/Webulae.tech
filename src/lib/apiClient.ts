@@ -1,5 +1,8 @@
-import axios, { AxiosError, AxiosResponse } from 'axios';
+import axios from 'axios';
+
 import { withTimeout } from './helpers';
+
+import type { AxiosError, AxiosResponse } from 'axios';
 
 // Create axios instance with default config
 const axiosInstance = axios.create({

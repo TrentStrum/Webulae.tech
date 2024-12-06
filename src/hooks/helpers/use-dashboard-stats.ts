@@ -1,9 +1,10 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/src/lib/supabase';
 import { useRouter } from 'next/navigation';
+
 import { useAuth } from '@/src/contexts/AuthContext';
+import { supabase } from '@/src/lib/supabase';
 
 export function useDashboardStats() {
 	const { data: user, isLoading: isLoadingAuth } = useAuth();

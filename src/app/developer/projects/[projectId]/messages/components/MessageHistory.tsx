@@ -1,8 +1,10 @@
 
-import { Card, CardHeader, CardTitle, CardContent } from '@/src/components/ui/card';
-import { Message } from '@/src/types';
 import { formatDistanceToNow } from 'date-fns';
+
 import { Badge } from '@/src/components/ui/badge';
+import { Card, CardHeader, CardTitle, CardContent } from '@/src/components/ui/card';
+
+import type { Message } from '@/src/types';
 
 
 type Props = {

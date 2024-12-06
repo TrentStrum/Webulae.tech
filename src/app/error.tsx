@@ -1,8 +1,9 @@
 'use client';
 
 import { useEffect } from 'react';
-import { SupabaseError } from '@/src/components/error/SupabaseError';
+
 import { ErrorFallback } from '@/src/components/error/error-fallback';
+import { SupabaseError } from '@/src/components/error/SupabaseError';
 
 export default function Error({
   error,

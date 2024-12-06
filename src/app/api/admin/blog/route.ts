@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
+
 import { getSupabaseClient } from '@/src/lib/supabase';
 
-export async function GET(req: Request) {
+export async function GET(req: Request): Promise<NextResponse> {
 	try {
 		const { searchParams } = new URL(req.url);
 		const searchTerm = searchParams.get('searchTerm') || '';
@@ -10,6 +11,7 @@ export async function GET(req: Request) {
 		const limit = parseInt(searchParams.get('limit') || '10', 10);
 
 		const supabase = getSupabaseClient();
+		if (!supabase) throw new Error('Could not initialize Supabase client');
 
 		let query = supabase.from('blog_posts').select('*');
 
@@ -47,3 +49,33 @@ export async function GET(req: Request) {
 	}
 }
 
+export async function POST(req: Request): Promise<NextResponse> {
+	try {
+		const data = await req.json();
+		const { title, content, published_at = new Date().toISOString() } = data;
+
+		// Validate required fields
+		if (!title || !content) {
+			return NextResponse.json(
+				{ error: 'Title and content are required' },
+				{ status: 400 }
+			);
+		}
+
+		const supabase = getSupabaseClient();
+		if (!supabase) throw new Error('Could not initialize Supabase client');
+
+		const { data: newPost, error } = await supabase
+			.from('blog_posts')
+			.insert([{ title, content, published_at, author_id: 'some-author-id', slug: 'some-slug' }])
+			.select()
+			.single();
+
+		if (error) throw error;
+
+		return NextResponse.json(newPost, { status: 201 });
+	} catch (error) {
+		console.error('Error creating blog post:', error);
+		return NextResponse.json({ error: 'Failed to create blog post' }, { status: 500 });
+	}
+}

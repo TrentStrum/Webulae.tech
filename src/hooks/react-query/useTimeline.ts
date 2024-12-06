@@ -1,6 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
+
 import { apiClient } from '@/src/lib/apiClient';
-import { TimelineItem } from '@/src/types/timeline.types';
+
+import type { TimelineItem } from '@/src/types/timeline.types';
 
 export const useProjectTimeline = (projectId: string) =>
 	useQuery({

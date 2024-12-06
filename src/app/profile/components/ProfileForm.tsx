@@ -1,9 +1,10 @@
-import { Card, CardHeader, CardTitle, CardContent } from "@/src/components/ui/card";
-import { Textarea } from "@/src/components/ui/textarea";
-import { Profile } from '@/src/types';
-import { Label } from '@/src/components/ui/label';
-import { Input } from '@/src/components/ui/input';
 import { Button } from '@/src/components/ui/button';
+import { Card, CardHeader, CardTitle, CardContent } from "@/src/components/ui/card";
+import { Input } from '@/src/components/ui/input';
+import { Label } from '@/src/components/ui/label';
+import { Textarea } from "@/src/components/ui/textarea";
+
+import type { Profile } from '@/src/types';
 
 
 type Props = {

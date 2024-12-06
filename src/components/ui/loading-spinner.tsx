@@ -1,6 +1,7 @@
 'use client';
 
 import { Loader2 } from 'lucide-react';
+
 import { cn } from '@/src/utils/utils';
 
 interface LoadingSpinnerProps extends React.HTMLAttributes<HTMLDivElement> {

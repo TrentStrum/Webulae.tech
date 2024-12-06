@@ -1,5 +1,6 @@
-import { Button } from "@/src/components/ui/button";
 import Link from "next/link";
+
+import { Button } from "@/src/components/ui/button";
 
 const AuthButton = () => (
 	<div className="space-x-2">

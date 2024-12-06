@@ -1,8 +1,9 @@
 'use client';
 
 import { useMutation } from '@tanstack/react-query';
-import { supabase } from '@/src/lib/supabase';
+
 import { useToast } from '@/src/hooks';
+import { supabase } from '@/src/lib/supabase';
 
 interface ResetPasswordData {
 	email: string;

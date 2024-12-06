@@ -1,6 +1,7 @@
 'use client';
 
 import { useBlogPosts } from '@/src/hooks/react-query/useBlog';
+
 import { BlogPostCard } from './BlogPostCard';
 
 export default function BlogList() {

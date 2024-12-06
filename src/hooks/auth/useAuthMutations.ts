@@ -1,10 +1,13 @@
 'use client';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { authService } from '@/src/services/authService';
 import { useRouter } from 'next/navigation';
-import { AuthResponse } from '@supabase/supabase-js';
+
+import { authService } from '@/src/services/authService';
+
 import { useToast } from '../helpers/use-toast';
+
+import type { AuthResponse } from '@supabase/supabase-js';
 
 type LoginCredentials = {
   email: string;

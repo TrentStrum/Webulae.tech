@@ -1,11 +1,15 @@
 'use client';
 
+import { useState } from "react";
+
 import { useToast } from "@/src/hooks";
 import { useResetPassword } from "@/src/hooks/react-query/useResetPassword";
-import { useState } from "react";
 import { useToggleUserRole, useUsers } from "@/src/hooks/react-query/useUsers";
+
 import { UserTable } from "./components/UserTable";
-import { User } from "@/src/types/user.types";
+
+import type { User } from "@/src/types/user.types";
+
 
 export default function AdminUsersPage() {
 	const { data: users, isLoading } = useUsers();

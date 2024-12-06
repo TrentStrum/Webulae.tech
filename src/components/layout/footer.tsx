@@ -1,5 +1,5 @@
-import Link from 'next/link';
 import { Code2, Facebook, Github, Instagram, Linkedin, Twitter } from 'lucide-react';
+import Link from 'next/link';
 
 const navigation = {
 	main: [

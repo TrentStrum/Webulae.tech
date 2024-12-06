@@ -1,5 +1,6 @@
 import { apiClient } from '../lib/apiClient';
-import { DataAccessInterface } from '../contracts/DataAccess';
+
+import type { DataAccessInterface } from '../contracts/DataAccess';
 
 
 export class ProjectDataAccess implements DataAccessInterface<Project> {

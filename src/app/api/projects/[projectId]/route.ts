@@ -1,5 +1,6 @@
-import { supabaseClient } from '@/src/lib/supabaseClient';
 import { NextResponse } from 'next/server';
+
+import { supabaseClient } from '@/src/lib/supabaseClient';
 
 export async function GET(req: Request, { params }: { params: { projectId: string } }) {
 	const projectId = params.projectId;

@@ -1,6 +1,7 @@
-import { queryClient, cachePrefetch } from '@/src/lib/cache/queryCache';
 import { renderHook } from '@testing-library/react';
+
 import { usePrefetch } from '@/src/hooks/helpers/use-prefetch';
+import { queryClient } from '@/src/lib/cache/queryCache';
 
 describe('Cache System', () => {
   beforeEach(() => {
@@ -8,10 +9,10 @@ describe('Cache System', () => {
   });
 
   it('should cache and retrieve data', async () => {
-    const testData = { id: '1', name: 'Test User' };
-    const fetchMock = jest.fn().mockResolvedValue(testData);
+		const testData = { id: '1', name: 'Test User' };
+		const fetchMock = jest.fn().mockResolvedValue(testData);
 
-    await queryClient.fetchQuery({
+		await queryClient.fetchQuery({
       queryKey: ['user', '1'],
       queryFn: fetchMock,
     });

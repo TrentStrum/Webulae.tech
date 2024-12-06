@@ -1,8 +1,11 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card';
-import { Badge } from '@/src/components/ui/badge';
-import { BlogPost } from '@/src/types/blog.types';
 import { formatDistanceToNow } from 'date-fns';
 import Link from 'next/link';
+
+import { Badge } from '@/src/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card';
+
+import type { BlogPost } from '@/src/types/blog.types';
+
 
 interface BlogPostCardProps {
 	post: BlogPost;

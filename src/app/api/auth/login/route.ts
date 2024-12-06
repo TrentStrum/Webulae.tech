@@ -1,11 +1,12 @@
-import { Database } from '@/src/types';
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
-export async function POST(request: Request) {
+import type { Database } from '@/src/types';
+
+export async function POST(req: Request): Promise<NextResponse> {
 	try {
-		const { email, password } = await request.json();
+		const { email, password } = await req.json();
 		const supabase = createRouteHandlerClient<Database>({ cookies });
 
 		const { data, error } = await supabase.auth.signInWithPassword({

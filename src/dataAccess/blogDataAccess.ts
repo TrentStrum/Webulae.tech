@@ -1,5 +1,6 @@
-import { BlogFormData } from "../types/blog.types";
 import { supabaseClient } from "../lib/supabaseClient";
+
+import type { BlogFormData } from "../types/blog.types";
 
 
 export const createBlogPost = async (data: BlogFormData) => {

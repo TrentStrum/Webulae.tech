@@ -1,14 +1,8 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { useLoadingState } from '../helpers/use-loading-state';
 
-interface FormState<T> {
-  data: T;
-  isDirty: boolean;
-  isSubmitting: boolean;
-  error: Error | null;
-}
+import { useLoadingState } from '../helpers/use-loading-state';
 
 export function useFormState<T extends Record<string, any>>(initialData: T) {
   const [data, setData] = useState<T>(initialData);

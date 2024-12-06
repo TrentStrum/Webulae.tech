@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect } from 'react';
-import { Button } from '../ui/button';
-import { useRouter } from 'next/navigation';
 import { AlertTriangle } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+
+import { Button } from '../ui/button';
 
 interface ErrorFallbackProps {
   error: Error;

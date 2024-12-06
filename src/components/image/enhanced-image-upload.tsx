@@ -1,10 +1,12 @@
 'use client';
 
+import { Upload, Pencil } from 'lucide-react';
 import { useState } from 'react';
-import { ImageEditor } from './image-editor';
+
 import { ImageAnnotator } from '../editor/image-annotator';
 import { Button } from '../ui/button';
-import { Upload, Edit, Pencil } from 'lucide-react';
+
+import { ImageEditor } from './image-editor';
 
 interface EnhancedImageUploadProps {
   onUpload: (file: File) => Promise<string>;

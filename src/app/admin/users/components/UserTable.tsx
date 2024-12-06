@@ -1,9 +1,12 @@
 'use client';
 
 import { Table, TableHeader, TableRow, TableHead, TableBody } from '@/src/components/ui/table';
-import { User } from '@/src/types';
-import { UserRow } from './UserRow';
 import { useUsers } from '@/src/hooks/react-query/useUsers';
+
+import { UserRow } from './UserRow';
+
+import type { User } from '@/src/types';
+
 
 type Props = {
 	onResetPassword: (userEmail: string) => Promise<void>;

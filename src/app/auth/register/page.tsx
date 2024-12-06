@@ -1,8 +1,9 @@
 'use client';
 
-import { SignUpForm } from './components/SignUpForm';
-import { AuthSideContent } from './components/AuthSideContent';
 import { UserPlus } from 'lucide-react';
+
+import { AuthSideContent } from './components/AuthSideContent';
+import { SignUpForm } from './components/SignUpForm';
 
 export default function RegisterPage() {
 	return (

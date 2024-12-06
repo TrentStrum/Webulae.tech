@@ -1,5 +1,6 @@
 import { supabase } from '@/src/lib/supabase';
-import { AuthUser } from '@/src/types/authUser.types';
+
+import type { AuthUser } from '@/src/types/authUser.types';
 
 let currentAuthListener: { unsubscribe: () => void } | null = null;
 

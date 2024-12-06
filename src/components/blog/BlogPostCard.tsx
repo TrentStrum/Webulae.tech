@@ -1,17 +1,19 @@
 'use client';
 
-import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
-import { Card, CardHeader, CardTitle, CardContent } from '@/src/components/ui/card';
-import { BlogPost } from '@/src/types/blog.types';
+import Link from 'next/link';
 
-type BlogPostCardProps = {
+import { Card, CardHeader, CardTitle, CardContent } from '@/src/components/ui/card';
+
+import type { BlogPost } from '@/src/types/blog.types';
+
+interface BlogPostCardProps {
   post: BlogPost;
 }
 
-export const BlogPostCard = ({ post }: BlogPostCardProps) => {
+export function BlogPostCard({ post }: BlogPostCardProps): JSX.Element {
   return (
-    <Link href={`/blog/${post.slug}`}>
+    <Link href={`/articles/${post.slug}`}>
       <Card className="transition-shadow hover:shadow-lg">
         <CardHeader>
           <CardTitle className="hover:text-primary transition-colors">

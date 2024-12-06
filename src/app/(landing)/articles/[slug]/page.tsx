@@ -1,20 +1,21 @@
 'use client';
 
-import { notFound, useParams } from 'next/navigation'
-
-import { BlogPost } from '@/src/types/blog.types';
-import { useEffect, useState } from 'react';
-import { supabase } from '@/src/lib/supabase';
-import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card';
 import { formatDistanceToNow } from 'date-fns';
+import { useParams } from 'next/navigation'
+import { useEffect, useState } from 'react';
 
-export default function ArticlePage() {
+import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card';
+import { supabase } from '@/src/lib/supabase';
+
+import type { BlogPost } from '@/src/types/blog.types';
+
+export default function ArticlePage(): JSX.Element {
   const { slug } = useParams();
   const [article, setArticle] = useState<BlogPost | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function loadArticle() {
+    async function loadArticle(): Promise<void> {
       try {
         if (!supabase) throw new Error('Supabase client not initialized');
         const { data, error } = await supabase
@@ -32,7 +33,6 @@ export default function ArticlePage() {
         if (error) throw error;
         setArticle(data);
 
-        // Record view if article exists
         if (data?.id) {
           const { data: { session } } = await supabase.auth.getSession();
           await supabase.from('blog_post_views').insert({
@@ -58,13 +58,13 @@ export default function ArticlePage() {
         <div className="max-w-4xl mx-auto">
           <Card className="animate-pulse">
             <CardHeader>
-              <div className="h-8 bg-muted rounded w-3/4"></div>
+              <div className="h-8 bg-muted rounded w-3/4" />
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <div className="h-4 bg-muted rounded w-full"></div>
-                <div className="h-4 bg-muted rounded w-5/6"></div>
-                <div className="h-4 bg-muted rounded w-4/6"></div>
+                <div className="h-4 bg-muted rounded w-full" />
+                <div className="h-4 bg-muted rounded w-5/6" />
+                <div className="h-4 bg-muted rounded w-4/6" />
               </div>
             </CardContent>
           </Card>

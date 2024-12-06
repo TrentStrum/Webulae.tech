@@ -1,9 +1,11 @@
 'use client';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/src/lib/supabase';
-import { Subscription, SubscriptionError } from '@/src/types/subscription.types';
+
 import { useToast } from '@/src/hooks/helpers/use-toast';
+import { supabase } from '@/src/lib/supabase';
+
+import type { Subscription, SubscriptionError } from '@/src/types/subscription.types';
 
 export function useSubscription(userId: string) {
   const queryClient = useQueryClient();

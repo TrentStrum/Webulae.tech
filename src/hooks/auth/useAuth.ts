@@ -1,32 +1,15 @@
 'use client';
 
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { authService } from '@/src/services/authService';
-import { useEffect } from 'react';
-import { AuthUser } from '@/src/types/user.types';
+import { useContext } from 'react';
 
-export function useAuth() {
-	const queryClient = useQueryClient();
+import { AuthContext } from '@/src/contexts/AuthContext';
 
-	const { data: user, isLoading } = useQuery<AuthUser | null>({
-		queryKey: ['auth', 'user'],
-		queryFn: async () => {
-			const session = await authService.getSession();
-			if (!session?.user) return null;
-			return authService.getUserProfile(session.user.id);
-		},
-		staleTime: Infinity,
-	});
+import type { AuthContextType } from '@/src/types/auth.types';
 
-	useEffect(() => {
-		const subscription = authService.onAuthStateChange((user) => {
-			queryClient.setQueryData(['auth', 'user'], user);
-		});
-
-		return () => {
-			subscription.data.subscription.unsubscribe();
-		};
-	}, [queryClient]);
-
-	return { user, isLoading };
+export function useAuth(): AuthContextType {
+	const context = useContext(AuthContext);
+	if (!context) {
+		throw new Error("useAuth must be used within an AuthProvider");
+	}
+	return context;
 }

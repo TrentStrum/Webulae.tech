@@ -1,8 +1,10 @@
 'use client';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { PaymentMethod, SubscriptionError } from '@/src/types/subscription.types';
+
 import { useToast } from '@/src/hooks/helpers/use-toast';
+
+import type { PaymentMethod, SubscriptionError } from '@/src/types/subscription.types';
 
 export function useSubscriptionPayment(userId: string) {
   const queryClient = useQueryClient();

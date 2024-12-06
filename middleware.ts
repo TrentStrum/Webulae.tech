@@ -1,7 +1,8 @@
 import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
 import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+
 import type { Database } from '@/src/types/database.types';
+import type { NextRequest } from 'next/server';
 
 // Routes that don't require authentication
 const PUBLIC_ROUTES = [

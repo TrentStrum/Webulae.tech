@@ -1,8 +1,10 @@
 'use client';
 
 import { useInfiniteQuery } from '@tanstack/react-query';
+
 import { supabase } from '@/src/lib/supabase';
-import { SubscriptionEvent, SubscriptionError } from '@/src/types/subscription.types';
+
+import type { SubscriptionEvent, SubscriptionError } from '@/src/types/subscription.types';
 
 const ITEMS_PER_PAGE = 10;
 

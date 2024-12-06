@@ -1,26 +1,27 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { formatDistanceToNow } from 'date-fns';
 import { useParams } from 'next/navigation';
+import { useState } from 'react';
+
 import { Badge } from '@/src/components/ui/badge';
+import { Button } from '@/src/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card';
 import { Input } from '@/src/components/ui/input';
 import { Label } from '@/src/components/ui/label';
 import { Textarea } from '@/src/components/ui/textarea';
-import { Button } from '@/src/components/ui/button';
 import { useToast } from '@/src/hooks';
 import { useSendMessage } from '@/src/hooks/react-query/useMessages';
-import { formatDistanceToNow } from 'date-fns';
-import { useQueryClient } from '@tanstack/react-query';
 import { useProjectMessages } from '@/src/hooks/react-query/useProjects/useProjectMesages';
-
+	
 export default function ProjectMessagesPage() {
 	const { id: projectId } = useParams();
 	const { toast } = useToast();
 	const [recipient, setRecipient] = useState('');
 	const [subject, setSubject] = useState('');
 	const [content, setContent] = useState('');
-	const { data: messages, isLoading, refetch } = useProjectMessages(projectId as string);
+	const { data: messages = [], isPending, refetch } = useProjectMessages(projectId as string);
 	const queryClient = useQueryClient();
 	const { mutate: sendMessage, isPending: isSending } = useSendMessage(queryClient);
 
@@ -48,7 +49,7 @@ export default function ProjectMessagesPage() {
 		}
 	};
 
-	if (isLoading) {
+	if (isPending) {
 		return <div className="container py-8">Loading...</div>;
 	}
 
@@ -104,13 +105,13 @@ export default function ProjectMessagesPage() {
 
 			<h2 className="text-2xl font-bold mb-4">Message History</h2>
 			<div className="space-y-4">
-				{messages?.map((message) => (
+				{messages.map((message) => (
 					<Card key={message.id}>
 						<CardHeader>
 							<div className="flex justify-between items-start">
 								<div>
 									<CardTitle>{message.subject}</CardTitle>
-									<p className="text-sm text-muted-foreground">From: {message.sender}</p>
+									<p className="text-sm text-muted-foreground">From: {message.profiles.username}</p>
 								</div>
 								<Badge className={message.status === 'unread' ? 'bg-primary' : ''}>
 									{message.status}
@@ -120,7 +121,7 @@ export default function ProjectMessagesPage() {
 						<CardContent>
 							<p className="mb-4 whitespace-pre-wrap">{message.content}</p>
 							<p className="text-sm text-muted-foreground">
-								{formatDistanceToNow(new Date(message.createdAt), { addSuffix: true })}
+								{formatDistanceToNow(new Date(message.created_at), { addSuffix: true })}
 							</p>
 						</CardContent>
 					</Card>

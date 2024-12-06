@@ -1,21 +1,25 @@
 'use client';
 
-import { Card, CardHeader, CardTitle } from '@/src/components/ui/card';
-import { useToast } from '@/src/hooks';
-import { ProjectFormData } from '@/src/schemas/projectSchema';
 import { useRouter } from 'next/navigation';
-import { createProjectHooks } from '@/src/hooks/react-query/useProjects';
+
+import { ProjectForm } from '@/src/components/forms/project-form';
+import { Card, CardHeader, CardTitle } from '@/src/components/ui/card';
 import { SupabaseProjectDataAccess } from '@/src/dataAccess/supabaseProjectDataAccess';
-import ProjectForm from '../(admin)/projects/components/ProjectForm';
+import { useToast } from '@/src/hooks/helpers/use-toast';
+import { useCreateProject } from '@/src/hooks/react-query/useProjects/useCreateProject';
+
+import type { ProjectFormData } from '@/src/schemas/projectSchema';
+
+
 
 export default function NewProjectPage() {
-	const { mutateAsync: createProject, isPending } = createProjectHooks(new SupabaseProjectDataAccess()).useCreateProject();
+	const { mutateAsync: createProjectMutation, isPending } = useCreateProject(new SupabaseProjectDataAccess());
 	const router = useRouter();
 	const { toast } = useToast();
 
 	const handleSubmit = async (data: ProjectFormData) => {
 		try {
-			await createProject(data);
+			await createProjectMutation(data);
 
 			toast({
 				title: 'Success',
