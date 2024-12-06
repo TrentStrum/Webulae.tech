@@ -6,7 +6,7 @@ import { UserRow } from './UserRow';
 import { useUsers } from '@/src/hooks/react-query/useUsers';
 
 type Props = {
-	onResetPassword: (email: string) => Promise<void>;
+	onResetPassword: (userEmail: string) => Promise<void>;
 	onToggleRole: (userId: string, currentRole: User['role']) => Promise<void>;
 	isMutating: string | null;
 };

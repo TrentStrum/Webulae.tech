@@ -1,13 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { formatDistanceToNow } from 'date-fns';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/src/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card';
 import { Badge } from '@/src/components/ui/badge';
-import { ProjectCardSkeleton } from '@/src/components/skeletons/project-card-skeleton';
 import { useToast } from '@/src/hooks';
 import { supabase } from '@/src/lib/supabase';
 

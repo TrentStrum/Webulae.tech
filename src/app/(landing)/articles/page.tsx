@@ -2,11 +2,6 @@
 
 import { useBlogPosts } from '@/src/hooks/react-query/useBlog';
 import { BlogPostCard } from '@/src/components/blog/BlogPostCard';
-import { BlogPostSkeleton } from '@/src/components/blog/BlogPostSkeleton';
-import { Input } from '@/src/components/ui/input';
-import { Button } from '@/src/components/ui/button';
-import { Search, SlidersHorizontal } from 'lucide-react';
-import { useState } from 'react';
 import { Filters } from '@/src/components/blog/Filters';
 
 export default function ArticlesPage() {

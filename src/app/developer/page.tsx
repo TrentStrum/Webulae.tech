@@ -5,26 +5,8 @@ import { formatDistanceToNow } from 'date-fns';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/src/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card';
 import { Badge } from '@/src/components/ui/badge';
-import { ProjectCardSkeleton } from '@/src/components/skeletons/project-card-skeleton';
-import { useToast } from '@/src/hooks';
-import { useDeveloperProjects } from '@/src/hooks/react-query/useProjects/useDeveloperProjects';
-import { useRoleAccess } from '@/src/hooks/helpers/use-role-access';
-import { getStatusColor } from '@/src/utils/statusColors';
 
 export default function DeveloperDashboard() {
-	const { toast } = useToast();
-
-	// Check developer access
-	useRoleAccess({
-		allowedRoles: ['developer', 'admin'], // Allow developers and admins
-		onAccessDenied: () =>
-			toast({
-				title: 'Access Denied',
-				description: 'You do not have permission to access this page.',
-				variant: 'destructive',
-			}),
-	});
-
 	// Fetch projects
 	const { data: activeProjects, isLoading: isLoadingActiveProjects } = useDeveloperProjects();
 	const { data: completedProjects, isLoading: isLoadingCompletedProjects } = useDeveloperProjects();

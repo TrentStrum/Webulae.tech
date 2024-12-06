@@ -6,10 +6,10 @@ import { User } from '@/src/types';
 
 type Props = {
 	user: User;
-	onResetPassword: (email: string) => Promise<void>;
+	onResetPassword: (userEmail: string) => Promise<void>;
 	onToggleRole: (userId: string, currentRole: User['role']) => Promise<void>;
 	isMutating: boolean;
-}
+};
 
 export function UserRow({ user, onResetPassword, onToggleRole, isMutating }: Props) {
 	return (
@@ -27,7 +27,7 @@ export function UserRow({ user, onResetPassword, onToggleRole, isMutating }: Pro
 						disabled={isMutating}
 					>
 						{isMutating ? 'Updating...' : 'Change Role'}
-					</Button>	
+					</Button>
 					<Button
 						variant="outline"
 						size="sm"

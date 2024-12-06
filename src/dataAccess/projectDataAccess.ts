@@ -1,5 +1,3 @@
-
-import { Project } from 'next/dist/build/swc';
 import { apiClient } from '../lib/apiClient';
 import { DataAccessInterface } from '../contracts/DataAccess';
 

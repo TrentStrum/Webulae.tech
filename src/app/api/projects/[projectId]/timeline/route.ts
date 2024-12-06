@@ -1,17 +1,16 @@
 import { DataAccessInterface } from '@/src/contracts/DataAccess';
 import { supabase } from '@/src/lib/supabase';
 import { Database } from '@/src/types/database.types';
-import { NextResponse } from 'next/server';
 
 type ProjectTimeline = Database['public']['Tables']['project_timeline']['Row'];
 
-const timelineDataAccess: DataAccessInterface<ProjectTimeline> = {
-	// Fetch by key (generalized method for single or multiple rows)
+export const timelineDataAccess: DataAccessInterface<ProjectTimeline> = {
 	async getByKey(
 		key: string,
 		value: string,
 		single = true,
 	): Promise<ProjectTimeline | ProjectTimeline[] | null> {
+		if (!supabase) throw new Error('Supabase client not initialized');
 		const query = supabase.from('project_timeline').select('*').eq(key, value);
 
 		try {
@@ -32,6 +31,7 @@ const timelineDataAccess: DataAccessInterface<ProjectTimeline> = {
 
 	// Create a new timeline entry
 	async create(data: Partial<ProjectTimeline>): Promise<ProjectTimeline | null> {
+		if (!supabase) throw new Error('Supabase client not initialized');
 		try {
 			const { data: newTimeline, error } = await supabase
 				.from('project_timeline')
@@ -48,6 +48,7 @@ const timelineDataAccess: DataAccessInterface<ProjectTimeline> = {
 
 	// Update an existing timeline entry
 	async update(id: string, data: Partial<ProjectTimeline>): Promise<ProjectTimeline | null> {
+		if (!supabase) throw new Error('Supabase client not initialized');
 		try {
 			const { data: updatedTimeline, error } = await supabase
 				.from('project_timeline')
@@ -65,6 +66,7 @@ const timelineDataAccess: DataAccessInterface<ProjectTimeline> = {
 
 	// Delete a timeline entry
 	async delete(id: string): Promise<void> {
+		if (!supabase) throw new Error('Supabase client not initialized');
 		try {
 			const { error } = await supabase.from('project_timeline').delete().eq('id', id);
 			if (error) throw new Error(`Error deleting timeline with ID ${id}: ${error.message}`);
@@ -76,6 +78,6 @@ const timelineDataAccess: DataAccessInterface<ProjectTimeline> = {
 };
 
 // Helper function to check if an error has a message
-function isErrorWithMessage(error: unknown): error is { message: string } {
+export function isErrorWithMessage(error: unknown): error is { message: string } {
 	return typeof error === 'object' && error !== null && 'message' in error;
 }

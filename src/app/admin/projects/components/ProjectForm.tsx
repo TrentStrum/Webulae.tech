@@ -18,7 +18,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from "react";
 
 type Props = {
-	onSubmit: (data: ProjectFormData) => Promise<void>;
+	onSubmit: (formData: ProjectFormData) => Promise<void>;
 	isSubmitting: boolean;
 };
 

@@ -9,16 +9,16 @@ import { User } from "@/src/types/user.types";
 
 export default function AdminUsersPage() {
 	const { data: users, isLoading } = useUsers();
-	const { resetPassword, isLoading: isResetting } = useResetPassword();
-	const { mutate: toggleRole, isPending: isToggling } = useToggleUserRole();
+	const { resetPassword } = useResetPassword();
+	const { mutate: toggleRole } = useToggleUserRole();
 	const { toast } = useToast();
 	const [activeUserId, setActiveUserId] = useState<string | null>(null);
 
-	const handleResetPassword = async (email: string) => {
-		const userId = users?.find((u) => u.email === email)?.id || null;
+	const handleResetPassword = async (userEmail: string) => {
+		const userId = users?.find((u) => u.email === userEmail)?.id || null;
 		setActiveUserId(userId);
 		try {
-			await resetPassword({ email });
+			await resetPassword({ email: userEmail });
 			toast({
 				title: 'Success',
 				description: 'Password reset email sent successfully.',
