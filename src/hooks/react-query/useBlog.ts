@@ -11,7 +11,7 @@ import {
 	InfiniteData,
 } from '@tanstack/react-query';
 import { supabase } from '@/src/lib/supabase';
-import type { BlogPost } from '@/src/types/blog.types';
+import type { BlogPost, BlogPostFormData } from '@/src/types/blog.types';
 
 const ITEMS_PER_PAGE = 10;
 
