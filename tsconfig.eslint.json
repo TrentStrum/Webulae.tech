@@ -3,28 +3,7 @@
 	"include": [
 		"src/**/*.ts",
 		"src/**/*.tsx",
-		"src/**/*.js",
-		"src/**/*.jsx",
-		"tests/**/*.ts",
-		"tests/**/*.tsx",
-		"tests/**/*.js",
-		"tests/**/*.jsx",
-		".eslintrc.js",
-		".eslintrc.json",
-		"jest.config.js",
-		"next.config.js"
-	],
-	"exclude": [
-		"node_modules",
-		".next",
-		"build",
-		"dist",
-		"coverage"
-	],
-	"compilerOptions": {
-		"types": ["node", "jest", "@testing-library/jest-dom"],
-		"jsx": "preserve",
-		"allowJs": true,
-		"noEmit": true
-	}
+		"*.js",
+		"*.ts"
+	]
 } 

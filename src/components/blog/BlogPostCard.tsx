@@ -5,11 +5,11 @@ import { formatDistanceToNow } from 'date-fns';
 import { Card, CardHeader, CardTitle, CardContent } from '@/src/components/ui/card';
 import { BlogPost } from '@/src/types/blog.types';
 
-interface BlogPostCardProps {
+type BlogPostCardProps = {
   post: BlogPost;
 }
 
-export function BlogPostCard({ post }: BlogPostCardProps) {
+export const BlogPostCard = ({ post }: BlogPostCardProps) => {
   return (
     <Link href={`/blog/${post.slug}`}>
       <Card className="transition-shadow hover:shadow-lg">
@@ -21,7 +21,7 @@ export function BlogPostCard({ post }: BlogPostCardProps) {
         <CardContent>
           <p className="text-muted-foreground mb-4">{post.excerpt}</p>
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <span>By {post.full_name || post.username || 'Anonymous'}</span>
+            <span>By {post.profiles?.full_name || post.profiles?.username || 'Anonymous'}</span>
             <span>•</span>
             <time dateTime={post.published_at || undefined}>
               {post.published_at &&

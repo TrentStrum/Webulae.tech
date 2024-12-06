@@ -1,15 +1,19 @@
 export type BlogPost = {
   id: string;
   title: string;
-  slug: string;
+  content: string;
+  content_format: string | null;
   excerpt: string | null;
-  content: string | null;
+  metadata: Json;
   published_at: string | null;
-  username: string | null;
-  full_name: string | null;
   created_at: string;
   updated_at: string;
   author_id: string;
+  slug: string;
+  profiles: {
+    username: string | null;
+    full_name: string | null;
+  } | null;
 };
 
 export type BlogPostFormData = {

@@ -3,6 +3,33 @@
 import { useBlogPosts } from '@/src/hooks/react-query/useBlog';
 import { BlogPostCard } from '@/src/components/blog/BlogPostCard';
 import { Filters } from '@/src/components/blog/Filters';
+import { useState } from 'react';
+import { Button } from '@/src/components/ui/button';
+import { SlidersHorizontal } from 'lucide-react';
+import { Input } from '@/src/components/ui/input';
+import { Search } from 'lucide-react';
+import { BlogPostSkeleton } from '@/src/components/blog/BlogPostSkeleton';
+
+interface BlogPost {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  content: string;
+  published_at: string;
+  author: string;
+  image_url?: string;
+  tags?: string[];
+  username: string;
+  full_name: string;
+  created_at: string;
+  updated_at: string;
+  author_id: string;
+}
+
+interface BlogPostsResponse {
+  pages: BlogPost[][];
+}
 
 export default function ArticlesPage() {
   const [searchTerm, setSearchTerm] = useState('');

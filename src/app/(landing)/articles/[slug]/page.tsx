@@ -1,11 +1,12 @@
 'use client';
 
-import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
-import { formatDistanceToNow } from "date-fns";
-import { Card, CardContent, CardHeader, CardTitle } from "@/src/components/ui/card";
-import { supabase } from "@/src/lib/supabase";
-import { BlogPost } from "@/src/types/blog.types";
+import { notFound, useParams } from 'next/navigation'
+
+import { BlogPost } from '@/src/types/blog.types';
+import { useEffect, useState } from 'react';
+import { supabase } from '@/src/lib/supabase';
+import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card';
+import { formatDistanceToNow } from 'date-fns';
 
 export default function ArticlePage() {
   const { slug } = useParams();
@@ -15,6 +16,7 @@ export default function ArticlePage() {
   useEffect(() => {
     async function loadArticle() {
       try {
+        if (!supabase) throw new Error('Supabase client not initialized');
         const { data, error } = await supabase
           .from("blog_posts")
           .select(`
@@ -23,7 +25,7 @@ export default function ArticlePage() {
               username,
               full_name
             )
-          `)
+          `)  
           .eq("slug", slug)
           .single();
 
