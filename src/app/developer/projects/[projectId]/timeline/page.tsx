@@ -4,17 +4,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/src/components/ui/ca
 import { useProjectTimeline } from '@/src/hooks/react-query/useTimeline';
 import { Badge } from '@/src/components/ui/badge';
 import { useParams } from 'next/navigation';
-
-
-const getStatusColor = (status: string) => {
-	const colors = {
-		planned: 'bg-blue-500/10 text-blue-500',
-		in_progress: 'bg-yellow-500/10 text-yellow-500',
-		completed: 'bg-green-500/10 text-green-500',
-		delayed: 'bg-red-500/10 text-red-500',
-	};
-	return colors[status as keyof typeof colors] || 'bg-gray-500/10 text-gray-500';
-};
+import { getStatusColor } from '@/src/utils/statusColors';
 
 export default function ProjectTimelinePage() {
 	const { id } = useParams();

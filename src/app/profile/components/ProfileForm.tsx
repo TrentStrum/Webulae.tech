@@ -13,12 +13,12 @@ type Props = {
 	onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
 }
 
-export default function ProfileForm({
+export const ProfileForm = ({
 	profile,
 	hasChanges,
 	onInputChange,
 	onSubmit,
-}: Props) {
+}: Props): JSX.Element => {
 	return (
 		<form onSubmit={onSubmit}>
 			<Card>

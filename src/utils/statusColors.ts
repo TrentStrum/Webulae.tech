@@ -1,4 +1,4 @@
-export const getStatusColor = (status: string) => {
+export const getStatusColor = (status: string): string => {
 	const statusColors: Record<string, string> = {
 		planning: 'bg-blue-500/10 text-blue-500',
 		in_progress: 'bg-yellow-500/10 text-yellow-500',

@@ -29,11 +29,9 @@ jobs:
           npm install --legacy-peer-deps -D eslint@8.x prettier@2.x @typescript-eslint/parser@6.x @typescript-eslint/eslint-plugin@6.x
 
       - name: Run ESLint
-        continue-on-error: true
-        run: npx eslint --max-warnings 50 --ext .js,.jsx,.ts,.tsx ./
+        run: npx eslint --max-warnings 0 --ext .js,.jsx,.ts,.tsx ./
 
       - name: Run Prettier Check
-        continue-on-error: true
         run: npx prettier --check .
 
       - name: Type Check

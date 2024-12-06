@@ -1,4 +1,3 @@
-```typescript
 'use client';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -6,57 +5,56 @@ import { useRouter } from 'next/navigation';
 import { useToast } from '@/src/hooks/helpers/use-toast';
 import { supabase } from '@/src/lib/supabase';
 
-export function useLogout() {
-  const queryClient = useQueryClient();
-  const router = useRouter();
-  const { toast } = useToast();
+export const useLogout = (): {
+	logout: () => Promise<void>;
+	isLoading: boolean;
+} => {
+	const queryClient = useQueryClient();
+	const router = useRouter();
+	const { toast } = useToast();
 
-  return useMutation({
-    mutationFn: async () => {
-      // Clear Supabase session
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+	const { mutateAsync, isPending } = useMutation({
+		mutationFn: async (): Promise<void> => {
+			if (!supabase) throw new Error('Supabase client not initialized');
+			const { error } = await supabase.auth.signOut();
+			if (error) throw error;
 
-      // Clear all storage
-      localStorage.clear();
-      sessionStorage.clear();
+			localStorage.clear();
+			sessionStorage.clear();
 
-      // Clear all cookies
-      document.cookie.split(';').forEach(cookie => {
-        document.cookie = cookie
-          .replace(/^ +/, '')
-          .replace(/=.*/, `=;expires=${new Date().toUTCString()};path=/`);
-      });
+			document.cookie.split(';').forEach((cookie) => {
+				document.cookie = cookie
+					.replace(/^ +/, '')
+					.replace(/=.*/, `=;expires=${new Date().toUTCString()};path=/`);
+			});
 
-      // Clear React Query cache
-      queryClient.clear();
+			queryClient.clear();
 
-      // Clear any OAuth tokens
-      if (window.opener) {
-        window.opener.postMessage({ type: 'logout' }, '*');
-      }
-    },
-    onSuccess: () => {
-      // Invalidate and remove all queries
-      queryClient.removeQueries();
-      
-      toast({
-        title: 'Logged out successfully',
-        description: 'You have been securely logged out.',
-      });
+			if (window.opener) {
+				window.opener.postMessage({ type: 'logout' }, '*');
+			}
+		},
+		onSuccess: (): void => {
+			queryClient.removeQueries();
+			toast({
+				title: 'Logged out successfully',
+				description: 'You have been securely logged out.',
+			});
+			router.push('/auth/login');
+			router.refresh();
+		},
+		onError: (error: Error): void => {
+			console.error('Logout error:', error);
+			toast({
+				title: 'Error',
+				description: 'Failed to log out. Please try again.',
+				variant: 'destructive',
+			});
+		},
+	});
 
-      // Redirect to login page
-      router.push('/auth/login');
-      router.refresh();
-    },
-    onError: (error) => {
-      console.error('Logout error:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to log out. Please try again.',
-        variant: 'destructive',
-      });
-    },
-  });
-}
-```
+	return {
+		logout: () => mutateAsync(),
+		isLoading: isPending,
+	};
+};

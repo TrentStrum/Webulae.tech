@@ -10,37 +10,40 @@ import { Input } from '@/src/components/ui/input';
 import { AuthForm } from '@/src/components/auth/auth-form';
 import { Button } from '@/src/components/ui/button';
 
+interface SignUpFormState {
+	email: string;
+	password: string;
+	fullName: string;
+}
 
-export function SignUpForm() {
-	const [email, setEmail] = useState('');
-	const [password, setPassword] = useState('');
-	const [fullName, setFullName] = useState('');
-	const [error, setError] = useState('');
-	const [loading, setLoading] = useState(false);
+export const SignUpForm = (): JSX.Element => {
+	const [formState, setFormState] = useState<SignUpFormState>({
+		email: '',
+		password: '',
+		fullName: '',
+	});
+	const [error, setError] = useState<string>('');
+	const [loading, setLoading] = useState<boolean>(false);
 	const router = useRouter();
 	const { toast } = useToast();
 
-	const handleSignUp = async (e: React.FormEvent) => {
+	const handleSignUp = async (e: React.FormEvent): Promise<void> => {
 		e.preventDefault();
 		setLoading(true);
 		setError('');
 
 		try {
-			if (password.length < 6) {
+			if (formState.password.length < 6) {
 				setError('Password must be at least 6 characters long');
 				return;
 			}
 
-			// Sign up with Supabase
-			const {
-				data: { user },
-				error: signUpError,
-			} = await supabaseClient.auth.signUp({
-				email,
-				password,
+			const { data: { user }, error: signUpError } = await supabaseClient.auth.signUp({
+				email: formState.email,
+				password: formState.password,
 				options: {
 					data: {
-						full_name: fullName,
+						full_name: formState.fullName,
 					},
 				},
 			});
@@ -56,11 +59,12 @@ export function SignUpForm() {
 				router.push('/login?verified=false');
 				router.refresh();
 			}
-		} catch (err: any) {
-			setError(err.message || 'An error occurred during sign up');
+		} catch (err) {
+			const errorMessage = err instanceof Error ? err.message : 'An error occurred during sign up';
+			setError(errorMessage);
 			toast({
 				title: 'Error',
-				description: err.message || 'An error occurred during sign up',
+				description: errorMessage,
 				variant: 'destructive',
 			});
 		} finally {
@@ -80,8 +84,8 @@ export function SignUpForm() {
 					<Input
 						id="fullName"
 						placeholder="John Doe"
-						value={fullName}
-						onChange={(e) => setFullName(e.target.value)}
+						value={formState.fullName}
+						onChange={(e) => setFormState({ ...formState, fullName: e.target.value })}
 						required
 					/>
 				</div>
@@ -91,8 +95,8 @@ export function SignUpForm() {
 						id="email"
 						type="email"
 						placeholder="name@example.com"
-						value={email}
-						onChange={(e) => setEmail(e.target.value)}
+						value={formState.email}
+						onChange={(e) => setFormState({ ...formState, email: e.target.value })}
 						required
 					/>
 				</div>
@@ -101,8 +105,8 @@ export function SignUpForm() {
 					<Input
 						id="password"
 						type="password"
-						value={password}
-						onChange={(e) => setPassword(e.target.value)}
+						value={formState.password}
+						onChange={(e) => setFormState({ ...formState, password: e.target.value })}
 						required
 						minLength={6}
 					/>
