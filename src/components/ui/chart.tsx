@@ -1,11 +1,12 @@
 'use client';
 
 import * as React from 'react';
-import { ResponsiveContainer, Tooltip, Legend  } from 'recharts';
+import { ResponsiveContainer, Tooltip, Legend } from 'recharts';
 
 import { cn } from '@/src/utils/utils';
 
-import type { LegendProps , TooltipProps } from 'recharts';
+import type { LegendProps, TooltipProps } from 'recharts';
+
 
 // Define RechartsPrimitive to group related components
 const RechartsPrimitive = {
