@@ -9,7 +9,7 @@ import { User } from "@/src/types/user.types";
 
 export default function AdminUsersPage() {
 	const { data: users, isLoading } = useUsers();
-	const { mutate: resetPassword, isPending: isResetting } = useResetPassword();
+	const { resetPassword, isLoading: isResetting } = useResetPassword();
 	const { mutate: toggleRole, isPending: isToggling } = useToggleUserRole();
 	const { toast } = useToast();
 	const [activeUserId, setActiveUserId] = useState<string | null>(null);
@@ -18,7 +18,7 @@ export default function AdminUsersPage() {
 		const userId = users?.find((u) => u.email === email)?.id || null;
 		setActiveUserId(userId);
 		try {
-			await resetPassword(email);
+			await resetPassword({ email });
 			toast({
 				title: 'Success',
 				description: 'Password reset email sent successfully.',

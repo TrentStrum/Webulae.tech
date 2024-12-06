@@ -1,9 +1,8 @@
 'use client';
 
-import { Button } from "@/src/components/ui/button";
-import { TableRow, TableCell } from "@/src/components/ui/table";
-import { User } from "@/src/types";
-
+import { Button } from '@/src/components/ui/button';
+import { TableRow, TableCell } from '@/src/components/ui/table';
+import { User } from '@/src/types';
 
 type Props = {
 	user: User;
@@ -28,7 +27,7 @@ export function UserRow({ user, onResetPassword, onToggleRole, isMutating }: Pro
 						disabled={isMutating}
 					>
 						{isMutating ? 'Updating...' : 'Change Role'}
-					</Button>
+					</Button>	
 					<Button
 						variant="outline"
 						size="sm"

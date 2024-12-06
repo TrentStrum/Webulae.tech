@@ -1,26 +1,26 @@
 'use client';
 
-import { Button } from "@/src/components/ui/button";
-import { CardContent } from "@/src/components/ui/card";
-import { Input } from "@/src/components/ui/input";
-import { Textarea } from "@/src/components/ui/textarea";
-import { ProjectFormData, projectSchema } from "@/src/schemas/projectSchema";
-import { Label } from "@radix-ui/react-label";
+import { Button } from '@/src/components/ui/button';
+import { CardContent } from '@/src/components/ui/card';
+import { Input } from '@/src/components/ui/input';
+import { Textarea } from '@/src/components/ui/textarea';
+import { ProjectFormData, projectSchema } from '@/src/schemas/projectSchema';
+import { Label } from '@radix-ui/react-label';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
 } from '@/src/components/ui/select';
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from "react";
 
 type Props = {
-  onSubmit: (data: ProjectFormData) => Promise<void>;
-  isSubmitting: boolean;
-}
+	onSubmit: (data: ProjectFormData) => Promise<void>;
+	isSubmitting: boolean;
+};
 
 export function ProjectForm({ onSubmit, isSubmitting }: Props) {
   const {
@@ -115,9 +115,9 @@ export function ProjectForm({ onSubmit, isSubmitting }: Props) {
               {...register('target_completion_date')}
               min={startDate || new Date().toISOString().split('T')[0]}
             />
-            {errors.target_completion_date && (
+            {errors.target_completion_date?.message && (
               <p className="text-sm text-destructive">
-                {errors.target_completion_date.message}
+                {errors.target_completion_date.message.toString()}
               </p>
             )}
           </div>
