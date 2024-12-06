@@ -39,4 +39,4 @@ export function useLoadingState(initialLoading = false): LoadingState {
     resetState,
   };
 }
-```
+```;

@@ -11,7 +11,7 @@ export const useCreateScopeChangeRequest = (projectId: string) => {
 		mutationFn: async (request: Omit<ScopeChangeRequest, 'id'>) => {
 			const response = await apiClient.post<Omit<ScopeChangeRequest, 'id'>, ScopeChangeRequest>(
 				`/projects/${projectId}/scope-change-requests`,
-				request,
+				request
 			);
 			return response;
 		},

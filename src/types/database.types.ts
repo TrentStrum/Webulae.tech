@@ -890,10 +890,10 @@ export type Database = {
 				Relationships: [
 					{
 						foreignKeyName: 'profiles_id_fkey';
-								columns: ['id'];
-								isOneToOne: true;
-								referencedRelation: 'auth_users';
-								referencedColumns: ['id'];
+						columns: ['id'];
+						isOneToOne: true;
+						referencedRelation: 'auth_users';
+						referencedColumns: ['id'];
 					},
 				];
 			};

@@ -15,7 +15,7 @@ export const useResetPassword = () => {
 	const { mutateAsync, isPending } = useMutation({
 		mutationFn: async (data: ResetPasswordData): Promise<void> => {
 			if (!supabase) throw new Error('Supabase client not initialized');
-			
+
 			const { error } = await supabase.auth.resetPasswordForEmail(data.email, {
 				redirectTo: `${window.location.origin}/auth/update-password`,
 			});

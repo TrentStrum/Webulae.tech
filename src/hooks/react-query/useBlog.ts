@@ -26,7 +26,10 @@ interface BlogPostsResponse {
 	pageParams: number[];
 }
 
-export function useBlogPosts({ searchTerm, sortBy }: UseBlogPostsParams): UseInfiniteQueryResult<BlogPostsResponse> {
+export function useBlogPosts({
+	searchTerm,
+	sortBy,
+}: UseBlogPostsParams): UseInfiniteQueryResult<BlogPostsResponse> {
 	return useInfiniteQuery({
 		queryKey: ['blog-posts', searchTerm, sortBy] as const,
 		initialPageParam: 0,
@@ -72,7 +75,7 @@ export function useBlogPosts({ searchTerm, sortBy }: UseBlogPostsParams): UseInf
 			if (error) throw error;
 			return {
 				data: data as BlogPost[],
-				nextCursor: data.length === ITEMS_PER_PAGE ? (pageParam as number) + 1 : undefined
+				nextCursor: data.length === ITEMS_PER_PAGE ? (pageParam as number) + 1 : undefined,
 			};
 		},
 		getNextPageParam: (lastPage) => lastPage.nextCursor,

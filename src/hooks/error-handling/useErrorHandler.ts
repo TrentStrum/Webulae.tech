@@ -105,4 +105,4 @@ function isErrorWithCode(error: unknown): error is ErrorWithCode {
     typeof error.message === 'string'
   );
 }
-```
+```;

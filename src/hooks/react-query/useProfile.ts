@@ -20,7 +20,7 @@ export const useProfile = () => {
 	});
 
 	const queryClient = useQueryClient();
-	
+
 	const { mutateAsync: mutateProfile } = useMutation({
 		mutationFn: async (updatedData: Partial<Profile>) => {
 			const response = await apiClient.patch<Profile>('/api/users', updatedData);
@@ -28,7 +28,7 @@ export const useProfile = () => {
 		},
 		onSuccess: (newProfile) => {
 			queryClient.setQueryData(['profile'], newProfile);
-			setFormData({});  // Reset form after successful update
+			setFormData({}); // Reset form after successful update
 		},
 	});
 
@@ -47,7 +47,7 @@ export const useProfile = () => {
 	const updateProfile = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		if (!hasChanges()) return;
-		
+
 		try {
 			await mutateProfile(formData);
 		} catch (error) {

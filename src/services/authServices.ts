@@ -11,7 +11,7 @@ export async function getSession() {
 
 // Fetch user profile from Supabase
 export async function getUserProfile(
-	userId: string,
+	userId: string
 ): Promise<Pick<AuthUser, 'role' | 'avatar_url'> | null> {
 	const { data: profile, error } = await supabaseClient
 		.from('profiles')

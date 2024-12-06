@@ -24,7 +24,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
 		console.error('Unexpected error fetching blog post:', error);
 		return NextResponse.json(
 			{ error: 'An unexpected error occurred while fetching the blog post' },
-			{ status: 500 },
+			{ status: 500 }
 		);
 	}
 }
@@ -39,7 +39,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
 		if (!body.title || !body.content) {
 			return NextResponse.json(
 				{ error: 'Title and content are required to update the blog post' },
-				{ status: 400 },
+				{ status: 400 }
 			);
 		}
 
@@ -64,7 +64,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
 		console.error('Unexpected error updating blog post:', error);
 		return NextResponse.json(
 			{ error: 'An unexpected error occurred while updating the blog post' },
-			{ status: 500 },
+			{ status: 500 }
 		);
 	}
 }

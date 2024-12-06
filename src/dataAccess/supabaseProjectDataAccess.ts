@@ -17,7 +17,7 @@ export interface Project {
 	projectId: string;
 	userId: string;
 }
-	
+
 export class SupabaseProjectDataAccess implements DataAccessInterface<Project> {
 	private table = 'projects' as const;
 
@@ -48,7 +48,7 @@ export class SupabaseProjectDataAccess implements DataAccessInterface<Project> {
 
 		if (error) throw new Error(error.message);
 		if (!created) return null;
-		
+
 		return created as Project;
 	}
 

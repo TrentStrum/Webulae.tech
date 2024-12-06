@@ -56,10 +56,7 @@ export async function POST(req: Request): Promise<NextResponse> {
 
 		// Validate required fields
 		if (!title || !content) {
-			return NextResponse.json(
-				{ error: 'Title and content are required' },
-				{ status: 400 }
-			);
+			return NextResponse.json({ error: 'Title and content are required' }, { status: 400 });
 		}
 
 		const supabase = getSupabaseClient();

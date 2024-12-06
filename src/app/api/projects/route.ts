@@ -29,7 +29,10 @@ const projectDataAccess: DataAccessInterface<Project> = {
 	},
 
 	async create(data: Partial<Project>) {
-		const { data: newProject, error } = await supabase.from('projects').insert(data as Project).single();
+		const { data: newProject, error } = await supabase
+			.from('projects')
+			.insert(data as Project)
+			.single();
 		if (error) throw new Error(`Error creating project: ${error.message}`);
 		return newProject;
 	},

@@ -11,13 +11,15 @@ const blogDataAccess: DataAccessInterface<BlogPost> = {
 	async getByKey(key: string, value: string, single = true) {
 		const query = supabase
 			.from('blog_posts')
-			.select(`
+			.select(
+				`
 				*,
 				author:author_id (
 					username,
 					full_name
 				)
-			`)
+			`
+			)
 			.eq(key, value);
 
 		if (single) {
@@ -99,7 +101,7 @@ export async function POST(req: Request) {
 		if (!title || !content || !author) {
 			return NextResponse.json(
 				{ error: 'Title, content, and author are required' },
-				{ status: 400 },
+				{ status: 400 }
 			);
 		}
 

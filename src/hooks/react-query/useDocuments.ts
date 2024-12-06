@@ -32,11 +32,7 @@ export const useDocuments = () => {
 export const useUploadDocument = () => {
 	const queryClient = useQueryClient();
 
-	const { mutateAsync, isPending, error } = useMutation<
-		Document,
-		Error,
-		UploadDocumentParams
-	>({
+	const { mutateAsync, isPending, error } = useMutation<Document, Error, UploadDocumentParams>({
 		mutationFn: async ({ file, category, projectId }) => {
 			const formData = new FormData();
 			formData.append('file', file);

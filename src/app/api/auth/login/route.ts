@@ -23,7 +23,7 @@ export async function POST(req: Request): Promise<NextResponse> {
 				user: data.user,
 				session: data.session,
 			},
-			{ status: 200 },
+			{ status: 200 }
 		);
 	} catch (error) {
 		console.error('Login error:', error);

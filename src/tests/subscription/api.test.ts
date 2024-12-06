@@ -122,4 +122,4 @@ describe('Subscription API Endpoints', () => {
     });
   });
 });
-```
+```;

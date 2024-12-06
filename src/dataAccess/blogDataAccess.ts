@@ -1,7 +1,6 @@
-import { supabaseClient } from "../lib/supabaseClient";
+import { supabaseClient } from '../lib/supabaseClient';
 
-import type { BlogFormData } from "../types/blog.types";
-
+import type { BlogFormData } from '../types/blog.types';
 
 export const createBlogPost = async (data: BlogFormData) => {
 	const { data: session } = await supabaseClient.auth.getSession();

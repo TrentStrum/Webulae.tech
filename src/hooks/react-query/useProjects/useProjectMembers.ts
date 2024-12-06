@@ -28,7 +28,7 @@ export const useAddProjectMember = () => {
 		},
 		onSuccess: (_, variables) => {
 			queryClient.invalidateQueries({
-				queryKey: ['projectMembers', variables.projectId]
+				queryKey: ['projectMembers', variables.projectId],
 			});
 		},
 	});

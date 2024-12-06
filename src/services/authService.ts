@@ -6,7 +6,6 @@ import { logger } from '@/src/utils/logger';
 
 import type { AuthUser } from '@/src/types/user.types';
 
-
 export const authService = {
 	// Session Management
 	getSession: async () => {

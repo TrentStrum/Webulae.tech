@@ -20,9 +20,6 @@ export async function GET(request: NextRequest) {
 		return NextResponse.redirect(new URL(next, requestUrl.origin));
 	} catch (error) {
 		console.error('Auth error:', error);
-		return NextResponse.json(
-			{ error: 'Authentication error occurred' },
-			{ status: 500 }
-		);
+		return NextResponse.json({ error: 'Authentication error occurred' }, { status: 500 });
 	}
 }

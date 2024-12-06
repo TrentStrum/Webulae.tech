@@ -38,4 +38,4 @@ export function useTimeout({
     reset: set 
   };
 }
-```
+```;

@@ -6,8 +6,6 @@ import { useAuthState } from '../../hooks/auth/useAuthState';
 
 import type { NavigationGuard, NavigationOptions } from '@/src/types/navigation.types';
 
-
-
 // Public navigation items shown to non-authenticated users
 const publicNavigation = [
 	{ name: 'About', href: '/about' },

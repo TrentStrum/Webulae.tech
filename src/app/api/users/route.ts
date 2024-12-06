@@ -29,7 +29,10 @@ const userDataAccess: DataAccessInterface<User> = {
 	},
 
 	async create(data: Partial<User>) {
-		const { data: newUser, error } = await supabase.from('profiles').insert(data as User).single();
+		const { data: newUser, error } = await supabase
+			.from('profiles')
+			.insert(data as User)
+			.single();
 		if (error) throw new Error(`Error creating user: ${error.message}`);
 		return newUser;
 	},

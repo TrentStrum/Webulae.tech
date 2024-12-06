@@ -117,4 +117,4 @@ async function handleFailedPayment(invoice: Stripe.Invoice) {
     },
   });
 }
-```
+```;

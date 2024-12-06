@@ -2,7 +2,6 @@ import { apiClient } from '../lib/apiClient';
 
 import type { DataAccessInterface } from '../contracts/DataAccess';
 
-
 export class ProjectDataAccess implements DataAccessInterface<Project> {
 	private baseUrl = '/projects';
 
@@ -26,4 +25,3 @@ export class ProjectDataAccess implements DataAccessInterface<Project> {
 		await apiClient.delete(`${this.baseUrl}/${id}`);
 	}
 }
-	

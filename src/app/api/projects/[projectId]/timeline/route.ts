@@ -9,7 +9,7 @@ export const timelineDataAccess: DataAccessInterface<ProjectTimeline> = {
 	async getByKey(
 		key: string,
 		value: string,
-		single = true,
+		single = true
 	): Promise<ProjectTimeline | ProjectTimeline[] | null> {
 		if (!supabase) throw new Error('Supabase client not initialized');
 		const query = supabase.from('project_timeline').select('*').eq(key, value);
