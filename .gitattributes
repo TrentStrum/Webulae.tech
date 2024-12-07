@@ -1,0 +1,10 @@
+# Set the default behavior to automatically normalize line endings.
+* text=auto
+# Ensure shell scripts have LF line endings
+*.sh text eol=lf
+
+# Ensure batch files have CRLF line endings
+*.bat text eol=crlf
+# Denote all files that are truly binary and should not be modified.
+*.png binary
+*.jpg binary
