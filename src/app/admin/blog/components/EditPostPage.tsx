@@ -17,5 +17,5 @@ export default function EditPostPage() {
 		);
 	}
 
-	return <BlogForm action="edit"/>;
+	return <BlogForm action="edit" />;
 }

@@ -27,29 +27,29 @@ type Props = {
 };
 
 export function ProjectForm({ onSubmit, isSubmitting }: Props) {
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    watch,
-    formState: { errors },
-  } = useForm<ProjectFormData>({
-    resolver: zodResolver(projectSchema),
-    defaultValues: {
+	const {
+		register,
+		handleSubmit,
+		setValue,
+		watch,
+		formState: { errors },
+	} = useForm<ProjectFormData>({
+		resolver: zodResolver(projectSchema),
+		defaultValues: {
       status: 'planning',
-      dev_environment_url: '',
-      staging_environment_url: '',
-    },
-  });
+			dev_environment_url: '',
+			staging_environment_url: '',
+		},
+	});
 
-  // Watch start_date to validate target_completion_date
+	// Watch start_date to validate target_completion_date
   const startDate = watch('start_date');
   useEffect(() => {
     if (startDate) {
-      const target = watch('target_completion_date');
-      if (target && new Date(target) < new Date(startDate)) {
-        setValue('target_completion_date', '');
-      }
+			const target = watch('target_completion_date');
+			if (target && new Date(target) < new Date(startDate)) {
+				setValue('target_completion_date', '');
+			}
     }
   }, [startDate, setValue, watch]);
 

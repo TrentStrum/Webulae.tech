@@ -1,12 +1,12 @@
-```typescript
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useToast } from '@/src/hooks/helpers/use-toast';
+
 import { Card, CardHeader, CardTitle } from '@/src/components/ui/card';
-import { RichTextEditor } from '@/src/components/editor/RichTextEditor';
-import { useAdminBlogPost, useCreateBlogPost, useUpdateBlogPost } from '@/src/hooks/react-query/useBlog';
 import { LoadingSpinner } from '@/src/components/ui/loading-spinner';
+import { useToast } from '@/src/hooks/helpers/use-toast';
+import { useBlogPost, useCreateBlogPost, useUpdateBlogPost } from '@/src/hooks/react-query/useBlog';
+
 import { BlogPostForm } from './BlogPostForm';
 
 interface BlogEditorProps {
@@ -17,7 +17,7 @@ interface BlogEditorProps {
 export default function BlogEditor({ mode, postId }: BlogEditorProps) {
   const router = useRouter();
   const { toast } = useToast();
-  const { data: post, isLoading: isLoadingPost } = useAdminBlogPost(postId || '', mode === 'edit');
+  const { data: post, isLoading: isLoadingPost } = useBlogPost(postId || '');
   const createPost = useCreateBlogPost();
   const updatePost = useUpdateBlogPost(postId || '');
 
@@ -73,4 +73,3 @@ export default function BlogEditor({ mode, postId }: BlogEditorProps) {
     </div>
   );
 }
-```

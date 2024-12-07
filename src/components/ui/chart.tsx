@@ -108,7 +108,7 @@ const ChartTooltip = RechartsPrimitive.Tooltip;
 
 const ChartTooltipContent = React.forwardRef<
 	HTMLDivElement,
-	TooltipProps<any, any> & React.ComponentProps<'div'> & {
+	TooltipProps<number, string> & React.ComponentProps<'div'> & {
 		hideLabel?: boolean;
 		hideIndicator?: boolean;
 		indicator?: 'line' | 'dot' | 'dashed';
@@ -118,31 +118,30 @@ const ChartTooltipContent = React.forwardRef<
 >(({ active, payload, ...props }, ref) => {
 	const { config } = useChart();
 
+	const { label, labelFormatter, hideLabel, labelClassName, labelKey } = props;
+
 	const tooltipLabel = React.useMemo(() => {
-		if (props.hideLabel || !payload?.length) {
+		if (hideLabel || !payload?.length) {
 			return null;
 		}
 
 		const [item] = payload;
-		const key = `${props.labelKey || item.dataKey || item.name || 'value'}`;
+		const key = `${labelKey || item.dataKey || item.name || 'value'}`;
 		const itemConfig = getPayloadConfigFromPayload(config, item, key);
-		const value =
-			!props.labelKey && typeof props.label === 'string'
-				? config[props.label as keyof typeof config]?.label || props.label
-				: itemConfig?.label;
+		const value = !labelKey && typeof label === 'string'
+			? config[label as keyof typeof config]?.label || label
+			: itemConfig?.label;
 
-		if (props.labelFormatter) {
-			return (
-				<div className={cn('font-medium', props.labelClassName)}>{props.labelFormatter(value, payload)}</div>
-			);
+		if (labelFormatter) {
+			return <div className={cn('font-medium', labelClassName)}>{labelFormatter(value, payload)}</div>;
 		}
 
 		if (!value) {
 			return null;
 		}
 
-		return <div className={cn('font-medium', props.labelClassName)}>{value}</div>;
-	}, [props.label, props.labelFormatter, payload, props.hideLabel, props.labelClassName, config, props.labelKey]);
+		return <div className={cn('font-medium', labelClassName)}>{value}</div>;
+	}, [payload, config, label, labelFormatter, hideLabel, labelClassName, labelKey]);
 
 	if (!active || !payload?.length) {
 		return null;

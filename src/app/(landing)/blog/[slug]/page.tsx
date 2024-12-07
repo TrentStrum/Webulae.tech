@@ -47,7 +47,9 @@ export default function BlogPostPage() {
           <CardHeader>
             <CardTitle className="text-3xl">{post.title}</CardTitle>
             <div className="flex items-center gap-2 text-sm text-muted-foreground mt-4">
-              <span>By {post.full_name || post.username || 'Anonymous'}</span>
+              <span>
+                By {post.profiles?.full_name || post.profiles?.username || 'Anonymous'}
+              </span>
               <span>•</span>
               <time dateTime={post.published_at || ''}>
                 {post.published_at &&

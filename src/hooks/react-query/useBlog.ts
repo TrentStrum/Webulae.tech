@@ -149,3 +149,22 @@ export function useCreateBlogPost(): UseMutationResult<BlogPost, Error, BlogPost
 		},
 	});
 }
+
+export function useUpdateBlogPost(postId: string) {
+	return useMutation({
+		mutationFn: async (data: BlogPostData) => {
+			const response = await apiClient.put(`/api/admin/blog/${postId}`, data);
+			return response.data;
+		},
+	});
+}
+
+export function useDeleteBlogPost() {
+	return useMutation({
+		mutationFn: async (id: string) => {
+			if (!supabase) throw new Error('Supabase client not initialized');
+			const { error } = await supabase.from('blog_posts').delete().eq('id', id);
+			if (error) throw error;
+		},
+	});
+}

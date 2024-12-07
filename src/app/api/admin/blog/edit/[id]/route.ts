@@ -1,10 +1,15 @@
 import { NextResponse } from 'next/server';
 
-import { getSupabaseClient } from '@/src/lib/supabase';
+import { createClient } from '@/src/lib/supabase/client';
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+export async function GET(
+	req: Request,
+	{ params }: { params: { id: string } }
+): Promise<NextResponse> {
 	try {
-		const supabase = getSupabaseClient();
+		const supabase = createClient();
+		if (!supabase) throw new Error('Could not initialize Supabase client');
+
 		const { id } = params;
 
 		// Fetch the blog post by ID
@@ -29,9 +34,14 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
 	}
 }
 
-export async function PUT(req: Request, { params }: { params: { id: string } }) {
+export async function PUT(
+	req: Request,
+	{ params }: { params: { id: string } }
+): Promise<NextResponse> {
 	try {
-		const supabase = getSupabaseClient();
+		const supabase = createClient();
+		if (!supabase) throw new Error('Could not initialize Supabase client');
+
 		const { id } = params;
 		const body = await req.json();
 

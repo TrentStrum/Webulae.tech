@@ -5,10 +5,13 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/src/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card';
 import { useToast } from '@/src/hooks/helpers/use-toast';
-import { useAdminBlogPosts } from '@/src/hooks/react-query/useBlog';
+import { useBlogPosts, useDeleteBlogPost } from '@/src/hooks/react-query/useBlog';
+
+import type { BlogPost } from '@/src/types/blog.types';
 
 export default function AdminBlogManagement() {
-	const { blogPostsQuery, deleteBlogPost } = useAdminBlogPosts({});
+	const blogPostsQuery = useBlogPosts({});
+	const deleteBlogPost = useDeleteBlogPost();
 	const router = useRouter();
 	const { toast } = useToast();
 
@@ -40,13 +43,13 @@ export default function AdminBlogManagement() {
 		return <p>Error loading blog posts.</p>;
 	}
 
-	const blogPosts = blogPostsQuery.data?.pages.flat() || [];
+	const blogPosts = blogPostsQuery.data?.pages.flatMap(page => page.data) || [];
 
 	return (
 		<div className="container py-8">
 			<h1 className="text-3xl font-bold mb-8">Manage Blog Posts</h1>
 			<div className="grid gap-6">
-				{blogPosts.map((post) => (
+				{blogPosts.map((post: BlogPost) => (
 					<Card key={post.id}>
 						<CardHeader>
 							<CardTitle>{post.title}</CardTitle>

@@ -1,57 +1,30 @@
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 
-import type { Database } from '@/src/types/database.types';
+import type { Database } from '@/src/types';
 
 let instance: ReturnType<typeof createClientComponentClient<Database>> | null = null;
 
-export function getSupabaseClient() {
+export function getSupabaseClient(): ReturnType<
+	typeof createClientComponentClient<Database>
+> | null {
 	if (!instance) {
-		const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-		const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-		if (!supabaseUrl || !supabaseKey) {
-			throw new Error(
-				'Missing Supabase configuration. Please check your environment variables:\n' +
-					'- NEXT_PUBLIC_SUPABASE_URL\n' +
-					'- NEXT_PUBLIC_SUPABASE_ANON_KEY'
-			);
-		}
-
-		// Validate URL format
-		try {
-			new URL(supabaseUrl);
-		} catch (error) {
-			throw new Error(`Invalid Supabase URL: ${supabaseUrl}`);
-		}
-
-		instance = createClientComponentClient<Database>({
-			supabaseUrl,
-			supabaseKey,
-			options: {
-				auth: {
-					persistSession: true,
-					autoRefreshToken: true,
-					detectSessionInUrl: true,
-					flowType: 'pkce',
-				},
-				global: {
-					headers: {
-						'x-client-info': 'webulae-app',
-					},
-				},
-			},
-		});
+		instance = createClientComponentClient<Database>();
 	}
 	return instance;
 }
 
-export const supabase = getSupabaseClient();
+// Use this in your API routes
+export function getSupabase(): ReturnType<typeof createClientComponentClient<Database>> {
+	const supabase = getSupabaseClient();
+	if (!supabase) throw new Error('Supabase client not initialized');
+	return supabase;
+}
 
-export function setupAuthListener(callback: (event: string, session: any) => void) {
+export function setupAuthListener(callback: (event: string, session: any) => void): () => void {
 	try {
 		const {
 			data: { subscription },
-		} = supabase.auth.onAuthStateChange(callback);
+		} = getSupabase().auth.onAuthStateChange(callback);
 		return () => subscription.unsubscribe();
 	} catch (error) {
 		console.error('Failed to setup auth listener:', error);
@@ -59,6 +32,6 @@ export function setupAuthListener(callback: (event: string, session: any) => voi
 	}
 }
 
-export function clearSupabaseInstance() {
+export function clearSupabaseInstance(): void {
 	instance = null;
 }

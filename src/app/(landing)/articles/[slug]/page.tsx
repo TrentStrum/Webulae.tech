@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation'
 import { useEffect, useState } from 'react';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card';
-import { supabase } from '@/src/lib/supabase';
+import { getSupabase } from '@/src/lib/supabase';
 
 import type { BlogPost } from '@/src/types/blog.types';
 
@@ -17,8 +17,8 @@ export default function ArticlePage(): JSX.Element {
   useEffect(() => {
     async function loadArticle(): Promise<void> {
       try {
-        if (!supabase) throw new Error('Supabase client not initialized');
-        const { data, error } = await supabase
+        if (!getSupabase()) throw new Error('Supabase client not initialized');
+        const { data, error } = await getSupabase()
           .from("blog_posts")
           .select(`
             *,
@@ -34,8 +34,8 @@ export default function ArticlePage(): JSX.Element {
         setArticle(data);
 
         if (data?.id) {
-          const { data: { session } } = await supabase.auth.getSession();
-          await supabase.from('blog_post_views').insert({
+          const { data: { session } } = await getSupabase().auth.getSession();
+          await getSupabase().from('blog_post_views').insert({
             post_id: data.id,
             viewer_id: session?.user?.id || null,
           });
