@@ -1,4 +1,3 @@
-
 import { formatDistanceToNow } from 'date-fns';
 
 import { Badge } from '@/src/components/ui/badge';
@@ -6,10 +5,9 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/src/components/ui/ca
 
 import type { Message } from '@/src/types';
 
-
 type Props = {
 	messages: Message[];
-}
+};
 
 export default function MessageHistory({ messages }: Props) {
 	return (

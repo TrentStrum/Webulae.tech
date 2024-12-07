@@ -1,5 +1,5 @@
 'use client';
-	
+
 export default function Profile() {
 	return (
 		<main className="p-4">

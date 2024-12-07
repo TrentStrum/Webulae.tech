@@ -21,7 +21,9 @@ export default function Account() {
 								<label htmlFor="email" className="block text-sm font-medium text-gray-700">
 									Email
 								</label>
-								<p id="email" className="mt-1">{user.email}</p>
+								<p id="email" className="mt-1">
+									{user.email}
+								</p>
 							</div>
 							<div className="mb-4">
 								<label htmlFor="lastSignIn" className="block text-sm font-medium text-gray-700">

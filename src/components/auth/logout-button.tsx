@@ -40,7 +40,7 @@ const LogoutButton = forwardRef<HTMLButtonElement, React.ComponentPropsWithoutRe
 				Log out
 			</Button>
 		);
-	},
+	}
 );
 
 export default LogoutButton;

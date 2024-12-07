@@ -3,11 +3,16 @@
 import { useState } from 'react';
 
 import { Button } from '@/src/components/ui/button';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/src/components/ui/card';
+import {
+	Card,
+	CardHeader,
+	CardTitle,
+	CardDescription,
+	CardContent,
+} from '@/src/components/ui/card';
 import { useToast } from '@/src/hooks';
 
 import { NotificationSetting } from './components/NotificationSettings';
-
 
 export default function SettingsPage() {
 	const [emailNotifications, setEmailNotifications] = useState(true);

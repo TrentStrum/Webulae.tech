@@ -38,4 +38,4 @@ export function LogoutButton({
     </LoadingButton>
   );
 }
-```
+```;

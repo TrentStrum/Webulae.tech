@@ -14,7 +14,7 @@ import { Textarea } from '@/src/components/ui/textarea';
 import { useToast } from '@/src/hooks';
 import { useSendMessage } from '@/src/hooks/react-query/useMessages';
 import { useProjectMessages } from '@/src/hooks/react-query/useProjects/useProjectMesages';
-	
+
 export default function ProjectMessagesPage() {
 	const { id: projectId } = useParams();
 	const { toast } = useToast();
@@ -29,7 +29,12 @@ export default function ProjectMessagesPage() {
 		e.preventDefault();
 
 		try {
-			await sendMessage({ projectId: projectId as string, recipientId: recipient, subject, content });
+			await sendMessage({
+				projectId: projectId as string,
+				recipientId: recipient,
+				subject,
+				content,
+			});
 			toast({
 				title: 'Message Sent',
 				description: 'Your message has been sent successfully.',

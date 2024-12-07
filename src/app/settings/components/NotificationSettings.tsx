@@ -1,6 +1,5 @@
-import { Label } from "@/src/components/ui/label";
-import { Switch } from "@/src/components/ui/switch";
-
+import { Label } from '@/src/components/ui/label';
+import { Switch } from '@/src/components/ui/switch';
 
 interface NotificationSettingProps {
 	label: string;

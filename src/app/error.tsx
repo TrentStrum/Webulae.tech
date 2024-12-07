@@ -6,21 +6,21 @@ import { ErrorFallback } from '@/src/components/error/error-fallback';
 import { SupabaseError } from '@/src/components/error/SupabaseError';
 
 export default function Error({
-  error,
-  reset,
+	error,
+	reset,
 }: {
-  error: Error & { digest?: string };
-  reset: () => void;
+	error: Error & { digest?: string };
+	reset: () => void;
 }) {
-  useEffect(() => {
-    console.error('Application error:', error);
-  }, [error]);
+	useEffect(() => {
+		console.error('Application error:', error);
+	}, [error]);
 
-  // Handle Supabase-specific errors
-  if (error.message.includes('Supabase')) {
-    return <SupabaseError error={error} resetErrorBoundary={reset} />;
-  }
+	// Handle Supabase-specific errors
+	if (error.message.includes('Supabase')) {
+		return <SupabaseError error={error} resetErrorBoundary={reset} />;
+	}
 
-  // Default error fallback
-  return <ErrorFallback error={error} resetErrorBoundary={reset} />;
+	// Default error fallback
+	return <ErrorFallback error={error} resetErrorBoundary={reset} />;
 }

@@ -7,7 +7,6 @@ import { Button } from '@/src/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card';
 import { apiClient } from '@/src/lib/apiClient';
 
-
 interface Project {
 	id: string;
 	name: string;

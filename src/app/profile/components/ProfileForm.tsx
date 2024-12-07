@@ -1,18 +1,17 @@
 import { Button } from '@/src/components/ui/button';
-import { Card, CardHeader, CardTitle, CardContent } from "@/src/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from '@/src/components/ui/card';
 import { Input } from '@/src/components/ui/input';
 import { Label } from '@/src/components/ui/label';
-import { Textarea } from "@/src/components/ui/textarea";
+import { Textarea } from '@/src/components/ui/textarea';
 
 import type { Profile } from '@/src/types';
-
 
 type Props = {
 	profile: Profile;
 	hasChanges: () => boolean;
 	onInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
 	onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
-}
+};
 
 export const ProfileForm = ({
 	profile,
@@ -74,4 +73,4 @@ export const ProfileForm = ({
 			</Card>
 		</form>
 	);
-}
+};

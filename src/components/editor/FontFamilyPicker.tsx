@@ -32,4 +32,4 @@ export function FontFamilyPicker({ editor }: FontFamilyPickerProps) {
     </div>
   );
 }
-```
+```;

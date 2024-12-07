@@ -14,29 +14,29 @@ import { ThemeProvider } from '@/src/contexts/theme-provider';
 const inter = Inter({ subsets: ['latin'] });
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
-        <ErrorBoundary>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <QueryProvider>
-              <AuthProvider>
-                <div className="flex min-h-screen flex-col">
-                  <Navbar />
-                  <main className="flex-1">{children}</main>
-                  <Footer />
-                  <Toaster />
-                </div>
-              </AuthProvider>
-            </QueryProvider>
-          </ThemeProvider>
-        </ErrorBoundary>
-      </body>
-    </html>
-  );
+	return (
+		<html lang="en" suppressHydrationWarning>
+			<body className={inter.className}>
+				<ErrorBoundary>
+					<ThemeProvider
+						attribute="class"
+						defaultTheme="system"
+						enableSystem
+						disableTransitionOnChange
+					>
+						<QueryProvider>
+							<AuthProvider>
+								<div className="flex min-h-screen flex-col">
+									<Navbar />
+									<main className="flex-1">{children}</main>
+									<Footer />
+									<Toaster />
+								</div>
+							</AuthProvider>
+						</QueryProvider>
+					</ThemeProvider>
+				</ErrorBoundary>
+			</body>
+		</html>
+	);
 }

@@ -7,7 +7,6 @@ import { UserRow } from './UserRow';
 
 import type { User } from '@/src/types';
 
-
 type Props = {
 	onResetPassword: (userEmail: string) => Promise<void>;
 	onToggleRole: (userId: string, currentRole: User['role']) => Promise<void>;

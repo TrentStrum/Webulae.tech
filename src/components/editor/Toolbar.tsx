@@ -180,4 +180,4 @@ export function Toolbar({ editor, onImageUpload }: ToolbarProps) {
     </div>
   );
 }
-```
+```;

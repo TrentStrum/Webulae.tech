@@ -1,4 +1,3 @@
-
 import { QueryProvider } from '@/src/contexts/QueryProvider';
 import { ThemeProvider } from '@/src/contexts/theme-provider';
 

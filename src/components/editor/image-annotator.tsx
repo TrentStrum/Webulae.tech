@@ -1,6 +1,5 @@
 'use client';
 
-
 import fabric from 'fabric/fabric-impl';
 import { Circle, MousePointer, Pencil, Square, Type, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
@@ -12,7 +11,7 @@ type Props = {
 	imageUrl: string;
 	onSave: (dataUrl: string) => Promise<void>;
 	onClose: () => void;
-}
+};
 
 export function ImageAnnotator({ imageUrl, onSave, onClose }: Props) {
 	const canvasRef = useRef<HTMLCanvasElement>(null);

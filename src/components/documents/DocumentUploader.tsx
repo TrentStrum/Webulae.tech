@@ -1,13 +1,25 @@
 'use client';
 
-import { useState } from "react";
+import { useState } from 'react';
 
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/src/components/ui/card";
-import { Input } from "@/src/components/ui/input";
-import { Label } from "@/src/components/ui/label";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/src/components/ui/select";
-import { useToast } from "@/src/hooks";
-import { useUploadDocument } from "@/src/hooks/react-query/useDocuments";
+import {
+	Card,
+	CardHeader,
+	CardTitle,
+	CardDescription,
+	CardContent,
+} from '@/src/components/ui/card';
+import { Input } from '@/src/components/ui/input';
+import { Label } from '@/src/components/ui/label';
+import {
+	Select,
+	SelectTrigger,
+	SelectValue,
+	SelectContent,
+	SelectItem,
+} from '@/src/components/ui/select';
+import { useToast } from '@/src/hooks';
+import { useUploadDocument } from '@/src/hooks/react-query/useDocuments';
 
 interface DocumentUploaderProps {
 	projectId: string;

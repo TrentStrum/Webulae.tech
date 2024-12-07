@@ -28,4 +28,4 @@ export function ColorPicker({ editor }: ColorPickerProps) {
     </div>
   );
 }
-```
+```;

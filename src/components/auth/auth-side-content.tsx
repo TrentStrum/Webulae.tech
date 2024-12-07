@@ -5,7 +5,7 @@ type Props = {
 	title: string;
 	quote: string;
 	author?: string;
-}
+};
 
 export function AuthSideContent({ icon: Icon, title, quote, author }: Props) {
 	return (

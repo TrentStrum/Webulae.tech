@@ -11,7 +11,6 @@ import { Textarea } from '@/src/components/ui/textarea';
 import { useToast } from '@/src/hooks';
 import { useCreateScopeChangeRequest } from '@/src/hooks/react-query/useScopeChangeRequests';
 
-
 export default function ScopeChangePage() {
 	const { id: projectId } = useParams();
 	const [title, setTitle] = useState('');
@@ -20,7 +19,7 @@ export default function ScopeChangePage() {
 	const { toast } = useToast();
 
 	const { mutate: createScopeChange, isPending: submitting } = useCreateScopeChangeRequest(
-		projectId as string,
+		projectId as string
 	);
 
 	const handleSubmit = (e: React.FormEvent) => {
@@ -49,7 +48,7 @@ export default function ScopeChangePage() {
 						variant: 'destructive',
 					});
 				},
-			},
+			}
 		);
 	};
 

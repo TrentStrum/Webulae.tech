@@ -9,7 +9,6 @@ import { Badge } from '../ui/badge';
 
 import type { PaymentMethod } from '@/src/types/subscription.types';
 
-
 interface Props {
 	paymentMethods: PaymentMethod[];
 }
@@ -59,4 +58,4 @@ export const PaymentMethodList = ({ paymentMethods }: Props): JSX.Element => {
 			)}
 		</div>
 	);
-}
+};

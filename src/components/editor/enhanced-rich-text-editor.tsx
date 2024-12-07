@@ -14,7 +14,6 @@ import StarterKit from '@tiptap/starter-kit';
 
 import { Button } from '../ui/button';
 
-
 type Props = {
 	content: string;
 	onChange: (content: string) => void;

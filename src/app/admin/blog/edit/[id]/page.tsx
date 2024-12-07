@@ -3,11 +3,11 @@
 import BlogEditor from '../../components/BlogEditor';
 
 interface Props {
-  params: {
-    id: string;
-  }
+	params: {
+		id: string;
+	};
 }
 
 export default function EditBlogPost({ params }: Props) {
-  return <BlogEditor mode="edit" postId={params.id} />;
+	return <BlogEditor mode="edit" postId={params.id} />;
 }

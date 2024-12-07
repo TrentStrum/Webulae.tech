@@ -27,9 +27,11 @@ export default function BlogList() {
 		<div className="container py-8">
 			<h1 className="text-3xl font-bold mb-8">Blog</h1>
 			<div className="space-y-4">
-				{blogPosts.pages.flatMap((page) => page).map((post) => (
-					<BlogPostCard key={post.id} post={post} />
-				))}
+				{blogPosts.pages
+					.flatMap((page) => page)
+					.map((post) => (
+						<BlogPostCard key={post.id} post={post} />
+					))}
 			</div>
 		</div>
 	);

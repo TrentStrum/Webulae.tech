@@ -29,7 +29,12 @@ export default function ProjectMessagesPage() {
 		e.preventDefault();
 
 		try {
-			await sendMessage({ projectId: projectId as string, recipientId: recipient, subject, content });
+			await sendMessage({
+				projectId: projectId as string,
+				recipientId: recipient,
+				subject,
+				content,
+			});
 			toast({
 				title: 'Message Sent',
 				description: 'Your message has been sent successfully.',

@@ -43,7 +43,7 @@ export default function AdminBlogManagement() {
 		return <p>Error loading blog posts.</p>;
 	}
 
-	const blogPosts = blogPostsQuery.data?.pages.flatMap(page => page.data) || [];
+	const blogPosts = blogPostsQuery.data?.pages.flatMap((page) => page.data) || [];
 
 	return (
 		<div className="container py-8">

@@ -5,20 +5,23 @@ import { useState } from 'react';
 import { Button } from '@/src/components/ui/button';
 import { Input } from '@/src/components/ui/input';
 import { Label } from '@/src/components/ui/label';
-import { Select, SelectValue, SelectTrigger, SelectContent, SelectItem } from '@/src/components/ui/select';
+import {
+	Select,
+	SelectValue,
+	SelectTrigger,
+	SelectContent,
+	SelectItem,
+} from '@/src/components/ui/select';
 import { Textarea } from '@/src/components/ui/textarea';
 import { useToast } from '@/src/hooks';
 import { useSendMessage } from '@/src/hooks/react-query/useMessages';
 
 import type { ProjectMember } from '@/src/types';
 
-
-
-
 type Props = {
 	members: ProjectMember[];
 	projectId: string;
-}
+};
 
 export default function MessageForm({ members, projectId }: Props) {
 	const [recipient, setRecipient] = useState('');
@@ -44,7 +47,7 @@ export default function MessageForm({ members, projectId }: Props) {
 				onError: () => {
 					toast({ title: 'Error', description: 'Failed to send message.', variant: 'destructive' });
 				},
-			},
+			}
 		);
 	};
 

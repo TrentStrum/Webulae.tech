@@ -22,12 +22,12 @@ export default function AdminDashboard() {
 				window.location.replace('/auth/login');
 				return;
 			}
-			
+
 			if (user && user.role !== 'admin') {
 				window.location.replace('/');
 				return;
 			}
-			
+
 			setIsCheckingAccess(false);
 		};
 

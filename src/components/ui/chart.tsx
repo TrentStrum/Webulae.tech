@@ -7,9 +7,6 @@ import { cn } from '@/src/utils/utils';
 
 import type { LegendProps, TooltipProps } from 'recharts';
 
-
-
-
 // Define RechartsPrimitive to group related components
 const RechartsPrimitive = {
 	ResponsiveContainer,
@@ -108,13 +105,14 @@ const ChartTooltip = RechartsPrimitive.Tooltip;
 
 const ChartTooltipContent = React.forwardRef<
 	HTMLDivElement,
-	TooltipProps<number, string> & React.ComponentProps<'div'> & {
-		hideLabel?: boolean;
-		hideIndicator?: boolean;
-		indicator?: 'line' | 'dot' | 'dashed';
-		nameKey?: string;
-		labelKey?: string;
-	}
+	TooltipProps<number, string> &
+		React.ComponentProps<'div'> & {
+			hideLabel?: boolean;
+			hideIndicator?: boolean;
+			indicator?: 'line' | 'dot' | 'dashed';
+			nameKey?: string;
+			labelKey?: string;
+		}
 >(({ active, payload, ...props }, ref) => {
 	const { config } = useChart();
 
@@ -128,12 +126,15 @@ const ChartTooltipContent = React.forwardRef<
 		const [item] = payload;
 		const key = `${labelKey || item.dataKey || item.name || 'value'}`;
 		const itemConfig = getPayloadConfigFromPayload(config, item, key);
-		const value = !labelKey && typeof label === 'string'
-			? config[label as keyof typeof config]?.label || label
-			: itemConfig?.label;
+		const value =
+			!labelKey && typeof label === 'string'
+				? config[label as keyof typeof config]?.label || label
+				: itemConfig?.label;
 
 		if (labelFormatter) {
-			return <div className={cn('font-medium', labelClassName)}>{labelFormatter(value, payload)}</div>;
+			return (
+				<div className={cn('font-medium', labelClassName)}>{labelFormatter(value, payload)}</div>
+			);
 		}
 
 		if (!value) {

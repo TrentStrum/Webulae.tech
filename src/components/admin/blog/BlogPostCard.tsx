@@ -6,7 +6,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/ca
 
 import type { BlogPost } from '@/src/types/blog.types';
 
-
 interface BlogPostCardProps {
 	post: BlogPost;
 }

@@ -39,7 +39,10 @@ export const SignUpForm = (): JSX.Element => {
 				return;
 			}
 
-			const { data: { user }, error: signUpError } = await supabaseClient.auth.signUp({
+			const {
+				data: { user },
+				error: signUpError,
+			} = await supabaseClient.auth.signUp({
 				email: formState.email,
 				password: formState.password,
 				options: {
@@ -125,4 +128,4 @@ export const SignUpForm = (): JSX.Element => {
 			</p>
 		</div>
 	);
-}
+};

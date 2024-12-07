@@ -6,7 +6,6 @@ import { Badge } from '@/src/components/ui/badge';
 import { Card, CardHeader, CardTitle, CardContent } from '@/src/components/ui/card';
 import { useProjectTimeline } from '@/src/hooks/react-query/useTimeline';
 
-
 const getStatusColor = (status: string) => {
 	const colors = {
 		planned: 'bg-blue-500/10 text-blue-500',

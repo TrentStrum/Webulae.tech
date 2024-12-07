@@ -10,10 +10,10 @@ import { useCreateProject } from '@/src/hooks/react-query/useProjects/useCreateP
 
 import type { ProjectFormData } from '@/src/schemas/projectSchema';
 
-
-
 export default function NewProjectPage() {
-	const { mutateAsync: createProjectMutation, isPending } = useCreateProject(new SupabaseProjectDataAccess());
+	const { mutateAsync: createProjectMutation, isPending } = useCreateProject(
+		new SupabaseProjectDataAccess()
+	);
 	const router = useRouter();
 	const { toast } = useToast();
 
@@ -47,5 +47,3 @@ export default function NewProjectPage() {
 		</div>
 	);
 }
-
-
