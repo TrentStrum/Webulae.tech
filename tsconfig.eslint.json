@@ -17,10 +17,5 @@
 		"postcss.config.js",
 		"middleware.ts"
 	],
-	"exclude": [
-		"node_modules",
-		".next",
-		"build",
-		"dist"
-	]
-} 
+	"exclude": ["node_modules", ".next", "build", "dist"]
+}

@@ -3,7 +3,6 @@
 import { AlertTriangle } from 'lucide-react';
 import { Component } from 'react';
 
-
 import { Button } from '../ui/button';
 
 import type { ErrorInfo, ReactNode } from 'react';

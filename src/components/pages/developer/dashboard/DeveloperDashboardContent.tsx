@@ -18,8 +18,8 @@ export default function DeveloperDashboardContent() {
 		return <ProjectCardSkeleton />;
 	}
 
-	const activeProjects = projects?.filter(p => p.status !== 'completed') ?? [];
-	const completedProjects = projects?.filter(p => p.status === 'completed') ?? [];
+	const activeProjects = projects?.filter((p) => p.status !== 'completed') ?? [];
+	const completedProjects = projects?.filter((p) => p.status === 'completed') ?? [];
 
 	return (
 		<div className="container py-8">
@@ -30,13 +30,13 @@ export default function DeveloperDashboardContent() {
 				</TabsList>
 
 				<TabsContent value="active">
-					{activeProjects.map(project => (
+					{activeProjects.map((project) => (
 						<ProjectCard key={project.projectId} project={project} />
 					))}
 				</TabsContent>
 
 				<TabsContent value="completed">
-					{completedProjects.map(project => (
+					{completedProjects.map((project) => (
 						<ProjectCard key={project.projectId} project={project} />
 					))}
 				</TabsContent>
@@ -62,4 +62,4 @@ function ProjectCard({ project }: { project: Project }) {
 			</Card>
 		</Link>
 	);
-} 
+}
