@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import '@testing-library/jest-dom';
 import { TextEncoder, TextDecoder } from 'util';
 
@@ -12,6 +13,7 @@ if (typeof Response === 'undefined') {
 			this.init = init;
 			this.status = init?.status || 200;
 			this.ok = this.status >= 200 && this.status < 300;
+			return this;
 		}
 
 		async json() {

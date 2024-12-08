@@ -1,18 +1,13 @@
-import { getSupabaseClient } from '@/src/lib/supabase';
+import { supabase } from '@/src/lib/supabase';
 
 import type { Database } from '@/src/types/database.types';
-import type {
-	Subscription,
-	PaymentMethod,
-	SubscriptionStatus,
-} from '@/src/types/subscription.types';
+import type { Subscription, SubscriptionStatus } from '@/src/types/subscription.types';
 
 type SubscriptionRow = Database['public']['Tables']['subscriptions']['Row'];
 
-function getClient() {
-	const client = getSupabaseClient();
-	if (!client) throw new Error('Supabase client not initialized');
-	return client;
+function getClient(): NonNullable<typeof supabase> {
+	if (!supabase) throw new Error('Supabase client not initialized');
+	return supabase;
 }
 
 export async function getSubscriptionData(userId: string): Promise<Subscription> {
@@ -40,7 +35,14 @@ export async function getSubscriptionData(userId: string): Promise<Subscription>
 		storageLimit: subscription.storage_limit,
 		apiCallsUsed: subscription.api_calls_used,
 		apiCallsLimit: subscription.api_calls_limit,
-		paymentMethods: subscription.payment_methods as PaymentMethod[],
+		paymentMethods: subscription.payment_methods.map((pm) => ({
+			id: pm.id,
+			isDefault: pm.is_default,
+			brand: pm.card_brand,
+			last4: pm.card_last4,
+			expiryMonth: pm.exp_month,
+			expiryYear: pm.exp_year,
+		})),
 		currentPeriodStart: subscription.current_period_start,
 		currentPeriodEnd: subscription.current_period_end,
 		cancelAtPeriodEnd: subscription.cancel_at_period_end,

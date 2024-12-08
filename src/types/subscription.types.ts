@@ -1,4 +1,10 @@
-export type SubscriptionStatus = 'active' | 'canceled' | 'expired' | 'past_due' | 'pending';
+export type SubscriptionStatus =
+	| 'active'
+	| 'past_due'
+	| 'canceled'
+	| 'pending'
+	| 'trial'
+	| 'paused';
 
 export type SubscriptionPlan = {
 	id: string;
@@ -13,7 +19,10 @@ export type SubscriptionPlan = {
 export interface PaymentMethod {
 	id: string;
 	isDefault: boolean;
-	// Add other payment method fields
+	brand: string;
+	last4: string;
+	expiryMonth: number;
+	expiryYear: number;
 }
 
 export type Subscription = {
@@ -42,13 +51,13 @@ export type Subscription = {
 export type SubscriptionEvent = {
 	id: string;
 	subscriptionId: string;
-	type: 'created' | 'renewed' | 'canceled' | 'updated' | 'payment_failed';
-	data: Record<string, any>;
+	type: 'created' | 'renewed' | 'canceled' | 'updated' | 'payment_failed' | 'trial_ended';
+	data: Record<string, string | number | boolean | null>;
 	createdAt: string;
 };
 
 export type SubscriptionError = {
 	code: string;
 	message: string;
-	details?: Record<string, any>;
+	details?: Record<string, string | number | boolean | null>;
 };

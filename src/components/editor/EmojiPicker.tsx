@@ -1,27 +1,25 @@
-```typescript
 'use client';
 
-import data from '@emoji-mart/data';
-import Picker from '@emoji-mart/react';
-import { Editor } from '@tiptap/react';
-import { useTheme } from 'next-themes';
+import type { Editor } from '@tiptap/react';
 
 interface EmojiPickerProps {
-  editor: Editor;
+	editor: Editor;
 }
 
-export function EmojiPicker({ editor }: EmojiPickerProps) {
-  const { theme } = useTheme();
+export function EmojiPicker({ editor }: EmojiPickerProps): JSX.Element {
+	const emojis = ['😀', '😊', '🎉', '❤️', '👍', '🚀', '💡', '⭐'];
 
-  return (
-    <Picker
-      data={data}
-      onEmojiSelect={(emoji: any) => {
-        editor.chain().focus().insertContent(emoji.native).run();
-      }}
-      theme={theme === 'dark' ? 'dark' : 'light'}
-      set="native"
-    />
-  );
+	return (
+		<div className="flex flex-wrap gap-2 p-2">
+			{emojis.map((emoji) => (
+				<button
+					key={emoji}
+					className="text-xl hover:bg-secondary p-2 rounded-md"
+					onClick={() => editor.chain().focus().insertContent(emoji).run()}
+				>
+					{emoji}
+				</button>
+			))}
+		</div>
+	);
 }
-```;

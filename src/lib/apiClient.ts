@@ -2,7 +2,14 @@ import axios from 'axios';
 
 import { withTimeout } from './helpers';
 
-import type { AxiosError, AxiosResponse } from 'axios';
+import type { Profile } from '@/src/types/user.types';
+import type { AxiosError } from 'axios';
+
+declare module 'axios' {
+	export interface InternalAxiosRequestConfig {
+		retryCount?: number;
+	}
+}
 
 // Create axios instance with default config
 const axiosInstance = axios.create({
@@ -40,6 +47,7 @@ axiosInstance.interceptors.response.use(
 			config &&
 			error.response &&
 			[408, 429, 500, 502, 503, 504].includes(error.response.status) &&
+			config.retryCount &&
 			config.retryCount < 3
 		) {
 			config.retryCount = (config.retryCount || 0) + 1;
@@ -53,6 +61,11 @@ axiosInstance.interceptors.response.use(
 	}
 );
 
+interface AuthStateChangeEvent {
+	event: 'SIGNED_IN' | 'SIGNED_OUT' | 'USER_UPDATED';
+	session: { user: { id: string } } | null;
+}
+
 export const apiClient = {
 	get: async <T>(url: string, config?: object): Promise<T> => {
 		try {
@@ -64,15 +77,13 @@ export const apiClient = {
 		}
 	},
 
-	post: async <TPayload = unknown, TResponse = TPayload>(
+	post: async <TResponse, TPayload = unknown>(
 		url: string,
 		payload?: TPayload,
 		config?: object
 	): Promise<TResponse> => {
 		try {
-			const response = await withTimeout(
-				axiosInstance.post<TPayload, AxiosResponse<TResponse>>(url, payload, config)
-			);
+			const response = await withTimeout(axiosInstance.post<TResponse>(url, payload, config));
 			return response.data;
 		} catch (error) {
 			handleApiError(error);
@@ -109,19 +120,91 @@ export const apiClient = {
 			throw error;
 		}
 	},
+
+	auth: {
+		onAuthStateChange(callback: AuthEventCallback): { subscription: AuthSubscription } {
+			let retryCount = 0;
+			const MAX_RETRIES = 3;
+			const RETRY_DELAY = 5000;
+
+			function setupEventSource(): EventSource {
+				const eventSource = new EventSource('/api/auth/events', {
+					withCredentials: true,
+				});
+
+				eventSource.onopen = (): void => {
+					retryCount = 0;
+					// eslint-disable-next-line no-console
+					console.debug('Auth state change connection established');
+				};
+
+				eventSource.onmessage = async (event: MessageEvent): Promise<void> => {
+					try {
+						const data = JSON.parse(event.data) as AuthStateChangeEvent;
+						await callback(data.event, data.session);
+					} catch (error) {
+						// eslint-disable-next-line no-console
+						console.error('Error processing auth state change:', error);
+					}
+				};
+
+				eventSource.onerror = (error: Event): void => {
+					// eslint-disable-next-line no-console
+					console.error('Auth state change connection error:', error);
+					if (eventSource.readyState === EventSource.CLOSED) {
+						eventSource.close();
+						if (retryCount < MAX_RETRIES) {
+							retryCount++;
+							setTimeout(() => {
+								setupEventSource();
+							}, RETRY_DELAY);
+						}
+					}
+				};
+
+				return eventSource;
+			}
+
+			const eventSource = setupEventSource();
+
+			const subscription: AuthSubscription = {
+				unsubscribe: (): void => {
+					eventSource.close();
+				},
+			};
+
+			return { subscription };
+		},
+
+		async getProfile<T = Profile>(): Promise<{ data: T }> {
+			const response = await apiClient.get<T>('/auth/profile');
+			return { data: response };
+		},
+	},
 };
 
-function handleApiError(error: unknown) {
+interface EnhancedError extends Error {
+	status?: number;
+	code?: string;
+}
+
+function handleApiError(error: unknown): never {
 	if (axios.isAxiosError(error)) {
-		const message = error.response?.data?.message || error.message;
-		const status = error.response?.status;
-
-		// Enhance error with additional context
-		const enhancedError = new Error(message);
-		(enhancedError as any).status = status;
-		(enhancedError as any).code = error.code;
-
+		const enhancedError = new Error(
+			error.response?.data?.message || error.message
+		) as EnhancedError;
+		enhancedError.status = error.response?.status;
+		enhancedError.code = error.code;
 		throw enhancedError;
 	}
 	throw error;
+}
+
+type AuthEventCallback = (
+	event: AuthStateChangeEvent['event'],
+	session: AuthStateChangeEvent['session']
+) => Promise<void>;
+
+interface AuthSubscription {
+	unsubscribe: () => void;
 }

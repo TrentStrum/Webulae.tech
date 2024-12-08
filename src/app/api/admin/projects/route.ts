@@ -1,10 +1,12 @@
 import { NextResponse } from 'next/server';
 
-import { getSupabaseClient } from '@/src/lib/supabase';
+import { getSupabaseClient } from '@/src/lib/helpers';
 
-export async function GET() {
+export async function GET(): Promise<NextResponse> {
 	try {
 		const supabase = getSupabaseClient();
+		if (!supabase) throw new Error('Could not initialize Supabase client');
+
 		const { data: projects, error } = await supabase.from('projects').select('*');
 
 		if (error) {
@@ -18,11 +20,11 @@ export async function GET() {
 	}
 }
 
-export async function POST(req: Request) {
+export async function POST(req: Request): Promise<NextResponse> {
 	try {
 		const body = await req.json();
 		const supabase = getSupabaseClient();
-
+		if (!supabase) throw new Error('Could not initialize Supabase client');
 		const { data: newProject, error } = await supabase.from('projects').insert(body).single();
 
 		if (error) {
@@ -36,7 +38,7 @@ export async function POST(req: Request) {
 	}
 }
 
-export async function PUT(req: Request) {
+export async function PUT(req: Request): Promise<NextResponse> {
 	try {
 		const body = await req.json();
 		const { id, ...updates } = body;
@@ -46,6 +48,8 @@ export async function PUT(req: Request) {
 		}
 
 		const supabase = getSupabaseClient();
+		if (!supabase) throw new Error('Could not initialize Supabase client');
+
 		const { data: updatedProject, error } = await supabase
 			.from('projects')
 			.update(updates)
@@ -63,7 +67,7 @@ export async function PUT(req: Request) {
 	}
 }
 
-export async function DELETE(req: Request) {
+export async function DELETE(req: Request): Promise<NextResponse> {
 	try {
 		const { searchParams } = new URL(req.url);
 		const id = searchParams.get('id');
@@ -73,6 +77,8 @@ export async function DELETE(req: Request) {
 		}
 
 		const supabase = getSupabaseClient();
+		if (!supabase) throw new Error('Could not initialize Supabase client');
+
 		const { error } = await supabase.from('projects').delete().eq('id', id);
 
 		if (error) {

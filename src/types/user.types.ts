@@ -1,9 +1,10 @@
 // Base user properties
 export type BaseUser = {
 	id: string;
-	email: string | null;
-	role: 'client' | 'admin' | 'developer';
+	email: string;
+	role: 'admin' | 'client' | 'developer';
 	username: string | null;
+	last_sign_in_at: string | null;
 	full_name: string | null;
 };
 
@@ -18,6 +19,7 @@ export type Profile = BaseUser & {
 
 // Auth-specific properties
 export type AuthUser = BaseUser & {
+	username?: string;
 	user_metadata?: {
 		role?: string;
 	};
@@ -27,4 +29,15 @@ export type AuthUser = BaseUser & {
 };
 
 // Export a type alias for the most commonly used user type
-export type User = Profile;
+export type User = DatabaseProfile;
+
+export type DatabaseProfile = {
+	id: string;
+	role: 'admin' | 'client' | 'developer';
+	email: string;
+	username: string | null;
+	full_name: string | null;
+	bio: string | null;
+	website: string | null;
+	last_sign_in_at: string | null;
+};

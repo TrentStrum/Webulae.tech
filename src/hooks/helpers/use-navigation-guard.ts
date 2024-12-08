@@ -3,9 +3,11 @@
 import { useRouter, usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 
-import { useAuth } from '@/src/contexts/AuthContext';
+import { useAuthState } from '../auth/useAuthState';
 
 import { useToast } from './use-toast';
+
+import type { AuthUser } from '@/src/types/authUser.types';
 
 interface NavigationGuardProps {
 	allowedRoles?: string[];
@@ -17,16 +19,16 @@ export function useNavigationGuard({
 	allowedRoles = [],
 	requireAuth = true,
 	redirectTo = '/auth/login',
-}: NavigationGuardProps = {}) {
-	const { data: user, isLoading } = useAuth();
+}: NavigationGuardProps = {}): { isLoading: boolean; user: AuthUser | null } {
+	const { user, loading } = useAuthState();
 	const router = useRouter();
 	const pathname = usePathname();
 	const { toast } = useToast();
 
 	useEffect(() => {
-		if (isLoading) return;
+		if (loading) return;
 
-		const handleNavigation = async () => {
+		const handleNavigation = async (): Promise<void> => {
 			// Not authenticated but authentication required
 			if (!user && requireAuth) {
 				toast({
@@ -51,7 +53,7 @@ export function useNavigationGuard({
 		};
 
 		handleNavigation();
-	}, [user, isLoading, router, pathname, redirectTo, requireAuth, allowedRoles, toast]);
+	}, [user, loading, router, pathname, redirectTo, requireAuth, allowedRoles, toast]);
 
-	return { isLoading, user };
+	return { isLoading: loading, user };
 }

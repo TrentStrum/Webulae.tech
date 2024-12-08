@@ -2,7 +2,7 @@ import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
-import type { Database } from '@/src/types';
+import type { Database } from '@/src/types/database.types';
 
 export async function POST(req: Request): Promise<NextResponse> {
 	try {

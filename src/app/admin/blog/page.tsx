@@ -1,82 +1,90 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 import { Button } from '@/src/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card';
+import { LoadingSpinner } from '@/src/components/ui/loading-spinner';
 import { useToast } from '@/src/hooks/helpers/use-toast';
 import { useBlogPosts, useDeleteBlogPost } from '@/src/hooks/react-query/useBlog';
+import { useAuth } from '@/src/hooks/useAuth';
 
-import type { BlogPost } from '@/src/types/blog.types';
-
-export default function AdminBlogManagement() {
-	const blogPostsQuery = useBlogPosts({});
-	const deleteBlogPost = useDeleteBlogPost();
+export default function AdminBlogPage() {
 	const router = useRouter();
+	const { user, loading: authLoading } = useAuth();
 	const { toast } = useToast();
-
-	const handleDelete = async (id: string) => {
-		try {
-			await deleteBlogPost.mutateAsync(id);
+	const { data: posts, isLoading } = useBlogPosts({});
+	const { mutate: deleteBlogPost, isPending } = useDeleteBlogPost({
+		onSuccess: () => {
 			toast({
 				title: 'Success',
-				description: 'Blog post deleted successfully.',
+				description: 'Blog post deleted successfully',
 			});
-		} catch (error) {
+		},
+		onError: () => {
 			toast({
 				title: 'Error',
-				description: 'Failed to delete the blog post.',
+				description: 'Failed to delete blog post',
 				variant: 'destructive',
 			});
+		},
+	});
+
+	useEffect(() => {
+		if (!authLoading && (!user || user.role !== 'admin')) {
+			router.push('/');
 		}
-	};
+	}, [user, authLoading, router]);
 
-	const handleEdit = (id: string) => {
-		router.push(`/admin/blog/edit/${id}`); // Navigate to an edit page
-	};
-
-	if (blogPostsQuery.isLoading) {
-		return <p>Loading blog posts...</p>;
+	if (authLoading || isLoading) {
+		return (
+			<div className="container py-8 flex justify-center">
+				<LoadingSpinner size="lg" />
+			</div>
+		);
 	}
 
-	if (blogPostsQuery.isError) {
-		return <p>Error loading blog posts.</p>;
+	if (!user || user.role !== 'admin') {
+		return null;
 	}
-
-	const blogPosts = blogPostsQuery.data?.pages.flatMap((page) => page.data) || [];
 
 	return (
 		<div className="container py-8">
-			<h1 className="text-3xl font-bold mb-8">Manage Blog Posts</h1>
+			<div className="flex justify-between items-center mb-8">
+				<h1 className="text-3xl font-bold">Blog Posts</h1>
+				<Button onClick={() => router.push('/admin/blog/new')}>Create New Post</Button>
+			</div>
+
 			<div className="grid gap-6">
-				{blogPosts.map((post: BlogPost) => (
+				{posts?.map((post) => (
 					<Card key={post.id}>
 						<CardHeader>
 							<CardTitle>{post.title}</CardTitle>
 						</CardHeader>
 						<CardContent>
-							<p>{post.excerpt || post.content?.substring(0, 100) + '...'}</p>
-							<div className="flex justify-end space-x-4 mt-4">
-								<Button variant="default" onClick={() => handleEdit(post.id)}>
+							<p className="text-muted-foreground mb-4">
+								{post.excerpt || post.content?.substring(0, 150) + '...'}
+							</p>
+							<div className="flex justify-end gap-4">
+								<Button
+									variant="outline"
+									onClick={() => router.push(`/admin/blog/${post.id}/edit`)}
+								>
 									Edit
 								</Button>
 								<Button
 									variant="destructive"
-									onClick={() => handleDelete(post.id)}
-									disabled={deleteBlogPost.isPending}
+									onClick={() => deleteBlogPost(post.id)}
+									disabled={isPending}
 								>
-									Delete
+									{isPending ? 'Deleting...' : 'Delete'}
 								</Button>
 							</div>
 						</CardContent>
 					</Card>
 				))}
 			</div>
-			{blogPostsQuery.hasNextPage && (
-				<div className="flex justify-center mt-6">
-					<Button onClick={() => blogPostsQuery.fetchNextPage()}>Load More</Button>
-				</div>
-			)}
 		</div>
 	);
 }

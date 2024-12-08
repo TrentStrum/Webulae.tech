@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-import { getSupabaseClient } from '@/src/lib/supabase';
+import { supabase } from '@/src/lib/supabase';
 
 export async function GET(req: Request): Promise<NextResponse> {
 	try {
@@ -9,9 +9,6 @@ export async function GET(req: Request): Promise<NextResponse> {
 		const sortBy = searchParams.get('sortBy') || 'newest';
 		const offset = parseInt(searchParams.get('offset') || '0', 10);
 		const limit = parseInt(searchParams.get('limit') || '10', 10);
-
-		const supabase = getSupabaseClient();
-		if (!supabase) throw new Error('Could not initialize Supabase client');
 
 		let query = supabase.from('blog_posts').select('*');
 
@@ -58,9 +55,6 @@ export async function POST(req: Request): Promise<NextResponse> {
 		if (!title || !content) {
 			return NextResponse.json({ error: 'Title and content are required' }, { status: 400 });
 		}
-
-		const supabase = getSupabaseClient();
-		if (!supabase) throw new Error('Could not initialize Supabase client');
 
 		const { data: newPost, error } = await supabase
 			.from('blog_posts')

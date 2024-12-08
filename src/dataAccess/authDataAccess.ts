@@ -1,11 +1,13 @@
-import { supabase } from '@/src/lib/supabase';
+import { supabase } from '../lib/supabase/server';
 
-import type { AuthUser } from '@/src/types/authUser.types';
+import type { AuthUser } from '../types/authUser.types';
+import type { AuthChangeEvent, AuthResponse, Session } from '@supabase/supabase-js';
 
 let currentAuthListener: { unsubscribe: () => void } | null = null;
 
 export const AuthDataAccess = {
-	getSession: async () => {
+	getSession: async (): Promise<Session | null> => {
+		// eslint-disable-next-line no-console
 		console.log('📡 AuthDataAccess: Fetching session');
 		const {
 			data: { session },
@@ -15,7 +17,8 @@ export const AuthDataAccess = {
 		return session;
 	},
 
-	getUserProfile: async (userId: string) => {
+	getUserProfile: async (userId: string): Promise<AuthUser> => {
+		// eslint-disable-next-line no-console
 		console.log('📡 AuthDataAccess: Fetching user data for ID:', userId);
 		const [
 			{ data: profile, error },
@@ -33,11 +36,11 @@ export const AuthDataAccess = {
 			id: profile.id,
 			email: session?.user?.email ?? '',
 			role: profile.role ?? 'client',
-			avatar_url: profile.avatar_url,
 		} as AuthUser;
 	},
 
 	onAuthStateChange: (callback: (user: AuthUser | null) => void) => {
+		// eslint-disable-next-line no-console
 		console.log('👂 AuthDataAccess: Setting up auth state listener');
 
 		if (currentAuthListener) {
@@ -46,7 +49,8 @@ export const AuthDataAccess = {
 
 		const {
 			data: { subscription },
-		} = supabase.auth.onAuthStateChange(async (event, session) => {
+		} = supabase.auth.onAuthStateChange(async (event: AuthChangeEvent, session: Session | null) => {
+			// eslint-disable-next-line no-console
 			console.log('🔄 AuthDataAccess: Auth state changed:', event);
 
 			if (session?.user) {
@@ -61,7 +65,7 @@ export const AuthDataAccess = {
 		return { data: { subscription } };
 	},
 
-	login: async (email: string, password: string) => {
+	login: async (email: string, password: string): Promise<AuthResponse> => {
 		return await supabase.auth.signInWithPassword({
 			email,
 			password,

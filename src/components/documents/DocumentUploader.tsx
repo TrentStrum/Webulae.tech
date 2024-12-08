@@ -27,7 +27,7 @@ interface DocumentUploaderProps {
 
 export default function DocumentUploader({ projectId }: DocumentUploaderProps) {
 	const [category, setCategory] = useState('');
-	const { uploadDocument, isUploading } = useUploadDocument();
+	const { mutate: uploadDocument, isPending: isUploading } = useUploadDocument();
 	const { toast } = useToast();
 
 	const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {

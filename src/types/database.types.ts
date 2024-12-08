@@ -1,147 +1,191 @@
-import type { PaymentMethod, SubscriptionStatus } from './subscription.types';
-
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export interface Database {
 	public: {
 		Tables: {
-			blog_comments: {
+			profiles: {
 				Row: {
-					author_id: string;
-					content: string;
-					created_at: string;
 					id: string;
-					parent_id: string | null;
-					post_id: string;
+					email: string;
+					role: 'admin' | 'client' | 'developer';
+					username: string | null;
+					full_name: string | null;
+					created_at: string;
 					updated_at: string;
 				};
 				Insert: {
-					author_id: string;
+					email: string;
+					role?: 'admin' | 'client' | 'developer';
+					username?: string | null;
+					full_name?: string | null;
+				};
+				Update: {
+					email?: string;
+					role?: 'admin' | 'client' | 'developer';
+					username?: string | null;
+					full_name?: string | null;
+				};
+			};
+			blog_posts: {
+				Row: {
+					id: string;
+					title: string;
 					content: string;
+					author_id: string;
+					slug: string;
+					created_at: string;
+					updated_at: string;
+				};
+				Insert: {
+					title: string;
+					content: string;
+					author_id: string;
+					slug: string;
 					created_at?: string;
-					id?: string;
-					parent_id?: string | null;
-					post_id: string;
 					updated_at?: string;
 				};
 				Update: {
-					author_id?: string;
+					title?: string;
 					content?: string;
-					created_at?: string;
-					id?: string;
-					parent_id?: string | null;
-					post_id?: string;
+					author_id?: string;
+					slug?: string;
 					updated_at?: string;
 				};
-				Relationships: Array<{
-					foreignKeyName: string;
-					columns: string[];
-					isOneToOne: boolean;
-					referencedRelation: string;
-					referencedColumns: string[];
-				}>;
+			};
+			customers: {
+				Row: {
+					id: string;
+					user_id: string;
+					stripe_customer_id: string;
+					created_at?: string;
+				};
+				Insert: {
+					user_id: string;
+					stripe_customer_id: string;
+				};
+				Update: {
+					stripe_customer_id?: string;
+				};
+			};
+			project_timeline: {
+				Row: {
+					id: string;
+					project_id: string;
+					title: string;
+					description: string;
+					status: 'pending' | 'in_progress' | 'completed';
+					created_at: string;
+					updated_at: string;
+				};
+				Insert: {
+					project_id: string;
+					title: string;
+					description: string;
+					status?: 'pending' | 'in_progress' | 'completed';
+				};
+				Update: {
+					title?: string;
+					description?: string;
+					status?: 'pending' | 'in_progress' | 'completed';
+				};
 			};
 			projects: {
 				Row: {
-					created_at: string;
-					description: string | null;
-					dev_environment_url: string | null;
 					id: string;
 					name: string;
-					staging_environment_url: string | null;
-					start_date: string | null;
-					status: Database['public']['Enums']['project_status'];
-					target_completion_date: string | null;
+					description: string;
+					status: 'active' | 'completed' | 'on_hold';
+					owner_id: string;
+					created_at: string;
 					updated_at: string;
 				};
 				Insert: {
-					created_at?: string;
-					description?: string | null;
-					dev_environment_url?: string | null;
-					id?: string;
 					name: string;
-					staging_environment_url?: string | null;
-					start_date?: string | null;
-					status?: Database['public']['Enums']['project_status'];
-					target_completion_date?: string | null;
-					updated_at?: string;
+					description: string;
+					status?: 'active' | 'completed' | 'on_hold';
+					owner_id: string;
 				};
 				Update: {
-					created_at?: string;
-					description?: string | null;
-					dev_environment_url?: string | null;
-					id?: string;
 					name?: string;
-					staging_environment_url?: string | null;
-					start_date?: string | null;
-					status?: Database['public']['Enums']['project_status'];
-					target_completion_date?: string | null;
-					updated_at?: string;
+					description?: string;
+					status?: 'active' | 'completed' | 'on_hold';
 				};
-				Relationships: [];
 			};
 			subscriptions: {
 				Row: {
 					id: string;
 					user_id: string;
-					status: SubscriptionStatus;
-					payment_methods: PaymentMethod[];
+					payment_methods: {
+						id: string;
+						card_last4: string;
+						card_brand: string;
+						exp_month: number;
+						exp_year: number;
+						is_default: boolean;
+					}[];
+					plan_id: string;
+					plan_name: string;
+					status: string;
+					next_billing_date: string;
+					projects_used: number;
+					projects_limit: number;
+					storage_used: number;
+					storage_limit: number;
+					api_calls_used: number;
+					api_calls_limit: number;
+					current_period_start: string;
+					current_period_end: string;
+					cancel_at_period_end: boolean;
+					stripe_subscription_id: string;
+					stripe_customer_id: string;
+					created_at: string;
+					updated_at: string;
 				};
 				Insert: {
-					id?: string;
 					user_id: string;
-					status: SubscriptionStatus;
-					payment_methods: PaymentMethod[];
+					plan_id: string;
+					plan_name: string;
+					stripe_subscription_id: string;
+					stripe_customer_id: string;
 				};
 				Update: {
-					id?: string;
-					user_id?: string;
-					status?: SubscriptionStatus;
-					payment_methods?: PaymentMethod[];
+					status?: string;
+					cancel_at_period_end?: boolean;
 				};
-				Relationships: [];
+			};
+			payment_methods: {
+				Row: {
+					id: string;
+					card_last4: string;
+					card_brand: string;
+					exp_month: number;
+					exp_year: number;
+					is_default: boolean;
+				};
+				Insert: {
+					card_last4: string;
+					card_brand: string;
+					exp_month: number;
+					exp_year: number;
+				};
+				Update: {
+					is_default?: boolean;
+				};
 			};
 			// Add other tables as needed
-		};
-		Views: {
-			admin_users: {
-				Row: {
-					id: string | null;
-				};
-				Relationships: Array<{
-					foreignKeyName: string;
-					columns: string[];
-					isOneToOne: boolean;
-					referencedRelation: string;
-					referencedColumns: string[];
-				}>;
-			};
-			// Add other views as needed
-		};
-		Functions: {
-			apply_project_members_policy_fix: {
-				Args: Record<PropertyKey, never>;
-				Returns: undefined;
-			};
-			// Add other functions as needed
-		};
-		Enums: {
-			invoice_status: 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled';
-			message_status: 'unread' | 'read' | 'archived';
-			project_status: 'planning' | 'in_progress' | 'review' | 'completed' | 'on_hold';
-			user_role: 'client' | 'admin' | 'developer';
-		};
-		CompositeTypes: {
-			[_ in never]: never;
 		};
 	};
 }
 
-type PublicSchema = Database[Extract<keyof Database, 'public'>];
-
-export type Tables<T extends keyof PublicSchema['Tables']> = PublicSchema['Tables'][T]['Row'];
-export type TablesInsert<T extends keyof PublicSchema['Tables']> =
-	PublicSchema['Tables'][T]['Insert'];
-export type TablesUpdate<T extends keyof PublicSchema['Tables']> =
-	PublicSchema['Tables'][T]['Update'];
-export type Enums<T extends keyof PublicSchema['Enums']> = PublicSchema['Enums'][T];
+export type DatabaseProfile = {
+	id: string;
+	role: 'admin' | 'client' | 'developer';
+	email: string;
+	username: string | null;
+	full_name: string | null;
+	bio: string | null;
+	website: string | null;
+	created_at: string;
+	updated_at: string;
+	last_sign_in_at: string | null;
+};

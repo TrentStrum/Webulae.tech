@@ -4,43 +4,47 @@ import { usePathname, useRouter } from 'next/navigation';
 
 import { useAuthState } from '../../hooks/auth/useAuthState';
 
-import type { NavigationGuard, NavigationOptions } from '@/src/types/navigation.types';
+import type {
+	NavigationGuard,
+	NavigationOptions,
+	NavigationItem,
+} from '@/src/types/navigation.types';
 
 // Public navigation items shown to non-authenticated users
-const publicNavigation = [
+const publicNavigation: NavigationItem[] = [
 	{ name: 'About', href: '/about' },
 	{ name: 'Articles', href: '/articles' },
 	{ name: 'Services', href: '/services' },
 	{ name: 'Contact', href: '/contact' },
-] as const;
+];
 
 // Navigation items for authenticated clients
-const clientNavigation = [
+const clientNavigation: NavigationItem[] = [
 	{ name: 'Projects', href: '/projects' },
 	{ name: 'Articles', href: '/articles' },
 	{ name: 'Messages', href: '/messages' },
-] as const;
+];
 
 // Navigation items for developers
-const developerNavigation = [
+const developerNavigation: NavigationItem[] = [
 	{ name: 'Projects', href: '/projects' },
 	{ name: 'Tasks', href: '/tasks' },
 	{ name: 'Documentation', href: '/docs' },
-] as const;
+];
 
 // Navigation items for admins
-const adminNavigation = [
+const adminNavigation: NavigationItem[] = [
 	{ name: 'Dashboard', href: '/admin/dashboard' },
 	{ name: 'Projects', href: '/admin/projects' },
 	{ name: 'Users', href: '/admin/users' },
 	{ name: 'Blog', href: '/admin/blog' },
-] as const;
+];
 
 export function useNavigation(): NavigationOptions {
 	const pathname = usePathname();
-	const { data: user } = useAuthState();
+	const { user } = useAuthState();
 
-	const getNavigationItems = () => {
+	const getNavigationItems = (): NavigationItem[] => {
 		if (!user) return publicNavigation;
 
 		switch (user.role) {
@@ -55,7 +59,7 @@ export function useNavigation(): NavigationOptions {
 		}
 	};
 
-	const isActive = (href: string) => {
+	const isActive = (href: string): boolean => {
 		// Exact match for home page
 		if (href === '/') {
 			return pathname === href;
@@ -92,7 +96,7 @@ export function useNavigation(): NavigationOptions {
 }
 
 export function useNavigationGuard(path: string, guard: NavigationGuard): void {
-	const { data: user } = useAuthState();
+	const { user } = useAuthState();
 	const pathname = usePathname();
 	const router = useRouter();
 

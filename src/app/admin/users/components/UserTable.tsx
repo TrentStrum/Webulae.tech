@@ -5,11 +5,11 @@ import { useUsers } from '@/src/hooks/react-query/useUsers';
 
 import { UserRow } from './UserRow';
 
-import type { User } from '@/src/types';
+import type { BaseUser, DatabaseProfile } from '@/src/types/user.types';
 
 type Props = {
 	onResetPassword: (userEmail: string) => Promise<void>;
-	onToggleRole: (userId: string, currentRole: User['role']) => Promise<void>;
+	onToggleRole: (userId: string, currentRole: BaseUser['role']) => Promise<void>;
 	isMutating: string | null;
 };
 
@@ -33,7 +33,7 @@ export function UserTable({ onResetPassword, onToggleRole, isMutating }: Props) 
 					</TableRow>
 				</TableHeader>
 				<TableBody>
-					{usersData.map((user: User) => (
+					{usersData.map((user: DatabaseProfile) => (
 						<UserRow
 							key={user.id}
 							user={user}

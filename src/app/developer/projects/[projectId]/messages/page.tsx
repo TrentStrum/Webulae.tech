@@ -44,10 +44,10 @@ export default function ProjectMessagesPage() {
 			setSubject('');
 			setContent('');
 			refetch();
-		} catch (error: any) {
+		} catch (error: unknown) {
 			toast({
 				title: 'Error',
-				description: error.message || 'Failed to send message.',
+				description: error instanceof Error ? error.message : 'Failed to send message.',
 				variant: 'destructive',
 			});
 		}

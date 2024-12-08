@@ -14,16 +14,16 @@ export function useLoadingState(initialLoading = false): LoadingState {
 	const [isLoading, setIsLoading] = useState(initialLoading);
 	const [error, setError] = useState<Error | null>(null);
 
-	const startLoading = useCallback(() => {
+	const startLoading = useCallback((): void => {
 		setIsLoading(true);
 		setError(null);
 	}, []);
 
-	const stopLoading = useCallback(() => {
+	const stopLoading = useCallback((): void => {
 		setIsLoading(false);
 	}, []);
 
-	const resetState = useCallback(() => {
+	const resetState = useCallback((): void => {
 		setIsLoading(false);
 		setError(null);
 	}, []);

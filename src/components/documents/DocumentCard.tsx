@@ -21,15 +21,11 @@ export default function DocumentCard({ document }: Props) {
 						<div>
 							<CardTitle className="text-lg">{document.name}</CardTitle>
 							<CardDescription>
-								Uploaded by {document.profiles?.full_name || document.profiles?.username}
+								Uploaded by {document.uploaded_by?.full_name || document.uploaded_by?.username}
 							</CardDescription>
 						</div>
 					</div>
-					<Button
-						variant="outline"
-						size="sm"
-						onClick={() => window.open(document.file_url, '_blank')}
-					>
+					<Button variant="outline" size="sm" onClick={() => window.open(document.url, '_blank')}>
 						<Download className="h-4 w-4 mr-2" />
 						Download
 					</Button>

@@ -1,6 +1,13 @@
+import type { AuthUser } from './authUser.types';
+
 export type NavigationGuard = (user: AuthUser | null) => boolean;
 
-export interface NavigationOptions {
-	navigationItems: ReadonlyArray<{ readonly name: string; readonly href: string }>;
+export type NavigationItem = {
+	name: string;
+	href: string;
+};
+
+export type NavigationOptions = {
+	navigationItems: NavigationItem[];
 	isActive: (href: string) => boolean;
-}
+};

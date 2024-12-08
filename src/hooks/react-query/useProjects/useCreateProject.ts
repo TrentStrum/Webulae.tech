@@ -2,13 +2,16 @@
 
 import { useMutation } from '@tanstack/react-query';
 
-import type { ProjectDataAccess } from '@/src/contracts/DataAccess';
-import type { ProjectFormData } from '@/src/schemas/projectSchema';
+import { ProjectDataAccess } from '@/src/dataAccess/projectDataAccess';
 
-export function useCreateProject(dataAccess: ProjectDataAccess) {
+import type { Project } from '@/src/types';
+import type { UseMutationResult } from '@tanstack/react-query';
+
+type CreateProjectData = Omit<Project, 'id' | 'created_at' | 'updated_at'>;
+
+export function useCreateProject(): UseMutationResult<Project, Error, CreateProjectData> {
+	const dataAccess = new ProjectDataAccess();
 	return useMutation({
-		mutationFn: async (data: ProjectFormData) => {
-			return await dataAccess.createProject(data);
-		},
+		mutationFn: (data: CreateProjectData) => dataAccess.create(data),
 	});
 }

@@ -3,10 +3,12 @@
 import { Button } from '@/src/components/ui/button';
 import { TableRow, TableCell } from '@/src/components/ui/table';
 
+import type { BaseUser } from '@/src/types/user.types';
+
 type Props = {
-	user: User;
+	user: BaseUser;
 	onResetPassword: (userEmail: string) => Promise<void>;
-	onToggleRole: (userId: string, currentRole: User['role']) => Promise<void>;
+	onToggleRole: (userId: string, currentRole: BaseUser['role']) => Promise<void>;
 	isMutating: boolean;
 };
 

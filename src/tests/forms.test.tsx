@@ -36,10 +36,10 @@ describe('Form System', () => {
 				password: z.string().min(8),
 			});
 
-			const TestComponent = () => {
+			const TestComponent = (): JSX.Element => {
 				const { validate, errors } = useFormValidation({ schema });
 
-				const handleSubmit = () => {
+				const handleSubmit = (): void => {
 					validate({ email: 'invalid', password: '123' });
 				};
 
@@ -65,7 +65,7 @@ describe('Form System', () => {
 		it('tracks form state changes', () => {
 			const initialData = { name: '', email: '' };
 
-			const TestComponent = () => {
+			const TestComponent = (): JSX.Element => {
 				const { data, isDirty, handleChange } = useFormState(initialData);
 
 				return (

@@ -1,31 +1,24 @@
-```typescript
 'use client';
 
-import { Editor } from '@tiptap/react';
-import { Button } from '../ui/button';
-
-const colors = [
-  '#000000', '#434343', '#666666', '#999999', '#b7b7b7', '#cccccc', '#d9d9d9', '#efefef', '#f3f3f3', '#ffffff',
-  '#980000', '#ff0000', '#ff9900', '#ffff00', '#00ff00', '#00ffff', '#4a86e8', '#0000ff', '#9900ff', '#ff00ff',
-];
+import type { Editor } from '@tiptap/react';
 
 interface ColorPickerProps {
-  editor: Editor;
+	editor: Editor;
 }
 
-export function ColorPicker({ editor }: ColorPickerProps) {
-  return (
-    <div className="grid grid-cols-10 gap-1 p-2">
-      {colors.map((color) => (
-        <Button
-          key={color}
-          variant="ghost"
-          className="w-6 h-6 p-0"
-          style={{ backgroundColor: color }}
-          onClick={() => editor.chain().focus().setColor(color).run()}
-        />
-      ))}
-    </div>
-  );
+export function ColorPicker({ editor }: ColorPickerProps): JSX.Element {
+	const colors = ['#000000', '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF'];
+
+	return (
+		<div className="flex flex-wrap gap-1 p-2">
+			{colors.map((color) => (
+				<button
+					key={color}
+					className="w-6 h-6 rounded-md border"
+					style={{ backgroundColor: color }}
+					onClick={() => editor.chain().focus().setColor(color).run()}
+				/>
+			))}
+		</div>
+	);
 }
-```;

@@ -2,7 +2,9 @@ import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 
 import type { Database } from '@/src/types/database.types';
 
-export async function resetUserPassword(email: string) {
+export async function resetUserPassword(
+	email: string
+): Promise<{ success: boolean; error?: unknown }> {
 	const supabase = createClientComponentClient<Database>();
 
 	try {

@@ -2,7 +2,10 @@ import { NextResponse } from 'next/server';
 
 import { supabaseClient } from '@/src/lib/supabaseClient';
 
-export async function GET(req: Request, { params }: { params: { projectId: string } }) {
+export async function GET(
+	req: Request,
+	{ params }: { params: { projectId: string } }
+): Promise<Response> {
 	const projectId = params.projectId;
 
 	try {
@@ -15,7 +18,8 @@ export async function GET(req: Request, { params }: { params: { projectId: strin
 		if (error) throw new Error(error.message);
 
 		return NextResponse.json(data, { status: 200 });
-	} catch (error: any) {
-		return NextResponse.json({ error: error.message }, { status: 500 });
+	} catch (error: Error | unknown) {
+		const message = error instanceof Error ? error.message : 'Unknown error';
+		return NextResponse.json({ error: message }, { status: 500 });
 	}
 }

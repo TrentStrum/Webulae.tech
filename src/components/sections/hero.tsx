@@ -9,7 +9,7 @@ import { useAuth } from '@/src/contexts/AuthContext';
 import { DashboardSkeleton } from '../skeletons/dashboard-skeleton';
 
 export function Hero() {
-	const { data: user, isLoading } = useAuth();
+	const { user, isPending } = useAuth();
 	const router = useRouter();
 
 	const handleMainButtonClick = () => {
@@ -20,7 +20,7 @@ export function Hero() {
 		}
 	};
 
-	if (isLoading) {
+	if (isPending) {
 		return <DashboardSkeleton />;
 	}
 

@@ -2,9 +2,12 @@ import { useEffect, useState } from 'react';
 
 import { getUserProfile } from '../../services/authServices';
 
-import type { AuthUser } from '../../types/authUser.types';
+import type { AuthUser } from '@/src/types/authUser.types';
 
-export function useUserProfile(userId: string | null) {
+export function useUserProfile(userId: string | null): {
+	profile: Pick<AuthUser, 'role' | 'avatar_url'> | null;
+	loading: boolean;
+} {
 	const [profile, setProfile] = useState<Pick<AuthUser, 'role' | 'avatar_url'> | null>(null);
 	const [loading, setLoading] = useState(true);
 
@@ -15,10 +18,17 @@ export function useUserProfile(userId: string | null) {
 			return;
 		}
 
-		const fetchProfile = async () => {
+		const fetchProfile = async (): Promise<void> => {
 			try {
-				const profile = await getUserProfile(userId);
-				setProfile(profile);
+				const profileData = await getUserProfile(userId);
+				setProfile(
+					profileData
+						? {
+								role: profileData.role,
+								avatar_url: profileData.avatar_url || undefined,
+							}
+						: null
+				);
 			} catch (error) {
 				console.error('Error fetching user profile:', error);
 			} finally {

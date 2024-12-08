@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-import { supabase } from '@/src/lib/supabase';
+import { supabase } from '@/src/lib/supabase/server';
 
 import type { DataAccessInterface } from '@/src/contracts/DataAccess';
 import type { Database } from '@/src/types/database.types';

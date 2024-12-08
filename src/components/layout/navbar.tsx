@@ -13,12 +13,10 @@ import { useMobileMenu } from '@/src/hooks/helpers/use-mobile-menu';
 import { useNavigation } from '@/src/hooks/helpers/use-navigation';
 import { cn } from '@/src/utils/utils';
 
-import { LoadingSpinner } from '../ui/loading-spinner';
-
 export function Navbar() {
 	const { theme, setTheme } = useTheme();
 	const [isMounted, setIsMounted] = useState(false);
-	const { data: user, isLoading } = useAuth();
+	const { user } = useAuth();
 	const { isOpen, setIsOpen } = useMobileMenu();
 	const { navigationItems, isActive } = useNavigation();
 	const mobileMenuRef = useRef<HTMLDivElement>(null);
@@ -91,9 +89,7 @@ export function Navbar() {
 							<Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
 						</Button>
 
-						{isLoading ? (
-							<LoadingSpinner size="sm" className="mx-2" />
-						) : user ? (
+						{user ? (
 							<UserMenu user={user} />
 						) : (
 							<AuthButtons />
@@ -143,7 +139,7 @@ export function Navbar() {
 							{item.name}
 						</Link>
 					))}
-					{!isLoading && !user && (
+					{!user && (
 						<div className="pt-4 pb-3 border-t border-border/40">
 							<AuthButtons />
 						</div>

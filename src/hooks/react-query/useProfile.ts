@@ -5,7 +5,16 @@ import { apiClient } from '@/src/lib/apiClient';
 
 import type { Profile } from '@/src/types/user.types';
 
-export const useProfile = () => {
+interface UseProfileReturn {
+	profile: Profile | undefined;
+	isLoading: boolean;
+	error: Error | null;
+	handleInputChange: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+	hasChanges: () => boolean;
+	updateProfile: (e: FormEvent<HTMLFormElement>) => Promise<void>;
+}
+
+export const useProfile = (): UseProfileReturn => {
 	const [formData, setFormData] = useState<Partial<Profile>>({});
 	const {
 		data: profile,
@@ -32,7 +41,7 @@ export const useProfile = () => {
 		},
 	});
 
-	const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+	const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
 		const { name, value } = e.target;
 		setFormData((prev) => ({
 			...prev,
@@ -40,11 +49,11 @@ export const useProfile = () => {
 		}));
 	};
 
-	const hasChanges = () => {
+	const hasChanges = (): boolean => {
 		return Object.keys(formData).length > 0;
 	};
 
-	const updateProfile = async (e: FormEvent<HTMLFormElement>) => {
+	const updateProfile = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
 		e.preventDefault();
 		if (!hasChanges()) return;
 

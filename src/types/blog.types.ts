@@ -1,20 +1,18 @@
-export type BlogPost = {
+export interface BlogPost {
 	id: string;
 	title: string;
 	content: string;
-	content_format: string | null;
-	excerpt: string | null;
-	metadata: Json;
-	published_at: string | null;
-	created_at: string;
-	updated_at: string;
 	author_id: string;
 	slug: string;
-	profiles: {
-		username: string | null;
-		full_name: string | null;
+	created_at: string;
+	updated_at: string;
+	published_at?: string;
+	excerpt?: string;
+	profiles?: {
+		username?: string;
+		full_name?: string;
 	} | null;
-};
+}
 
 export type BlogPostFormData = {
 	title: string;

@@ -1,30 +1,19 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { useState } from 'react';
 
-import { supabase } from '@/src/lib/supabase';
+import type { DatabaseProfile } from '@/src/types/user.types';
 
-export function useAuthState() {
-	return useQuery({
-		queryKey: ['auth', 'user'],
-		queryFn: async () => {
-			const {
-				data: { session },
-				error,
-			} = await supabase.auth.getSession();
-			if (error || !session?.user?.email) return null;
+interface AuthState {
+	user: DatabaseProfile | null;
+	loading: boolean;
+	setUser: (user: DatabaseProfile | null) => void;
+	setLoading: (loading: boolean) => void;
+}
 
-			const { data: profile, error: profileError } = await supabase
-				.from('profiles')
-				.select('*')
-				.eq('id', session.user.id)
-				.single();
+export function useAuthState(): AuthState {
+	const [user, setUser] = useState<DatabaseProfile | null>(null);
+	const [loading, setLoading] = useState(true);
 
-			if (profileError) throw profileError;
-			return {
-				...profile,
-				email: session.user.email,
-			};
-		},
-	});
+	return { user, loading, setUser, setLoading };
 }

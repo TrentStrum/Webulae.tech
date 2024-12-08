@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 
-import { LoadingSpinner } from '@/src/components/ui/loading-spinner';
 import { useAuth } from '@/src/contexts/AuthContext';
 import { useMobileMenu } from '@/src/hooks/helpers/use-mobile-menu';
 import { useNavigation } from '@/src/hooks/helpers/use-navigation';
@@ -15,7 +14,7 @@ import { NavbarMobileMenu } from './navbar-mobile-menu';
 
 export function Navbar() {
 	const [isMounted, setIsMounted] = useState(false);
-	const { data: user, isLoading } = useAuth();
+	const { user } = useAuth();
 	const { isOpen, setIsOpen } = useMobileMenu();
 	const { navigationItems } = useNavigation();
 
@@ -34,10 +33,10 @@ export function Navbar() {
 						</div>
 
 						<div className="flex items-center gap-2">
-							{isLoading ? (
-								<LoadingSpinner size="sm" className="mx-2" />
-							) : (
+							{user ? (
 								<NavbarActions user={user} isMounted={isMounted} />
+							) : (
+								<NavbarActions isMounted={isMounted} />
 							)}
 							<NavbarMobileMenu isOpen={isOpen} setIsOpen={setIsOpen} />
 						</div>

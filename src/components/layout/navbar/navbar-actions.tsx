@@ -10,7 +10,7 @@ import { Button } from '@/src/components/ui/button';
 import type { AuthUser } from '@/src/types/authUser.types';
 
 interface NavbarActionsProps {
-	user: AuthUser | null;
+	user?: AuthUser | null;
 	isMounted: boolean;
 }
 

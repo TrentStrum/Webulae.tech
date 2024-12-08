@@ -3,24 +3,46 @@
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 
-import { useAuth } from '@/src/contexts/AuthContext';
-import { supabase } from '@/src/lib/supabase';
+import { apiClient } from '@/src/lib/apiClient';
 
-export function useDashboardStats() {
-	const { data: user, isLoading: isLoadingAuth } = useAuth();
+import { useAuthState } from '../auth/useAuthState';
+
+type Project = {
+	status: string;
+};
+
+type Profile = {
+	role: string;
+};
+
+type ApiResponse<T> = {
+	data: T[] | null;
+	error: Error | null;
+};
+
+export function useDashboardStats(): {
+	projectStats: { total: number; active: number; completed: number };
+	userStats: { total: number; clients: number; developers: number };
+	isLoading: boolean;
+	error: Error | null;
+} {
+	const { user, loading: isLoadingAuth } = useAuthState();
 	const router = useRouter();
 
 	const { data, isLoading, error } = useQuery({
 		queryKey: ['dashboard', 'stats'],
-		queryFn: async () => {
+		queryFn: async (): Promise<{
+			projectStats: { total: number; active: number; completed: number };
+			userStats: { total: number; clients: number; developers: number };
+		}> => {
 			if (!user || user.role !== 'admin') {
 				router.push('/');
 				throw new Error('Unauthorized');
 			}
 
 			const [projectsResult, usersResult] = await Promise.all([
-				supabase.from('projects').select('status'),
-				supabase.from('profiles').select('role'),
+				apiClient.get<ApiResponse<Project>>('/projects'),
+				apiClient.get<ApiResponse<Profile>>('/profiles'),
 			]);
 
 			if (projectsResult.error) throw projectsResult.error;

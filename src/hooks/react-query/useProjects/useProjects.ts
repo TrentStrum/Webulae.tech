@@ -3,9 +3,10 @@ import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '@/src/lib/apiClient';
 
 import type { Project } from '@/src/types/project.types';
+import type { UseQueryResult } from '@tanstack/react-query';
 
-export const useProjects = () =>
-	useQuery<Project[]>({
+export const useProjects = (): UseQueryResult<Project[], Error> =>
+	useQuery({
 		queryKey: ['projects'],
 		queryFn: async () => {
 			const response = await apiClient.get<Project[]>('/admin/projects');

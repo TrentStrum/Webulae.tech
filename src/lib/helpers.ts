@@ -1,3 +1,9 @@
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+
+import type { Database } from '../types/database.types';
+
+let instance: ReturnType<typeof createClientComponentClient<Database>> | null = null;
+
 export async function withTimeout<T>(promise: Promise<T>, timeoutMs: number = 5000): Promise<T> {
 	const timeout = new Promise<never>((_, reject) => {
 		setTimeout(() => {
@@ -6,4 +12,13 @@ export async function withTimeout<T>(promise: Promise<T>, timeoutMs: number = 50
 	});
 
 	return Promise.race([promise, timeout]);
+}
+
+export function getSupabaseClient(): ReturnType<
+	typeof createClientComponentClient<Database>
+> | null {
+	if (!instance) {
+		instance = createClientComponentClient<Database>();
+	}
+	return instance;
 }

@@ -62,7 +62,7 @@ export default function MessageForm({ members, projectId }: Props) {
 					<SelectContent>
 						{members.map((member) => (
 							<SelectItem key={member.userId} value={member.userId}>
-								{member.profiles.full_name || member.profiles.username} ({member.role})
+								{member.profiles.fullName || member.profiles.username} ({member.role})
 							</SelectItem>
 						))}
 					</SelectContent>

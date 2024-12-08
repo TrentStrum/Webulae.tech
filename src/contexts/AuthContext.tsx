@@ -1,30 +1,55 @@
 'use client';
 
 import { useQueryClient } from '@tanstack/react-query';
-import { createContext, useContext, useEffect } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 
-import { useAuthState } from '@/src/hooks/auth/useAuthState';
-import { setupAuthListener } from '@/src/lib/supabase';
+import { apiClient } from '../lib/apiClient';
 
-import type { User } from '@/src/types/user.types';
+import type { AuthState } from '../types/auth.types';
+import type { AuthUser } from '../types/user.types';
+import type { ReactNode } from 'react';
 
-const AuthContext = createContext<ReturnType<typeof useAuthState> | undefined>(undefined);
+export const AuthContext = createContext<AuthState<AuthUser> | undefined>(undefined);
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-	const authState = useAuthState();
+export function AuthProvider({ children }: { children: ReactNode }): JSX.Element {
 	const queryClient = useQueryClient();
+	const [authState, setAuthState] = useState<AuthState<AuthUser>>({
+		user: null,
+		isAuthenticated: false,
+		isPending: true,
+	});
 
 	useEffect(() => {
-		return setupAuthListener((event, session) => {
-			const user = session?.user as User | null;
-			queryClient.setQueryData(['auth', 'user'], user);
+		const { subscription } = apiClient.auth.onAuthStateChange(async (_event, session) => {
+			if (session?.user) {
+				const profile = await apiClient.auth.getProfile<AuthUser>();
+				const newState = {
+					user: profile.data,
+					isAuthenticated: true,
+					isPending: false,
+				};
+				setAuthState(newState);
+				queryClient.setQueryData(['auth', 'user'], profile.data);
+			} else {
+				const newState = {
+					user: null,
+					isAuthenticated: false,
+					isPending: false,
+				};
+				setAuthState(newState);
+				queryClient.setQueryData(['auth', 'user'], null);
+			}
 		});
+
+		return () => {
+			subscription.unsubscribe();
+		};
 	}, [queryClient]);
 
 	return <AuthContext.Provider value={authState}>{children}</AuthContext.Provider>;
 }
 
-export function useAuth() {
+export function useAuth(): AuthState<AuthUser> {
 	const context = useContext(AuthContext);
 	if (context === undefined) {
 		throw new Error('useAuth must be used within an AuthProvider');

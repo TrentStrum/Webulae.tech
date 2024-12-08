@@ -31,7 +31,7 @@ describe('Navigation Guard', () => {
 			isLoading: false,
 		});
 
-		const TestComponent = () => {
+		const TestComponent = (): JSX.Element => {
 			useNavigationGuard({ requireAuth: true });
 			return <div>Protected Page</div>;
 		};
@@ -49,7 +49,7 @@ describe('Navigation Guard', () => {
 			isLoading: false,
 		});
 
-		const TestComponent = () => {
+		const TestComponent = (): JSX.Element => {
 			useNavigationGuard({ allowedRoles: ['admin'] });
 			return <div>Admin Page</div>;
 		};
@@ -67,7 +67,7 @@ describe('Navigation Guard', () => {
 			isLoading: false,
 		});
 
-		const TestComponent = () => {
+		const TestComponent = (): JSX.Element => {
 			useNavigationGuard({ allowedRoles: ['admin'] });
 			return <div>Admin Page</div>;
 		};

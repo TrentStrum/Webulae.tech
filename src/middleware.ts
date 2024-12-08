@@ -30,7 +30,7 @@ const DEFAULT_ROLE_REDIRECTS = {
 	client: '/client/dashboard',
 } as const;
 
-export async function middleware(req: NextRequest) {
+export async function middleware(req: NextRequest): Promise<NextResponse> {
 	// Create a response object that we can modify
 	const res = NextResponse.next();
 

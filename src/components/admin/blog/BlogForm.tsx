@@ -4,41 +4,38 @@ import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
-import { EnhancedRichTextEditor } from '@/src/components/editor/enhanced-rich-text-editor';
 import { Button } from '@/src/components/ui/button';
 import { Input } from '@/src/components/ui/input';
 import { useToast } from '@/src/hooks/helpers/use-toast';
-import {
-	useAdminBlogPost,
-	useCreateBlogPost,
-	useUpdateBlogPost,
-} from '@/src/hooks/react-query/useBlog';
+import { useBlogPost, useCreateBlogPost, useUpdateBlogPost } from '@/src/hooks/react-query/useBlog';
+
+import { EnhancedRichTextEditor } from '../../editor/enhanced-rich-text-editor';
 
 import type { BlogPostFormData } from '@/src/types/blog.types';
 
 interface BlogFormProps {
 	action: 'create' | 'edit';
-	postId?: string; // Required for editing
+	postId?: string;
 }
 
-export function BlogForm({ action, postId }: BlogFormProps) {
+export function BlogForm({ action, postId }: BlogFormProps): JSX.Element {
 	const router = useRouter();
+	const { toast } = useToast();
 	const { register, handleSubmit, setValue, watch } = useForm<BlogPostFormData>({
 		defaultValues: {
 			title: '',
 			content: '',
 		},
 	});
-	const { toast } = useToast();
-	const content = watch('content'); // Watch the `content` field for changes
 
-	// Fetch the blog post when editing
-	const { data: blogPost, isPending: isFetchingPost } = useAdminBlogPost(
-		postId || '',
-		action === 'edit'
-	);
+	const content = watch('content');
 
-	// Prefill the form when editing
+	// Queries and Mutations
+	const { data: blogPost, isPending: isFetchingPost } = useBlogPost(postId || '');
+	const createBlogPost = useCreateBlogPost();
+	const updateBlogPost = useUpdateBlogPost(postId || '');
+
+	// Prefill form when editing
 	useEffect(() => {
 		if (action === 'edit' && blogPost) {
 			setValue('title', blogPost.title);
@@ -46,84 +43,37 @@ export function BlogForm({ action, postId }: BlogFormProps) {
 		}
 	}, [action, blogPost, setValue]);
 
-	// Hook for creating a new blog post
-	const createBlogPost = useCreateBlogPost();
-	console.log('createBlogPost mutation state:', {
-		isPending: createBlogPost.isPending,
-		isError: createBlogPost.isError,
-	});
-
-	// Hook for updating an existing blog post
-	const updateBlogPost = useUpdateBlogPost(postId || '');
-	console.log('updateBlogPost mutation state:', {
-		isPending: updateBlogPost.isPending,
-		isError: updateBlogPost.isError,
-	});
-
-	const onSubmit = (data: BlogPostFormData) => {
-		console.log('Starting onSubmit with action:', action); // Debug log
-
-		if (action === 'create') {
-			console.log('Triggering create mutation');
-			createBlogPost.mutate(data, {
-				onSuccess: () => {
-					console.log('Create successful');
-					toast({
-						title: 'Post Created',
-						description: 'The blog post was created successfully.',
-					});
-					router.push('/admin/blog');
-				},
-				onError: (error: any) => {
-					console.error('Create error:', error);
-					toast({
-						title: 'Error',
-						description: error.message || 'Failed to create the blog post.',
-						variant: 'destructive',
-					});
-				},
-			});
-		} else if (action === 'edit' && postId) {
-			console.log('Triggering update mutation for postId:', postId);
-			updateBlogPost.mutate(data, {
-				onSuccess: () => {
-					console.log('Update successful');
-					toast({
-						title: 'Changes Saved',
-						description: 'The blog post was updated successfully.',
-					});
-					router.push('/admin/blog');
-				},
-				onError: (error: any) => {
-					console.error('Update error details:', {
-						error,
-						message: error.message,
-						response: error.response,
-					});
-					toast({
-						title: 'Error',
-						description: error.message || 'Failed to update the blog post.',
-						variant: 'destructive',
-					});
-				},
+	const onSubmit = async (data: BlogPostFormData) => {
+		try {
+			if (action === 'create') {
+				await createBlogPost.mutateAsync(data);
+				toast({
+					title: 'Post Created',
+					description: 'The blog post was created successfully.',
+				});
+			} else if (action === 'edit' && postId) {
+				await updateBlogPost.mutateAsync(data);
+				toast({
+					title: 'Changes Saved',
+					description: 'The blog post was updated successfully.',
+				});
+			}
+			router.push('/admin/blog');
+		} catch (error: unknown) {
+			toast({
+				title: 'Error',
+				description: error instanceof Error ? error.message : 'Failed to save the blog post.',
+				variant: 'destructive',
 			});
 		}
 	};
 
-	if (isFetchingPost && action === 'edit') return <p>Loading post...</p>;
+	if (isFetchingPost && action === 'edit') {
+		return <p>Loading post...</p>;
+	}
 
 	return (
-		<form
-			onSubmit={handleSubmit((data) => {
-				console.log('Form handleSubmit triggered with data:', data); // Debug log
-				try {
-					onSubmit(data);
-				} catch (error) {
-					console.error('Error in onSubmit:', error); // Debug log
-				}
-			})}
-			className="space-y-6"
-		>
+		<form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
 			<div className="space-y-2">
 				<label htmlFor="title">Title</label>
 				<Input id="title" {...register('title')} required />
@@ -131,7 +81,7 @@ export function BlogForm({ action, postId }: BlogFormProps) {
 			<div className="space-y-2">
 				<label htmlFor="content">Content</label>
 				<EnhancedRichTextEditor
-					content={action === 'edit' ? blogPost?.content || '' : content || ''}
+					content={action === 'edit' ? blogPost?.content || '' : content}
 					onChange={(value) => setValue('content', value)}
 					placeholder="Write your blog content here..."
 				/>

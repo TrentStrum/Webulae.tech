@@ -18,6 +18,7 @@ export function ProjectForm({ onSubmit, isSubmitting }: ProjectFormProps): JSX.E
 		onSubmit({
 			name: formData.get('name') as string,
 			description: formData.get('description') as string,
+			status: 'planning',
 		});
 	};
 

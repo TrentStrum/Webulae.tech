@@ -3,8 +3,9 @@ import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '@/src/lib/apiClient';
 
 import type { TimelineItem } from '@/src/types/timeline.types';
+import type { UseQueryResult } from '@tanstack/react-query';
 
-export const useProjectTimeline = (projectId: string) =>
+export const useProjectTimeline = (projectId: string): UseQueryResult<TimelineItem[], Error> =>
 	useQuery({
 		queryKey: ['projectTimeline', projectId],
 		queryFn: async () => {

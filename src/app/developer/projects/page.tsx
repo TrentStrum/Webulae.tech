@@ -7,13 +7,7 @@ import { Button } from '@/src/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card';
 import { apiClient } from '@/src/lib/apiClient';
 
-interface Project {
-	id: string;
-	name: string;
-	description: string;
-	status: string;
-}
-
+import type { Project } from '@/src/types';
 export default function ProjectsPage() {
 	const {
 		data: projects,
@@ -41,14 +35,14 @@ export default function ProjectsPage() {
 
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 				{projects?.map((project) => (
-					<Card key={project.id}>
+					<Card key={project.projectId}>
 						<CardHeader>
 							<CardTitle>{project.name}</CardTitle>
 						</CardHeader>
 						<CardContent>
 							<p className="text-muted-foreground mb-4">{project.description}</p>
 							<p className="text-sm font-semibold capitalize">Status: {project.status}</p>
-							<Link href={`/projects/${project.id}`}>
+							<Link href={`/projects/${project.projectId}`}>
 								<Button variant="outline" className="mt-4">
 									View Project
 								</Button>

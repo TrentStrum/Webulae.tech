@@ -1,10 +1,10 @@
 import { AuthDataAccess } from '@/src/dataAccess/authDataAccess';
 import { sessionUtils } from '@/src/lib/auth/session';
 import { tokenUtils } from '@/src/lib/auth/token';
-import { supabase } from '@/src/lib/supabase';
+import { supabaseClient } from '@/src/lib/supabaseClient';
 import { logger } from '@/src/utils/logger';
 
-import type { AuthUser } from '@/src/types/user.types';
+import type { AuthUser } from '@/src/types/authUser.types';
 
 export const authService = {
 	// Session Management
@@ -32,7 +32,7 @@ export const authService = {
 	login: async (email: string, password: string) => {
 		logger.info('Attempting login');
 		try {
-			const response = await supabase?.auth.signInWithPassword({ email, password });
+			const response = await supabaseClient.auth.signInWithPassword({ email, password });
 			if (!response) throw new Error('No response from auth service');
 
 			if (response.error) {
@@ -57,7 +57,7 @@ export const authService = {
 	logout: async () => {
 		logger.info('Attempting logout');
 		try {
-			const response = await supabase?.auth.signOut();
+			const response = await supabaseClient.auth.signOut();
 			if (!response) throw new Error('No response from auth service');
 			if (response.error) throw response.error;
 
@@ -74,7 +74,7 @@ export const authService = {
 	// Password Management
 	resetPassword: async (email: string) => {
 		try {
-			const response = await supabase?.auth.resetPasswordForEmail(email, {
+			const response = await supabaseClient.auth.resetPasswordForEmail(email, {
 				redirectTo: `${window.location.origin}/auth/reset-password`,
 			});
 			if (!response) throw new Error('No response from auth service');
@@ -88,7 +88,7 @@ export const authService = {
 
 	updatePassword: async (newPassword: string) => {
 		try {
-			const response = await supabase?.auth.updateUser({
+			const response = await supabaseClient.auth.updateUser({
 				password: newPassword,
 			});
 			if (!response) throw new Error('No response from auth service');
@@ -103,7 +103,7 @@ export const authService = {
 	// Session Refresh
 	refreshSession: async () => {
 		try {
-			const response = await supabase?.auth.refreshSession();
+			const response = await supabaseClient.auth.refreshSession();
 			if (!response) throw new Error('No response from auth service');
 			const { data, error } = response;
 			if (error) throw error;

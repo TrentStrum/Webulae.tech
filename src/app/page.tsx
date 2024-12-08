@@ -10,10 +10,10 @@ import ClientDashboard from './client/dashboard/page';
 import DeveloperDashboard from './developer/dashboard/page';
 
 export default function Home() {
-	const { data: session } = useAuth();
+	const { user } = useAuth();
 
-	if (session) {
-		switch (session.role) {
+	if (user) {
+		switch (user.role) {
 			case 'admin':
 				return (
 					<main>

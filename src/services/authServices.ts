@@ -1,30 +1,36 @@
 import { supabaseClient } from '../lib/supabaseClient';
 
-import type { AuthUser } from '../types/authUser.types';
+import type { AuthUser } from '../types/user.types';
+import type { Session } from '@supabase/supabase-js';
 
 // Get the current session
-export async function getSession() {
+export async function getSession(): Promise<Session | null> {
 	const { data, error } = await supabaseClient.auth.getSession();
 	if (error) throw new Error(error.message);
 	return data.session;
 }
 
+type ProfileResponse = {
+	role: AuthUser['role'];
+	avatar_url: string | null;
+};
+
 // Fetch user profile from Supabase
-export async function getUserProfile(
-	userId: string
-): Promise<Pick<AuthUser, 'role' | 'avatar_url'> | null> {
-	const { data: profile, error } = await supabaseClient
+export async function getUserProfile(userId: string): Promise<ProfileResponse | null> {
+	const { data, error } = await supabaseClient
 		.from('profiles')
 		.select('role, avatar_url')
 		.eq('id', userId)
-		.single();
+		.single<ProfileResponse>();
 
-	if (error) throw new Error(error.message);
-	if (!profile?.role) return null;
-	return profile as Pick<AuthUser, 'role' | 'avatar_url'>;
+	if (error || !data) return null;
+	return data;
 }
 
 // Subscribe to auth state changes
-export function onAuthStateChange(callback: (session: any) => void) {
-	return supabaseClient.auth.onAuthStateChange((_event, session) => callback(session));
+export function onAuthStateChange(callback: (session: Session | null) => void): () => void {
+	const {
+		data: { subscription },
+	} = supabaseClient.auth.onAuthStateChange((_event, session) => callback(session));
+	return () => subscription.unsubscribe();
 }

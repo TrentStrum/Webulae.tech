@@ -1,21 +1,29 @@
 import { supabaseClient } from '../lib/supabaseClient';
 
+interface ProjectDocument {
+	id: string;
+	name: string;
+	category: string;
+	file_url: string;
+	file_type: string;
+	project_id: string;
+	uploader_id: string;
+	created_at: string;
+	profiles?: { username: string; full_name: string };
+}
+
 export const DocumentsDataAccess = {
-	async getAll() {
+	async getAll(): Promise<ProjectDocument[]> {
 		const { data, error } = await supabaseClient
 			.from('project_documents')
-			.select(
-				`
-      *,
-      profiles (username, full_name)
-    `
-			)
-			.order('created_at', { ascending: false });
+			.select('*, profiles(username, full_name)')
+			.order('created_at', { ascending: false })
+			.returns<ProjectDocument[]>();
 
 		if (error) throw new Error(error.message);
-		return data;
+		return data ?? [];
 	},
-	async upload({ file, category }: { file: File; category: string }) {
+	async upload({ file, category }: { file: File; category: string }): Promise<ProjectDocument> {
 		const fileExt = file.name.split('.').pop();
 		const fileName = `${Math.random()}.${fileExt}`;
 		const filePath = `${category}/${fileName}`;

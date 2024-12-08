@@ -1,26 +1,25 @@
 'use client';
 
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, type UseMutationResult } from '@tanstack/react-query';
 
 import { useToast } from '@/src/hooks';
-import { supabase } from '@/src/lib/supabase';
+import { apiClient } from '@/src/lib/apiClient';
 
 interface ResetPasswordData {
 	email: string;
 }
 
-export const useResetPassword = () => {
+export const useResetPassword = (): UseMutationResult<void, Error, ResetPasswordData> => {
 	const { toast } = useToast();
 
-	const { mutateAsync, isPending } = useMutation({
+	return useMutation({
 		mutationFn: async (data: ResetPasswordData): Promise<void> => {
-			if (!supabase) throw new Error('Supabase client not initialized');
+			if (!apiClient) throw new Error('API client not initialized');
 
-			const { error } = await supabase.auth.resetPasswordForEmail(data.email, {
+			await apiClient.post('/auth/reset-password', {
+				email: data.email,
 				redirectTo: `${window.location.origin}/auth/update-password`,
 			});
-
-			if (error) throw error;
 		},
 		onSuccess: (): void => {
 			toast({
@@ -36,9 +35,4 @@ export const useResetPassword = () => {
 			});
 		},
 	});
-
-	return {
-		resetPassword: (data: ResetPasswordData) => mutateAsync(data),
-		isLoading: isPending,
-	};
 };

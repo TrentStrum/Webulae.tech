@@ -8,11 +8,11 @@ type ErrorWithMessage = {
 	code?: string;
 };
 
-export function useErrorHandler() {
+export function useErrorHandler(): { handleError: (error: unknown) => void } {
 	const { toast } = useToast();
 	const router = useRouter();
 
-	const handleError = (error: unknown) => {
+	const handleError = (error: unknown): void => {
 		console.error('Error caught by handler:', error);
 
 		const errorMessage = getErrorMessage(error);

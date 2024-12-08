@@ -4,10 +4,10 @@ import { Input } from '@/src/components/ui/input';
 import { Label } from '@/src/components/ui/label';
 import { Textarea } from '@/src/components/ui/textarea';
 
-import type { Profile } from '@/src/types';
+import type { DatabaseProfile } from '@/src/types/user.types';
 
 type Props = {
-	profile: Profile;
+	profile: DatabaseProfile;
 	hasChanges: () => boolean;
 	onInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
 	onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;

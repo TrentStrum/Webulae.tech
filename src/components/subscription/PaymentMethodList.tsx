@@ -14,7 +14,7 @@ interface Props {
 }
 
 export const PaymentMethodList = ({ paymentMethods }: Props): JSX.Element => {
-	const { removePaymentMethod, setDefaultPaymentMethod } = useSubscriptionPayment('');
+	const { removePaymentMethod, setDefaultPaymentMethod } = useSubscriptionPayment();
 
 	return (
 		<div className="space-y-4">
@@ -24,10 +24,10 @@ export const PaymentMethodList = ({ paymentMethods }: Props): JSX.Element => {
 						<CreditCard className="h-6 w-6 text-muted-foreground" />
 						<div>
 							<p className="font-medium">
-								{method.card.brand.toUpperCase()} •••• {method.card.last4}
+								{method.brand.toUpperCase()} •••• {method.last4}
 							</p>
 							<p className="text-sm text-muted-foreground">
-								Expires {method.card.expMonth}/{method.card.expYear}
+								Expires {method.expiryMonth}/{method.expiryYear}
 							</p>
 						</div>
 					</div>

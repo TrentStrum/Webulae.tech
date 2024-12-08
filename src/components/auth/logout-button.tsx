@@ -3,35 +3,24 @@
 import { LogOut } from 'lucide-react';
 import { forwardRef } from 'react';
 
-import { useLogoutMutation } from '@/src/hooks/auth/useAuthMutations';
+import { useLogout } from '@/src/hooks/auth/useLogout';
 
 import { Button } from '../ui/button';
 
 const LogoutButton = forwardRef<HTMLButtonElement, React.ComponentPropsWithoutRef<'button'>>(
 	function LogoutButton(props, ref) {
-		const { mutate: logout, isPending } = useLogoutMutation();
-		console.log('LogoutButton: Component rendered');
+		const { logout, isLoading } = useLogout();
 
 		const handleLogout = (e: React.MouseEvent) => {
-			console.log('LogoutButton: Click detected - before preventDefault');
 			e.preventDefault();
-			console.log('LogoutButton: Click detected - after preventDefault');
-
-			logout(undefined, {
-				onSuccess: () => {
-					console.log('LogoutButton: Logout successful');
-				},
-				onError: (error) => {
-					console.error('Logout error:', error);
-				},
-			});
+			logout();
 		};
 
 		return (
 			<Button
 				variant="ghost"
 				onClick={handleLogout}
-				disabled={isPending}
+				disabled={isLoading}
 				className="w-full justify-start"
 				ref={ref}
 				{...props}

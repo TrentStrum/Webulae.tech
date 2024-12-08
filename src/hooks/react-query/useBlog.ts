@@ -2,116 +2,48 @@
 
 import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 
-import { supabase } from '@/src/lib/supabase';
+import { apiClient } from '@/src/lib/apiClient';
 
 import type { BlogPost, BlogPostFormData } from '@/src/types/blog.types';
 import type {
 	UseInfiniteQueryResult,
 	UseQueryResult,
 	UseMutationResult,
+	UseMutationOptions,
 } from '@tanstack/react-query';
-
-const ITEMS_PER_PAGE = 10;
 
 interface UseBlogPostsParams {
 	searchTerm?: string;
 	sortBy?: string;
 }
 
-interface BlogPostsResponse {
-	pages: Array<{
-		data: BlogPost[];
-		nextCursor?: number;
-	}>;
-	pageParams: number[];
-}
-
 export function useBlogPosts({
 	searchTerm,
 	sortBy,
-}: UseBlogPostsParams): UseInfiniteQueryResult<BlogPostsResponse> {
+}: UseBlogPostsParams): UseInfiniteQueryResult<BlogPost[], Error> {
 	return useInfiniteQuery({
-		queryKey: ['blog-posts', searchTerm, sortBy] as const,
+		queryKey: ['blog-posts', searchTerm, sortBy],
 		initialPageParam: 0,
 		queryFn: async ({ pageParam }) => {
-			if (!supabase) throw new Error('Supabase client not initialized');
-			let query = supabase
-				.from('blog_posts')
-				.select(
-					`
-					*,
-					profiles (
-						username,
-						full_name
-					)
-				`
-				)
-				.not('published_at', 'is', null);
-
-			if (searchTerm) {
-				query = query.or(`title.ilike.%${searchTerm}%,content.ilike.%${searchTerm}%`);
-			}
-
-			switch (sortBy) {
-				case 'oldest':
-					query = query.order('published_at', { ascending: true });
-					break;
-				case 'a-z':
-					query = query.order('title', { ascending: true });
-					break;
-				case 'z-a':
-					query = query.order('title', { ascending: false });
-					break;
-				case 'newest':
-				default:
-					query = query.order('published_at', { ascending: false });
-			}
-
-			const { data, error } = await query.range(
-				pageParam * ITEMS_PER_PAGE,
-				(pageParam + 1) * ITEMS_PER_PAGE - 1
-			);
-
-			if (error) throw error;
-			return {
-				data: data as BlogPost[],
-				nextCursor: data.length === ITEMS_PER_PAGE ? (pageParam as number) + 1 : undefined,
-			};
+			const response = await apiClient.get<BlogPost[]>('/blog', {
+				params: {
+					page: pageParam,
+					search: searchTerm,
+					sort: sortBy,
+				},
+			});
+			return response;
 		},
-		getNextPageParam: (lastPage) => lastPage.nextCursor,
+		getNextPageParam: (lastPage, pages) => (lastPage.length > 0 ? pages.length : undefined),
 	});
 }
 
-export function useBlogPost(slug: string): UseQueryResult<BlogPost> {
+export function useBlogPost(slug: string): UseQueryResult<BlogPost, Error> {
 	return useQuery({
 		queryKey: ['blog', 'post', slug],
 		queryFn: async () => {
-			if (!supabase) throw new Error('Supabase client not initialized');
-			const { data, error } = await supabase
-				.from('blog_posts')
-				.select(
-					`
-					*,
-					profiles (
-						username,
-						full_name
-					)
-				`
-				)
-				.eq('slug', slug)
-				.single();
-
-			if (error) throw error;
-
-			// Record view
-			if (data?.id) {
-				await supabase.from('blog_post_views').insert({
-					post_id: data.id,
-					viewer_id: (await supabase.auth.getSession()).data.session?.user?.id || null,
-				});
-			}
-
-			return data as BlogPost;
+			const response = await apiClient.get<BlogPost>(`/blog/${slug}`);
+			return response;
 		},
 		enabled: !!slug,
 	});
@@ -122,27 +54,8 @@ export function useCreateBlogPost(): UseMutationResult<BlogPost, Error, BlogPost
 
 	return useMutation({
 		mutationFn: async (data: BlogPostFormData) => {
-			if (!supabase) throw new Error('Supabase client not initialized');
-			const {
-				data: { session },
-			} = await supabase.auth.getSession();
-			if (!session?.user?.id) throw new Error('User not authenticated');
-
-			const { data: post, error } = await supabase
-				.from('blog_posts')
-				.insert([
-					{
-						...data,
-						author_id: session.user.id,
-						slug: data.title.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-						published_at: new Date().toISOString(),
-					},
-				])
-				.select()
-				.single();
-
-			if (error) throw error;
-			return post as BlogPost;
+			const response = await apiClient.post<BlogPost>('/blog', data);
+			return response;
 		},
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ['blog', 'posts'] });
@@ -150,21 +63,43 @@ export function useCreateBlogPost(): UseMutationResult<BlogPost, Error, BlogPost
 	});
 }
 
-export function useUpdateBlogPost(postId: string) {
+export function useUpdateBlogPost(
+	postId: string
+): UseMutationResult<BlogPost, Error, BlogPostFormData> {
 	return useMutation({
-		mutationFn: async (data: BlogPostData) => {
-			const response = await apiClient.put(`/api/admin/blog/${postId}`, data);
-			return response.data;
+		mutationFn: async (data: BlogPostFormData) => {
+			const response = await apiClient.put<BlogPost>(`/api/admin/blog/${postId}`, data);
+			return response;
 		},
 	});
 }
 
-export function useDeleteBlogPost() {
+export function useDeleteBlogPost(
+	options?: UseMutationOptions<void, Error, string>
+): UseMutationResult<void, Error, string> {
 	return useMutation({
-		mutationFn: async (id: string) => {
-			if (!supabase) throw new Error('Supabase client not initialized');
-			const { error } = await supabase.from('blog_posts').delete().eq('id', id);
-			if (error) throw error;
+		mutationFn: async (id: string): Promise<void> => {
+			await apiClient.delete(`/api/admin/blog/${id}`);
 		},
+		...options,
+	});
+}
+
+export function useBlogPostWithViews(slug: string): UseQueryResult<BlogPost, Error> {
+	return useQuery({
+		queryKey: ['blog', 'post', slug],
+		queryFn: async () => {
+			const response = await apiClient.get<BlogPost>(`/api/blog/${slug}`);
+
+			// Increment view count if post exists
+			if (response?.id) {
+				await apiClient.post('/api/blog/views', {
+					post_id: response.id,
+				});
+			}
+
+			return response;
+		},
+		enabled: !!slug,
 	});
 }

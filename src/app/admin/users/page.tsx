@@ -12,7 +12,7 @@ import type { User } from '@/src/types/user.types';
 
 export default function AdminUsersPage() {
 	const { data: users, isLoading } = useUsers();
-	const { resetPassword } = useResetPassword();
+	const { mutate: resetPassword } = useResetPassword();
 	const { mutate: toggleRole } = useToggleUserRole();
 	const { toast } = useToast();
 	const [activeUserId, setActiveUserId] = useState<string | null>(null);

@@ -14,20 +14,20 @@ interface ProfileResponse {
 	};
 }
 
-export const useRoleAccess = ({ allowedRoles, onAccessDenied }: UseRoleAccessProps) => {
+export const useRoleAccess = ({ allowedRoles, onAccessDenied }: UseRoleAccessProps): void => {
 	const router = useRouter();
 
 	useEffect(() => {
-		const checkAccess = async () => {
+		const checkAccess = async (): Promise<void> => {
 			try {
-				const { profile } = await apiClient.get<ProfileResponse>('/auth/profile'); // Fetch the user profile
+				const { profile } = await apiClient.get<ProfileResponse>('/auth/profile');
 
 				if (!profile || !allowedRoles.includes(profile.role)) {
 					onAccessDenied?.();
-					router.push('/'); // Redirect to home if access is denied
+					router.push('/');
 				}
 			} catch {
-				router.push('/auth/login'); // Redirect to login if there's an error
+				router.push('/auth/login');
 			}
 		};
 

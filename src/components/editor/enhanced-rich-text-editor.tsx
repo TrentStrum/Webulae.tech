@@ -1,16 +1,16 @@
 'use client';
 
 import { Toolbar } from '@radix-ui/react-toolbar';
-import Color from '@tiptap/extension-color';
-import Highlight from '@tiptap/extension-highlight';
-import Image from '@tiptap/extension-image';
-import Link from '@tiptap/extension-link';
-import Placeholder from '@tiptap/extension-placeholder';
-import TextAlign from '@tiptap/extension-text-align';
-import TextStyle from '@tiptap/extension-text-style';
-import Underline from '@tiptap/extension-underline';
+import { Color } from '@tiptap/extension-color';
+import { Highlight } from '@tiptap/extension-highlight';
+import { Image } from '@tiptap/extension-image';
+import { Link } from '@tiptap/extension-link';
+import { Placeholder } from '@tiptap/extension-placeholder';
+import { TextAlign } from '@tiptap/extension-text-align';
+import { TextStyle } from '@tiptap/extension-text-style';
+import { Underline } from '@tiptap/extension-underline';
 import { useEditor, EditorContent } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
+import { StarterKit } from '@tiptap/starter-kit';
 
 import { Button } from '../ui/button';
 

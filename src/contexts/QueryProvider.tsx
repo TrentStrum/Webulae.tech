@@ -6,7 +6,7 @@ import { useState, type ReactNode } from 'react';
 
 import { ErrorBoundary } from '@/src/components/error/error-boundary';
 
-export function QueryProvider({ children }: { children: ReactNode }) {
+export function QueryProvider({ children }: { children: ReactNode }): JSX.Element {
 	const [queryClient] = useState(
 		() =>
 			new QueryClient({

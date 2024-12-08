@@ -1,11 +1,13 @@
 'use client';
 
-import fabric from 'fabric/fabric-impl';
+import { Canvas, Circle as FabricCircle, Image, IText, Rect } from 'fabric/fabric-impl';
 import { Circle, MousePointer, Pencil, Square, Type, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
 import { Button } from '../ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '../ui/dialog';
+
+import type { TPointerEventInfo, TPointerEvent } from 'fabric/fabric-impl';
 
 type Props = {
 	imageUrl: string;
@@ -15,7 +17,7 @@ type Props = {
 
 export function ImageAnnotator({ imageUrl, onSave, onClose }: Props) {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
-	const fabricCanvasRef = useRef<fabric.Canvas | null>(null);
+	const fabricCanvasRef = useRef<Canvas | null>(null);
 	const [tool, setTool] = useState<'select' | 'draw' | 'rectangle' | 'circle' | 'text'>('select');
 	const [saving, setSaving] = useState(false);
 
@@ -23,7 +25,7 @@ export function ImageAnnotator({ imageUrl, onSave, onClose }: Props) {
 		if (!canvasRef.current) return;
 
 		// Initialize Fabric canvas
-		const canvas = new fabric.Canvas(canvasRef.current, {
+		const canvas = new Canvas(canvasRef.current, {
 			width: 800,
 			height: 600,
 			backgroundColor: '#f0f0f0',
@@ -31,17 +33,15 @@ export function ImageAnnotator({ imageUrl, onSave, onClose }: Props) {
 		fabricCanvasRef.current = canvas;
 
 		// Load image
-		fabric.Image.fromURL(imageUrl, (img: fabric.Image) => {
-			// Scale image to fit canvas while maintaining aspect ratio
+		Image.fromURL(imageUrl, {
+			crossOrigin: 'anonymous',
+		}).then((img: Image) => {
 			const scale = Math.min(canvas.width! / img.width!, canvas.height! / img.height!);
 			img.scale(scale);
-
-			// Center image
 			img.set({
 				left: (canvas.width! - img.width! * scale) / 2,
 				top: (canvas.height! - img.height! * scale) / 2,
 			});
-
 			canvas.add(img);
 			canvas.renderAll();
 		});
@@ -58,7 +58,7 @@ export function ImageAnnotator({ imageUrl, onSave, onClose }: Props) {
 		canvas.isDrawingMode = tool === 'draw';
 		canvas.selection = tool === 'select';
 
-		if (tool === 'draw') {
+		if (tool === 'draw' && canvas.freeDrawingBrush) {
 			canvas.freeDrawingBrush.width = 2;
 			canvas.freeDrawingBrush.color = '#ff0000';
 		}
@@ -72,16 +72,18 @@ export function ImageAnnotator({ imageUrl, onSave, onClose }: Props) {
 			let isDrawing = false;
 			let startX = 0;
 			let startY = 0;
-			let shape: fabric.Object | null = null;
+			let rectShape: Rect | null = null;
+			let circleShape: FabricCircle | null = null;
+			let shape = tool === 'rectangle' ? rectShape : circleShape;
 
-			canvas.on('mouse:down', (o: fabric.IEvent<MouseEvent>) => {
-				const pointer = canvas.getPointer(o.e);
+			canvas.on('mouse:down', (o: TPointerEventInfo<TPointerEvent>) => {
+				const pointer = canvas.getPointer(o.e, true);
 				isDrawing = true;
 				startX = pointer.x;
 				startY = pointer.y;
 
 				if (tool === 'rectangle') {
-					shape = new fabric.Rect({
+					rectShape = new Rect({
 						left: startX,
 						top: startY,
 						width: 0,
@@ -90,8 +92,9 @@ export function ImageAnnotator({ imageUrl, onSave, onClose }: Props) {
 						stroke: '#ff0000',
 						strokeWidth: 2,
 					});
+					canvas.add(rectShape);
 				} else {
-					shape = new fabric.Circle({
+					circleShape = new FabricCircle({
 						left: startX,
 						top: startY,
 						radius: 0,
@@ -99,9 +102,8 @@ export function ImageAnnotator({ imageUrl, onSave, onClose }: Props) {
 						stroke: '#ff0000',
 						strokeWidth: 2,
 					});
+					canvas.add(circleShape);
 				}
-
-				canvas.add(shape);
 			});
 
 			canvas.on('mouse:move', (o) => {
@@ -109,7 +111,7 @@ export function ImageAnnotator({ imageUrl, onSave, onClose }: Props) {
 
 				const pointer = canvas.getPointer(o.e);
 				if (tool === 'rectangle') {
-					const rect = shape as fabric.Rect;
+					const rect = shape as Rect;
 					const width = pointer.x - startX;
 					const height = pointer.y - startY;
 					rect.set({
@@ -119,7 +121,7 @@ export function ImageAnnotator({ imageUrl, onSave, onClose }: Props) {
 						top: height > 0 ? startY : pointer.y,
 					});
 				} else {
-					const circle = shape as fabric.Circle;
+					const circle = shape as FabricCircle;
 					const radius =
 						Math.sqrt(Math.pow(pointer.x - startX, 2) + Math.pow(pointer.y - startY, 2)) / 2;
 					circle.set({
@@ -138,9 +140,9 @@ export function ImageAnnotator({ imageUrl, onSave, onClose }: Props) {
 		}
 
 		if (tool === 'text') {
-			canvas.on('mouse:down', (o: fabric.IEvent<MouseEvent>) => {
+			canvas.on('mouse:down', (o: TPointerEventInfo<TPointerEvent>) => {
 				const pointer = canvas.getPointer(o.e);
-				const text = new fabric.IText('Click to edit', {
+				const text = new IText('Click to edit', {
 					left: pointer.x,
 					top: pointer.y,
 					fontSize: 20,
@@ -160,6 +162,7 @@ export function ImageAnnotator({ imageUrl, onSave, onClose }: Props) {
 			const dataUrl = fabricCanvasRef.current.toDataURL({
 				format: 'png',
 				quality: 1,
+				multiplier: 1,
 			});
 			await onSave(dataUrl);
 			onClose();

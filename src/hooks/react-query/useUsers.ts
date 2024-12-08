@@ -1,21 +1,23 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { apiClient } from '@/src/lib/apiClient';
-import { supabase } from '@/src/lib/supabase';
 
-import type { User } from '@/src/types/user.types';
+import type { DatabaseProfile } from '@/src/types/database.types';
+import type { BaseUser } from '@/src/types/user.types';
+import type { UseMutationResult, UseQueryResult } from '@tanstack/react-query';
 
-export const useUsers = () => {
-	return useQuery<User[], Error>({
+export const useUsers = (): UseQueryResult<DatabaseProfile[], Error> => {
+	return useQuery<DatabaseProfile[], Error>({
 		queryKey: ['users'],
-		queryFn: async () => {
-			return await apiClient.get<User[]>('/users');
-		},
-		staleTime: 1000 * 60 * 5, // Cache data for 5 minutes
+		queryFn: () => apiClient.get<DatabaseProfile[]>('/api/users'),
 	});
 };
 
-export const useToggleUserRole = () => {
+export const useToggleUserRole = (): UseMutationResult<
+	void,
+	Error,
+	{ userId: string; currentRole: keyof typeof roles }
+> => {
 	const queryClient = useQueryClient();
 
 	const roles = {
@@ -27,9 +29,7 @@ export const useToggleUserRole = () => {
 	return useMutation<void, Error, { userId: string; currentRole: keyof typeof roles }>({
 		mutationFn: async ({ userId, currentRole }) => {
 			const newRole = roles[currentRole] || 'client';
-			const { error } = await supabase.from('profiles').update({ role: newRole }).eq('id', userId);
-
-			if (error) throw error;
+			await apiClient.patch(`/users/${userId}/role`, { role: newRole });
 		},
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ['users'] });
@@ -37,18 +37,11 @@ export const useToggleUserRole = () => {
 	});
 };
 
-export const useCurrentUser = () => {
-	type SupabaseUser = Awaited<ReturnType<typeof supabase.auth.getUser>>['data']['user'];
-
-	return useQuery<SupabaseUser, Error>({
+export const useCurrentUser = (): UseQueryResult<BaseUser, Error> => {
+	return useQuery<BaseUser, Error>({
 		queryKey: ['currentUser'],
 		queryFn: async () => {
-			const {
-				data: { user },
-				error,
-			} = await supabase.auth.getUser();
-			if (error) throw error;
-			return user;
+			return await apiClient.get<BaseUser>('/users/me');
 		},
 	});
 };

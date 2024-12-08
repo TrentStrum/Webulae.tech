@@ -2,16 +2,23 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { apiClient } from '@/src/lib/apiClient';
 
-export const useProjectMembers = (projectId: string) =>
+import type { ProjectMember } from '@/src/types/project.types';
+import type { UseMutationResult, UseQueryResult } from '@tanstack/react-query';
+
+export const useProjectMembers = (projectId: string): UseQueryResult<ProjectMember[], Error> =>
 	useQuery({
 		queryKey: ['projectMembers', projectId],
 		queryFn: async () => {
 			return apiClient.get(`/projects/${projectId}/members`);
 		},
-		enabled: !!projectId, // Fetch only if projectId is provided
+		enabled: !!projectId,
 	});
 
-export const useAddProjectMember = () => {
+export const useAddProjectMember = (): UseMutationResult<
+	ProjectMember,
+	Error,
+	{ projectId: string; userId: string; role: string }
+> => {
 	const queryClient = useQueryClient();
 
 	return useMutation({
@@ -24,7 +31,10 @@ export const useAddProjectMember = () => {
 			userId: string;
 			role: string;
 		}) => {
-			await apiClient.post(`/projects/${projectId}/members`, { userId, role });
+			return await apiClient.post<ProjectMember>(`/projects/${projectId}/members`, {
+				userId,
+				role,
+			});
 		},
 		onSuccess: (_, variables) => {
 			queryClient.invalidateQueries({

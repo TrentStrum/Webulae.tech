@@ -1,12 +1,13 @@
 import { useCallback } from 'react';
 
-import { useAuth } from '@/src/contexts/AuthContext';
 import { cachePrefetch } from '@/src/lib/cache/queryCache';
 
-export function usePrefetch() {
-	const { data: user } = useAuth();
+import { useAuthState } from '../auth/useAuthState';
 
-	const prefetchUserData = useCallback(async () => {
+export function usePrefetch(): { prefetchUserData: () => Promise<void> } {
+	const { user } = useAuthState();
+
+	const prefetchUserData = useCallback(async (): Promise<void> => {
 		if (!user?.id) return;
 
 		try {

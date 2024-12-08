@@ -54,18 +54,12 @@ export default function ArticlesPage() {
 
 				{isLoading ? (
 					<BlogPostSkeleton />
-				) : blogPosts?.pages[0]?.data.length === 0 ? (
+				) : blogPosts?.length === 0 ? (
 					<p className="text-center text-muted-foreground py-8">No articles found.</p>
 				) : (
 					<>
 						<div className="space-y-6">
-							{blogPosts?.pages.map((page, i) => (
-								<div key={i} className="space-y-6">
-									{page.data.map((post) => (
-										<BlogPostCard key={post.id} post={post} />
-									))}
-								</div>
-							))}
+							{blogPosts?.map((post) => <BlogPostCard key={post.id} post={post} />)}
 						</div>
 						{hasNextPage && (
 							<div className="flex justify-center mt-8">

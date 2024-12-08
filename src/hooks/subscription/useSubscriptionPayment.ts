@@ -1,32 +1,49 @@
 'use client';
 
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-
-import { useToast } from '@/src/hooks/helpers/use-toast';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import axios from 'axios';
 
 import type { PaymentMethod, SubscriptionError } from '@/src/types/subscription.types';
+import type { UseMutationResult } from '@tanstack/react-query';
 
-export function useSubscriptionPayment(userId: string) {
+type PaymentMethodResponse = {
+	success: boolean;
+	paymentMethod: PaymentMethod;
+};
+
+type UseSubscriptionPaymentReturn = {
+	paymentMethods: PaymentMethod[] | undefined;
+	isLoading: boolean;
+	error: SubscriptionError | null;
+	addPaymentMethod: UseMutationResult<PaymentMethodResponse, SubscriptionError, string>;
+	removePaymentMethod: UseMutationResult<PaymentMethodResponse, SubscriptionError, string>;
+	setDefaultPaymentMethod: UseMutationResult<PaymentMethodResponse, SubscriptionError, string>;
+};
+
+export function useSubscriptionPayment(): UseSubscriptionPaymentReturn {
 	const queryClient = useQueryClient();
-	const { toast } = useToast();
 
 	const {
 		data: paymentMethods,
 		isLoading,
 		error,
 	} = useQuery<PaymentMethod[], SubscriptionError>({
-		queryKey: ['payment-methods', userId],
+		queryKey: ['payment-methods'],
 		queryFn: async () => {
-			const response = await fetch('/api/payment-methods');
-			if (!response.ok) {
-				const error = await response.json();
-				throw error;
-			}
-			return response.json();
+			const { data } = await axios.get('/api/payment-methods');
+
+			return data.map((method: PaymentMethod) => ({
+				id: method.id,
+				brand: method.brand,
+				last4: method.last4,
+				isDefault: method.isDefault,
+				expiryMonth: method.expiryMonth,
+				expiryYear: method.expiryYear,
+			}));
 		},
 	});
 
-	const addPaymentMethod = useMutation({
+	const addPaymentMethod = useMutation<PaymentMethodResponse, SubscriptionError, string>({
 		mutationFn: async (paymentMethodId: string) => {
 			const response = await fetch('/api/payment-methods/add', {
 				method: 'POST',
@@ -42,22 +59,11 @@ export function useSubscriptionPayment(userId: string) {
 			return response.json();
 		},
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ['payment-methods', userId] });
-			toast({
-				title: 'Success',
-				description: 'Payment method added successfully',
-			});
-		},
-		onError: (error: SubscriptionError) => {
-			toast({
-				title: 'Error',
-				description: error.message,
-				variant: 'destructive',
-			});
+			queryClient.invalidateQueries({ queryKey: ['payment-methods'] });
 		},
 	});
 
-	const removePaymentMethod = useMutation({
+	const removePaymentMethod = useMutation<PaymentMethodResponse, SubscriptionError, string>({
 		mutationFn: async (paymentMethodId: string) => {
 			const response = await fetch(`/api/payment-methods/${paymentMethodId}`, {
 				method: 'DELETE',
@@ -71,27 +77,14 @@ export function useSubscriptionPayment(userId: string) {
 			return response.json();
 		},
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ['payment-methods', userId] });
-			toast({
-				title: 'Success',
-				description: 'Payment method removed successfully',
-			});
-		},
-		onError: (error: SubscriptionError) => {
-			toast({
-				title: 'Error',
-				description: error.message,
-				variant: 'destructive',
-			});
+			queryClient.invalidateQueries({ queryKey: ['payment-methods'] });
 		},
 	});
 
-	const setDefaultPaymentMethod = useMutation({
+	const setDefaultPaymentMethod = useMutation<PaymentMethodResponse, SubscriptionError, string>({
 		mutationFn: async (paymentMethodId: string) => {
-			const response = await fetch('/api/payment-methods/default', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ paymentMethodId }),
+			const response = await fetch(`/api/payment-methods/${paymentMethodId}/default`, {
+				method: 'PUT',
 			});
 
 			if (!response.ok) {
@@ -102,18 +95,7 @@ export function useSubscriptionPayment(userId: string) {
 			return response.json();
 		},
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ['payment-methods', userId] });
-			toast({
-				title: 'Success',
-				description: 'Default payment method updated successfully',
-			});
-		},
-		onError: (error: SubscriptionError) => {
-			toast({
-				title: 'Error',
-				description: error.message,
-				variant: 'destructive',
-			});
+			queryClient.invalidateQueries({ queryKey: ['payment-methods'] });
 		},
 	});
 

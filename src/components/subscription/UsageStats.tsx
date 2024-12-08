@@ -23,10 +23,9 @@ export function UsageStats({ used, limit, type }: UsageStatsProps) {
 			<CardContent>
 				<Progress
 					value={percentage}
-					className="h-2"
-					indicatorClassName={
+					className={`h-2 ${
 						percentage > 90 ? 'bg-red-500' : percentage > 75 ? 'bg-yellow-500' : ''
-					}
+					}`}
 				/>
 				{percentage > 90 && (
 					<p className="text-sm text-red-500 mt-2">

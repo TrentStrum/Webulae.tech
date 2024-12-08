@@ -8,13 +8,13 @@ import { DashboardSkeleton } from '@/src/components/skeletons/dashboard-skeleton
 import { Badge } from '@/src/components/ui/badge';
 import { Button } from '@/src/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card';
-import { useAuthState } from '@/src/hooks/auth/useAuthState';
 import { useDashboardStats } from '@/src/hooks/helpers/use-dashboard-stats';
+import { useAuth } from '@/src/hooks/useAuth';
 
 export default function AdminDashboard() {
 	const { projectStats, userStats, isLoading: isLoadingStats, error } = useDashboardStats();
 	const [isCheckingAccess, setIsCheckingAccess] = useState(true);
-	const { data: user, isLoading: isLoadingAuth } = useAuthState();
+	const { user, loading: isLoadingAuth } = useAuth();
 
 	useEffect(() => {
 		const checkAccess = async () => {

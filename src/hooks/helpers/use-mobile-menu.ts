@@ -2,17 +2,20 @@
 
 import { useEffect, useState } from 'react';
 
-export function useMobileMenu() {
+export function useMobileMenu(): {
+	isOpen: boolean;
+	setIsOpen: (value: boolean) => void;
+} {
 	const [isOpen, setIsOpen] = useState(false);
 
 	useEffect(() => {
-		const handleEscape = (e: KeyboardEvent) => {
+		const handleEscape = (e: KeyboardEvent): void => {
 			if (e.key === 'Escape') {
 				setIsOpen(false);
 			}
 		};
 
-		const handleResize = () => {
+		const handleResize = (): void => {
 			if (window.innerWidth >= 640) {
 				setIsOpen(false);
 			}

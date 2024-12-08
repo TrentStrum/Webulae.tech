@@ -3,11 +3,33 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { useToast } from '@/src/hooks/helpers/use-toast';
-import { supabase } from '@/src/lib/supabase';
+
+import { supabaseClient as supabase } from '../../lib/supabaseClient';
 
 import type { Subscription, SubscriptionError } from '@/src/types/subscription.types';
+import type { UseMutationResult } from '@tanstack/react-query';
 
-export function useSubscription(userId: string) {
+type SubscriptionResponse = {
+	success: boolean;
+	subscription: Subscription;
+};
+
+export function useSubscription(userId: string): {
+	subscription: Subscription | undefined;
+	isLoading: boolean;
+	error: SubscriptionError | null;
+	createSubscription: UseMutationResult<
+		SubscriptionResponse,
+		SubscriptionError,
+		{ planId: string; paymentMethodId: string }
+	>;
+	cancelSubscription: UseMutationResult<SubscriptionResponse, SubscriptionError, boolean>;
+	updateSubscription: UseMutationResult<
+		SubscriptionResponse,
+		SubscriptionError,
+		{ planId: string }
+	>;
+} {
 	const queryClient = useQueryClient();
 	const { toast } = useToast();
 
@@ -25,11 +47,32 @@ export function useSubscription(userId: string) {
 				.single();
 
 			if (error) throw { code: error.code, message: error.message };
-			return data;
+
+			return {
+				...data,
+				nextBillingDate: data.next_billing_date,
+				projectsUsed: data.projects_used,
+				projectsLimit: data.projects_limit,
+				storageUsed: data.storage_used,
+				storageLimit: data.storage_limit,
+				stripeSubscriptionId: data.stripe_subscription_id,
+				apiCallsUsed: data.api_calls_used,
+				apiCallsLimit: data.api_calls_limit,
+				paymentMethods: [],
+				userId: data.user_id,
+				planId: data.plan_id,
+				status: data.status,
+				createdAt: data.created_at,
+				updatedAt: data.updated_at,
+			} as unknown as Subscription;
 		},
 	});
 
-	const createSubscription = useMutation({
+	const createSubscription = useMutation<
+		SubscriptionResponse,
+		SubscriptionError,
+		{ planId: string; paymentMethodId: string }
+	>({
 		mutationFn: async ({
 			planId,
 			paymentMethodId,
@@ -66,8 +109,8 @@ export function useSubscription(userId: string) {
 		},
 	});
 
-	const cancelSubscription = useMutation({
-		mutationFn: async (atPeriodEnd: boolean = true) => {
+	const cancelSubscription = useMutation<SubscriptionResponse, SubscriptionError, boolean>({
+		mutationFn: async (atPeriodEnd = true) => {
 			if (!subscription?.stripeSubscriptionId) {
 				throw new Error('No active subscription found');
 			}
@@ -104,7 +147,11 @@ export function useSubscription(userId: string) {
 		},
 	});
 
-	const updateSubscription = useMutation({
+	const updateSubscription = useMutation<
+		SubscriptionResponse,
+		SubscriptionError,
+		{ planId: string }
+	>({
 		mutationFn: async ({ planId }: { planId: string }) => {
 			if (!subscription?.stripeSubscriptionId) {
 				throw new Error('No active subscription found');

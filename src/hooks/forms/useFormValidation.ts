@@ -9,11 +9,16 @@ interface ValidationOptions<T> {
 	onError?: (errors: z.ZodError) => void;
 }
 
-export function useFormValidation<T>({ schema, onSuccess, onError }: ValidationOptions<T>) {
+export function useFormValidation<T>({ schema, onSuccess, onError }: ValidationOptions<T>): {
+	errors: Record<string, string>;
+	validate: (data: unknown) => { success: boolean; data?: T; errors?: Record<string, string> };
+	clearErrors: () => void;
+	getFieldError: (field: string) => string | undefined;
+} {
 	const [errors, setErrors] = useState<Record<string, string>>({});
 
 	const validate = useCallback(
-		(data: unknown) => {
+		(data: unknown): { success: boolean; data?: T; errors?: Record<string, string> } => {
 			try {
 				const validData = schema.parse(data);
 				setErrors({});

@@ -1,0 +1,38 @@
+{
+  "typescript": {
+    "rules": {
+      "explicit-function-return-type": {
+        "enabled": true,
+        "description": "All functions must have an explicit return type annotation",
+        "severity": "warning"
+      },
+      "api-client-usage": {
+        "enabled": true,
+        "description": "Client-side code must use apiClient, server-side code must use supabase directly",
+        "clientPattern": "src/**/*.{ts,tsx}",
+        "serverPattern": "src/app/**/*.{ts,tsx}",
+        "rules": {
+          "client": {
+            "required": "apiClient",
+            "forbidden": "supabase"
+          },
+          "server": {
+            "required": "supabase",
+            "forbidden": "apiClient"
+          }
+        },
+        "severity": "warning"
+      },
+      "use-is-pending": {
+        "enabled": true,
+        "description": "Use isPending instead of isLoading (deprecated)",
+        "pattern": "src/**/*.{ts,tsx}",
+        "rules": {
+          "forbidden": "isLoading",
+          "required": "isPending"
+        },
+        "severity": "warning"
+      }
+    }
+  }
+} 

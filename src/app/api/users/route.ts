@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-import { supabase } from '@/src/lib/supabase';
+import { supabase } from '@/src/lib/supabase/server';
 
 import type { DataAccessInterface } from '@/src/contracts/DataAccess';
 import type { Database } from '@/src/types/database.types';
@@ -58,7 +58,7 @@ function isErrorWithMessage(error: unknown): error is { message: string } {
 }
 
 // Handler for GET requests to fetch all users or a specific user by ID
-export async function GET(req: Request) {
+export async function GET(req: Request): Promise<NextResponse> {
 	try {
 		const { searchParams } = new URL(req.url);
 		const id = searchParams.get('id');
@@ -82,7 +82,7 @@ export async function GET(req: Request) {
 }
 
 // Handler for POST requests to create a new user
-export async function POST(req: Request) {
+export async function POST(req: Request): Promise<NextResponse> {
 	try {
 		const body = await req.json();
 		const newUser = await userDataAccess.create?.(body);
@@ -101,7 +101,7 @@ export async function POST(req: Request) {
 }
 
 // Handler for PUT requests to update an existing user
-export async function PUT(req: Request) {
+export async function PUT(req: Request): Promise<NextResponse> {
 	try {
 		const body = await req.json();
 		const { id, ...updates } = body;
@@ -126,7 +126,7 @@ export async function PUT(req: Request) {
 }
 
 // Handler for DELETE requests to delete a user
-export async function DELETE(req: Request) {
+export async function DELETE(req: Request): Promise<NextResponse> {
 	try {
 		const { searchParams } = new URL(req.url);
 		const id = searchParams.get('id');

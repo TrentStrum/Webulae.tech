@@ -2,63 +2,15 @@
 
 import { formatDistanceToNow } from 'date-fns';
 import { useParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card';
-import { getSupabase } from '@/src/lib/supabase';
-
-import type { BlogPost } from '@/src/types/blog.types';
+import { useBlogPostWithViews } from '@/src/hooks/react-query/useBlog';
 
 export default function ArticlePage(): JSX.Element {
 	const { slug } = useParams();
-	const [article, setArticle] = useState<BlogPost | null>(null);
-	const [loading, setLoading] = useState(true);
+	const { data: article, isPending } = useBlogPostWithViews(slug as string);
 
-	useEffect(() => {
-		async function loadArticle(): Promise<void> {
-			try {
-				if (!getSupabase()) throw new Error('Supabase client not initialized');
-				const { data, error } = await getSupabase()
-					.from('blog_posts')
-					.select(
-						`
-            *,
-            profiles (
-              username,
-              full_name
-            )
-          `
-					)
-					.eq('slug', slug)
-					.single();
-
-				if (error) throw error;
-				setArticle(data);
-
-				if (data?.id) {
-					const {
-						data: { session },
-					} = await getSupabase().auth.getSession();
-					await getSupabase()
-						.from('blog_post_views')
-						.insert({
-							post_id: data.id,
-							viewer_id: session?.user?.id || null,
-						});
-				}
-			} catch (error) {
-				console.error('Error loading article:', error);
-			} finally {
-				setLoading(false);
-			}
-		}
-
-		if (slug) {
-			loadArticle();
-		}
-	}, [slug]);
-
-	if (loading) {
+	if (isPending) {
 		return (
 			<div className="container py-8">
 				<div className="max-w-4xl mx-auto">

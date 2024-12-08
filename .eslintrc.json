@@ -1,4 +1,6 @@
 {
+	"root": true,
+	"ignorePatterns": ["next.config.js", ".eslintrc.js", "postcss.config.js", "jest.config.js"],
 	"extends": [
 		"next/core-web-vitals",
 		"plugin:@typescript-eslint/recommended",
@@ -17,7 +19,7 @@
 	],
 	"parser": "@typescript-eslint/parser",
 	"parserOptions": {
-		"project": "./tsconfig.eslint.json",
+		"project": ["./tsconfig.json", "./tsconfig.eslint.json"],
 		"ecmaVersion": 2022,
 		"sourceType": "module",
 		"ecmaFeatures": {
@@ -98,6 +100,5 @@
 				"jest/valid-expect": "error"
 			}
 		}
-	],
-	"root": true
+	]
 }

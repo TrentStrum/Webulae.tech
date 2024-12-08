@@ -1,8 +1,8 @@
 import { supabaseClient } from '../lib/supabaseClient';
 
-import type { BlogFormData } from '../types/blog.types';
+import type { BlogPostFormData } from '../types/blog.types';
 
-export const createBlogPost = async (data: BlogFormData) => {
+export const createBlogPost = async (data: BlogPostFormData): Promise<void> => {
 	const { data: session } = await supabaseClient.auth.getSession();
 	if (!session) throw new Error('Not authenticated');
 

@@ -8,13 +8,14 @@ import { authService } from '@/src/services/authService';
 import { useToast } from '../helpers/use-toast';
 
 import type { AuthResponse } from '@supabase/supabase-js';
+import type { UseMutationResult } from '@tanstack/react-query';
 
 type LoginCredentials = {
 	email: string;
 	password: string;
 };
 
-export function useLoginMutation() {
+export function useLoginMutation(): UseMutationResult<AuthResponse, Error, LoginCredentials> {
 	const queryClient = useQueryClient();
 	const router = useRouter();
 	const { toast } = useToast();
@@ -23,7 +24,7 @@ export function useLoginMutation() {
 		mutationFn: async ({ email, password }) => {
 			const response = await authService.login(email, password);
 			if (response.error) {
-				throw new Error(response.error.message);
+				throw new Error(response.error);
 			}
 			return response;
 		},
@@ -56,7 +57,7 @@ export function useLoginMutation() {
 	});
 }
 
-export function useLogoutMutation() {
+export function useLogoutMutation(): UseMutationResult<{ error: null }, Error, void> {
 	const queryClient = useQueryClient();
 	const router = useRouter();
 	const { toast } = useToast();
@@ -64,6 +65,7 @@ export function useLogoutMutation() {
 	return useMutation({
 		mutationKey: ['auth', 'logout'],
 		mutationFn: async () => {
+			// eslint-disable-next-line no-console
 			console.log('🔄 useLogoutMutation: Starting logout');
 			const result = await authService.logout();
 			if (result.error) {
@@ -72,9 +74,11 @@ export function useLogoutMutation() {
 			return result;
 		},
 		onMutate: () => {
+			// eslint-disable-next-line no-console
 			console.log('🚀 useLogoutMutation: Mutation starting');
 		},
 		onSuccess: () => {
+			// eslint-disable-next-line no-console
 			console.log('✅ useLogoutMutation: Success');
 			queryClient.setQueryData(['auth', 'user'], null);
 			queryClient.invalidateQueries({ queryKey: ['auth'] });
@@ -85,6 +89,7 @@ export function useLogoutMutation() {
 			router.push('/auth/login');
 		},
 		onError: (error: Error) => {
+			// eslint-disable-next-line no-console
 			console.error('❌ useLogoutMutation: Error:', error);
 			toast({
 				title: 'Error',

@@ -6,18 +6,22 @@ import { Button } from '@/src/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card';
 import { LoadingSpinner } from '@/src/components/ui/loading-spinner';
 import { useToast } from '@/src/hooks/helpers/use-toast';
-import { useProject, useDeleteProject } from '@/src/hooks/react-query/useProjects';
+import { useProjects } from '@/src/hooks/react-query/useProjects';
+import { useDeleteProject } from '@/src/hooks/react-query/useProjects/useDeleteProject';
 
 export default function ProjectDetailsPage() {
 	const { projectId } = useParams();
 	const router = useRouter();
 	const { toast } = useToast();
-	const { data: project, isLoading } = useProject(projectId as string);
-	const deleteProject = useDeleteProject();
+	const { data: projects, isLoading } = useProjects();
+	const project = projects?.find((p) => p.projectId === projectId);
+	const { mutate: deleteProject, isPending } = useDeleteProject({
+		onSuccess: () => router.push('/admin/projects'),
+	});
 
 	const handleDelete = async () => {
 		try {
-			await deleteProject.mutateAsync(projectId as string);
+			await deleteProject(projectId as string);
 			toast({
 				title: 'Success',
 				description: 'Project deleted successfully',
@@ -61,8 +65,8 @@ export default function ProjectDetailsPage() {
 					<CardTitle>{project.name}</CardTitle>
 					<div className="flex gap-4">
 						<Button onClick={handleEdit}>Edit Project</Button>
-						<Button variant="destructive" onClick={handleDelete} disabled={deleteProject.isPending}>
-							{deleteProject.isPending ? 'Deleting...' : 'Delete Project'}
+						<Button variant="destructive" onClick={handleDelete} disabled={isPending}>
+							{isPending ? 'Deleting...' : 'Delete Project'}
 						</Button>
 					</div>
 				</CardHeader>

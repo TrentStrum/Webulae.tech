@@ -9,7 +9,10 @@ interface Attempt {
 	timestamp: number;
 }
 
-export function useRateLimit(config: RateLimitConfig) {
+export function useRateLimit(config: RateLimitConfig): {
+	checkRateLimit: () => { allowed: boolean; timeUntilReset: number };
+	recordAttempt: () => void;
+} {
 	const [attempts, setAttempts] = useState<Attempt[]>([]);
 
 	const checkRateLimit = useCallback(() => {

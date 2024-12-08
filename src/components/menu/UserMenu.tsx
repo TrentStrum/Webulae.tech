@@ -13,7 +13,7 @@ import {
 	DropdownMenuTrigger,
 } from '@/src/components/ui/dropdown-menu';
 
-import type { AuthUser } from '@/src/types/authUser.types';
+import type { AuthUser } from '@/src/contracts/AuthUser';
 
 const renderDropdownMenuItems = (user: AuthUser) => {
 	const commonItems = [

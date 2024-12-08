@@ -1,4 +1,4 @@
-import { supabase } from '../lib/supabase';
+import { supabase } from '@/src/lib/supabase/server';
 
 import type { DataAccessInterface } from '../contracts/DataAccess';
 import type { ProjectFormData } from '@/src/schemas/projectSchema';
@@ -37,9 +37,9 @@ export class SupabaseProjectDataAccess implements DataAccessInterface<Project> {
 		return data as Project[];
 	}
 
-	async create(data: Partial<Project>): Promise<Project | null> {
+	async create(data: Partial<Project>): Promise<Project> {
 		if (!supabase) throw new Error('Could not initialize Supabase client');
-		if (!data.name || !data.projectId || !data.userId) return null;
+		if (!data.name || !data.projectId || !data.userId) throw new Error('Missing required fields');
 
 		const { data: created, error } = await supabase
 			.from(this.table)
@@ -47,7 +47,7 @@ export class SupabaseProjectDataAccess implements DataAccessInterface<Project> {
 			.single();
 
 		if (error) throw new Error(error.message);
-		if (!created) return null;
+		if (!created) throw new Error('Failed to create project');
 
 		return created as Project;
 	}
@@ -71,15 +71,30 @@ export class SupabaseProjectDataAccess implements DataAccessInterface<Project> {
 		if (error) throw new Error(error.message);
 	}
 
-	async createProject(data: ProjectFormData) {
+	async createProject(data: ProjectFormData): Promise<Project> {
 		if (!supabase) throw new Error('Could not initialize Supabase client');
 		const { data: project, error } = await supabase
-			.from('projects')
+			.from(this.table)
 			.insert([data])
 			.select()
 			.single();
 
 		if (error) throw error;
-		return project;
+		return project as Project;
+	}
+
+	async getByKey(key: string, value: string, single = true): Promise<Project | Project[] | null> {
+		if (!supabase) throw new Error('Could not initialize Supabase client');
+		const query = supabase.from(this.table).select('*').eq(key, value);
+
+		if (single) {
+			const { data, error } = await query.single();
+			if (error) throw new Error(error.message);
+			return data as Project;
+		}
+
+		const { data, error } = await query;
+		if (error) throw new Error(error.message);
+		return data as Project[];
 	}
 }

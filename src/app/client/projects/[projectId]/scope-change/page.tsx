@@ -11,7 +11,7 @@ import { Textarea } from '@/src/components/ui/textarea';
 import { useToast } from '@/src/hooks';
 import { useCreateScopeChangeRequest } from '@/src/hooks/react-query/useScopeChangeRequests';
 
-export default function ScopeChangePage() {
+export default function ScopeChangePage(): JSX.Element {
 	const { id: projectId } = useParams();
 	const [title, setTitle] = useState('');
 	const [description, setDescription] = useState('');
@@ -22,7 +22,7 @@ export default function ScopeChangePage() {
 		projectId as string
 	);
 
-	const handleSubmit = (e: React.FormEvent) => {
+	const handleSubmit = (e: React.FormEvent): void => {
 		e.preventDefault();
 
 		createScopeChange(
@@ -40,8 +40,7 @@ export default function ScopeChangePage() {
 					});
 					router.push(`/projects/${projectId}`);
 				},
-				onError: (error: any) => {
-					console.error('Error submitting scope change request:', error);
+				onError: (_error: unknown) => {
 					toast({
 						title: 'Error',
 						description: 'Failed to submit scope change request.',

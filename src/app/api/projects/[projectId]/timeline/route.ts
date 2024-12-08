@@ -6,6 +6,13 @@ import type { Database } from '@/src/types/database.types';
 type ProjectTimeline = Database['public']['Tables']['project_timeline']['Row'];
 
 export const timelineDataAccess: DataAccessInterface<ProjectTimeline> = {
+	async getAll(): Promise<ProjectTimeline[]> {
+		if (!supabase) throw new Error('Supabase client not initialized');
+		const { data, error } = await supabase.from('project_timeline').select('*');
+		if (error) throw new Error(`Error fetching all timelines: ${error.message}`);
+		return data;
+	},
+
 	async getByKey(
 		key: string,
 		value: string,
@@ -31,7 +38,7 @@ export const timelineDataAccess: DataAccessInterface<ProjectTimeline> = {
 	},
 
 	// Create a new timeline entry
-	async create(data: Partial<ProjectTimeline>): Promise<ProjectTimeline | null> {
+	async create(data: Partial<ProjectTimeline>): Promise<ProjectTimeline> {
 		if (!supabase) throw new Error('Supabase client not initialized');
 		try {
 			const { data: newTimeline, error } = await supabase
@@ -48,7 +55,7 @@ export const timelineDataAccess: DataAccessInterface<ProjectTimeline> = {
 	},
 
 	// Update an existing timeline entry
-	async update(id: string, data: Partial<ProjectTimeline>): Promise<ProjectTimeline | null> {
+	async update(id: string, data: Partial<ProjectTimeline>): Promise<ProjectTimeline> {
 		if (!supabase) throw new Error('Supabase client not initialized');
 		try {
 			const { data: updatedTimeline, error } = await supabase

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import ReactCrop, { type Crop } from 'react-image-crop';
+import { type Crop, ReactCrop as Cropper } from 'react-image-crop';
 
 import 'react-image-crop/dist/ReactCrop.css';
 import { Button } from '../ui/button';
@@ -82,9 +82,10 @@ export function ImageEditor({ imageUrl, onSave, onClose, aspectRatio }: ImageEdi
 					<DialogTitle>Edit Image</DialogTitle>
 				</DialogHeader>
 				<div className="flex justify-center p-4">
-					<ReactCrop crop={crop} onChange={(c) => setCrop(c)} aspect={aspectRatio}>
+					<Cropper crop={crop} onChange={(c) => setCrop(c)} aspect={aspectRatio}>
+						{/* eslint-disable-next-line @next/next/no-img-element */}
 						<img ref={imageRef} src={imageUrl} alt="Edit" className="max-h-[60vh] object-contain" />
-					</ReactCrop>
+					</Cropper>
 				</div>
 				<DialogFooter>
 					<Button variant="outline" onClick={onClose}>

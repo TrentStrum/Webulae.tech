@@ -1,8 +1,8 @@
 import type { Profile } from './profile.types';
 
 export type Project = {
-	dev_environment_url: any;
-	staging_environment_url: any;
+	dev_environment_url: string | null;
+	staging_environment_url: string | null;
 	projectId: string;
 	userId: string;
 	name: string;

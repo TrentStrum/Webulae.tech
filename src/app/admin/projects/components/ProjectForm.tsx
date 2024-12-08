@@ -18,7 +18,7 @@ import {
 import { Textarea } from '@/src/components/ui/textarea';
 import { projectSchema } from '@/src/schemas/projectSchema';
 
-import type { ProjectFormData } from '@/src/schemas/projectSchema';
+import type { ProjectFormData, ProjectStatus } from '@/src/schemas/projectSchema';
 
 type Props = {
 	onSubmit: (formData: ProjectFormData) => Promise<void>;
@@ -82,7 +82,7 @@ export function ProjectForm({ onSubmit, isSubmitting }: Props) {
 					<Label htmlFor="status">Status</Label>
 					<Select
 						defaultValue="planning"
-						onValueChange={(value) => setValue('status', value as any)}
+						onValueChange={(value) => setValue('status', value as ProjectStatus)}
 					>
 						<SelectTrigger>
 							<SelectValue placeholder="Select status" />

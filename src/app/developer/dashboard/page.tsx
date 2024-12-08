@@ -3,113 +3,38 @@
 import { formatDistanceToNow } from 'date-fns';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
 
 import { ProjectCardSkeleton } from '@/src/components/skeletons/project-card-skeleton';
 import { Badge } from '@/src/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/src/components/ui/tabs';
-import { useToast } from '@/src/hooks';
-import { supabase } from '@/src/lib/supabase';
+import { useProjects, useToast } from '@/src/hooks';
+import { useProfile } from '@/src/hooks/react-query/useProfile';
 
-interface Project {
-	id: string;
-	name: string;
-	description: string;
-	status: string;
-	updated_at: string;
-}
+import type { Project } from '@/src/types';
 
-export default function DeveloperDashboard() {
-	const [activeProjects, setActiveProjects] = useState<Project[]>([]);
-	const [completedProjects, setCompletedProjects] = useState<Project[]>([]);
-	const [loading, setLoading] = useState(true);
+export default function DeveloperDashboard(): JSX.Element {
 	const router = useRouter();
 	const { toast } = useToast();
 
-	useEffect(() => {
-		checkDeveloperAccess();
-		loadProjects();
-	}, []);
+	// Get user profile and check access
+	const { profile, isLoading: isLoadingProfile } = useProfile();
+	if (!profile || (profile.role !== 'developer' && profile.role !== 'admin')) {
+		router.push('/');
+		toast({
+			title: 'Access Denied',
+			description: 'You do not have permission to access this page.',
+			variant: 'destructive',
+		});
+	}
 
-	const checkDeveloperAccess = async () => {
-		if (!supabase) throw new Error('Could not initialize Supabase client');
-		const {
-			data: { session },
-		} = await supabase.auth.getSession();
-		if (!session) {
-			router.push('/auth/login');
-			return;
-		}
+	// Fetch projects
+	const { data: projects, isLoading: isLoadingProjects } = useProjects();
 
-		const { data: profile } = await supabase
-			.from('profiles')
-			.select('role')
-			.eq('id', session.user.id)
-			.single();
+	const activeProjects = projects?.filter((p) => p.status !== 'completed') ?? [];
+	const completedProjects = projects?.filter((p) => p.status === 'completed') ?? [];
 
-		if (!profile || (profile.role !== 'developer' && profile.role !== 'admin')) {
-			router.push('/');
-			toast({
-				title: 'Access Denied',
-				description: 'You do not have permission to access this page.',
-				variant: 'destructive',
-			});
-		}
-	};
-
-	const loadProjects = async () => {
-		try {
-			if (!supabase) throw new Error('Could not initialize Supabase client');
-			const {
-				data: { session },
-			} = await supabase.auth.getSession();
-			if (!session) return;
-
-			const { data: projectMembers, error: memberError } = await supabase
-				.from('project_members')
-				.select('project_id')
-				.eq('user_id', session.user.id)
-				.eq('role', 'developer');
-
-			if (memberError) throw memberError;
-
-			const projectIds = projectMembers?.map((pm) => pm.project_id) || [];
-
-			if (projectIds.length > 0) {
-				const { data: projects, error: projectsError } = await supabase
-					.from('projects')
-					.select('*')
-					.in('id', projectIds)
-					.order('updated_at', { ascending: false });
-
-				if (projectsError) throw projectsError;
-
-				const formattedProjects =
-					projects?.map((project) => ({
-						id: project.id,
-						name: project.name,
-						description: project.description || '',
-						status: project.status,
-						updated_at: project.updated_at,
-					})) || [];
-
-				setActiveProjects(formattedProjects.filter((p: Project) => p.status !== 'completed'));
-				setCompletedProjects(formattedProjects.filter((p: Project) => p.status === 'completed'));
-			}
-		} catch (error) {
-			console.error('Error loading projects:', error);
-			toast({
-				title: 'Error',
-				description: 'Failed to load projects.',
-				variant: 'destructive',
-			});
-		} finally {
-			setLoading(false);
-		}
-	};
-
-	const getStatusColor = (status: string) => {
+	const getStatusColor = (status: Project['status']): string => {
 		const statusColors: Record<string, string> = {
 			planning: 'bg-blue-500/10 text-blue-500',
 			in_progress: 'bg-yellow-500/10 text-yellow-500',
@@ -120,7 +45,7 @@ export default function DeveloperDashboard() {
 		return statusColors[status] || 'bg-gray-500/10 text-gray-500';
 	};
 
-	if (loading) {
+	if (isLoadingProfile || isLoadingProjects) {
 		return (
 			<div className="container py-8">
 				<h1 className="text-3xl font-bold mb-8">Developer Dashboard</h1>
@@ -152,7 +77,7 @@ export default function DeveloperDashboard() {
 						</Card>
 					) : (
 						activeProjects.map((project) => (
-							<Link key={project.id} href={`/projects/${project.id}`}>
+							<Link key={project.projectId} href={`/projects/${project.projectId}`}>
 								<Card className="transition-all hover:shadow-lg hover:border-primary/50">
 									<CardHeader>
 										<div className="flex items-center justify-between">
@@ -184,7 +109,7 @@ export default function DeveloperDashboard() {
 						</Card>
 					) : (
 						completedProjects.map((project) => (
-							<Link key={project.id} href={`/projects/${project.id}`}>
+							<Link key={project.projectId} href={`/projects/${project.projectId}`}>
 								<Card className="transition-all hover:shadow-lg hover:border-primary/50">
 									<CardHeader>
 										<div className="flex items-center justify-between">
