@@ -6,15 +6,15 @@ import type { AuthUser } from '@/src/types/authUser.types';
 
 export function useUserProfile(userId: string | null): {
 	profile: Pick<AuthUser, 'role' | 'avatar_url'> | null;
-	loading: boolean;
+	isPending: boolean;
 } {
 	const [profile, setProfile] = useState<Pick<AuthUser, 'role' | 'avatar_url'> | null>(null);
-	const [loading, setLoading] = useState(true);
+	const [isPending, setIsPending] = useState(true);
 
 	useEffect(() => {
 		if (!userId) {
 			setProfile(null);
-			setLoading(false);
+			setIsPending(false);
 			return;
 		}
 
@@ -26,18 +26,18 @@ export function useUserProfile(userId: string | null): {
 						? {
 								role: profileData.role,
 								avatar_url: profileData.avatar_url || undefined,
-							}
-							: null
+						  }
+						: null
 				);
 			} catch (error) {
 				console.error('Error fetching user profile:', error);
 			} finally {
-				setLoading(false);
+				setIsPending(false);
 			}
 		};
 
 		fetchProfile();
 	}, [userId]);
 
-	return { profile, loading };
+	return { profile, isPending };
 }
