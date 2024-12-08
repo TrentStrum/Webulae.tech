@@ -3,6 +3,7 @@
 import { AlertTriangle } from 'lucide-react';
 import { Component } from 'react';
 
+
 import { Button } from '../ui/button';
 
 import type { ErrorInfo, ReactNode } from 'react';
@@ -14,12 +15,13 @@ interface Props {
 
 interface State {
 	hasError: boolean;
-	error?: Error;
+	error?: Error | null;
 }
 
 export class ErrorBoundary extends Component<Props, State> {
 	public state: State = {
 		hasError: false,
+		error: null,
 	};
 
 	public static getDerivedStateFromError(error: Error): State {
@@ -32,6 +34,16 @@ export class ErrorBoundary extends Component<Props, State> {
 
 	private handleRetry = () => {
 		this.setState({ hasError: false, error: undefined });
+	};
+
+	private handleNavigation = (): void => {
+		if (typeof window !== 'undefined') {
+			window.location.reload();
+		}
+	};
+
+	private handleRefresh = (): void => {
+		this.handleNavigation();
 	};
 
 	public render() {
@@ -49,7 +61,7 @@ export class ErrorBoundary extends Component<Props, State> {
 							{this.state.error?.message || 'An unexpected error occurred'}
 						</p>
 						<div className="space-x-4">
-							<Button onClick={() => window.location.reload()}>Refresh Page</Button>
+							<Button onClick={this.handleRefresh}>Refresh Page</Button>
 							<Button variant="outline" onClick={this.handleRetry}>
 								Try Again
 							</Button>

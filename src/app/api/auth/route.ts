@@ -21,3 +21,5 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 		return NextResponse.json({ error: 'Authentication error occurred' }, { status: 500 });
 	}
 }
+
+export const dynamic = 'force-dynamic';
