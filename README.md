@@ -1,3 +1,1 @@
-# Webulae.tech2
-
-[Edit in StackBlitz next generation editor ⚡️](https://stackblitz.com/~/github.com/TrentStrum/Webulae.tech2)
+Project management app for developers, primarily freelance developers to manage projects with clients. Initially built for me to use in my freelance work, but now also available as a Saas. 
