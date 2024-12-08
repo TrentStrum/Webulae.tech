@@ -27,7 +27,7 @@ export function useUserProfile(userId: string | null): {
 								role: profileData.role,
 								avatar_url: profileData.avatar_url || undefined,
 							}
-						: null
+							: null
 				);
 			} catch (error) {
 				console.error('Error fetching user profile:', error);
