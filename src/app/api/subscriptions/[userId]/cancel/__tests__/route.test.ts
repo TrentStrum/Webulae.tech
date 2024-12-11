@@ -1,8 +1,9 @@
 import { createServerClient } from '@/src/lib/supabase/server';
+
 import { POST } from '../route';
 
 jest.mock('@/src/lib/supabase/server', () => ({
-	createServerClient: jest.fn()
+	createServerClient: jest.fn(),
 }));
 
 describe('Cancel Subscription Route Handler', () => {
@@ -17,16 +18,15 @@ describe('Cancel Subscription Route Handler', () => {
 					update: jest.fn().mockReturnValue({
 						eq: jest.fn().mockReturnValue({
 							data: null,
-							error: null
-						})
-					})
-				})
+							error: null,
+						}),
+					}),
+				}),
 			});
 
-			const response = await POST(
-				new Request('http://localhost:3000'),
-				{ params: { userId: 'user123' } }
-			);
+			const response = await POST(new Request('http://localhost:3000'), {
+				params: { userId: 'user123' },
+			});
 			const data = await response.json();
 
 			expect(response.status).toBe(200);
@@ -38,16 +38,15 @@ describe('Cancel Subscription Route Handler', () => {
 				from: jest.fn().mockReturnValue({
 					update: jest.fn().mockReturnValue({
 						eq: jest.fn().mockReturnValue({
-							error: new Error('Database error')
-						})
-					})
-				})
+							error: new Error('Database error'),
+						}),
+					}),
+				}),
 			});
 
-			const response = await POST(
-				new Request('http://localhost:3000'),
-				{ params: { userId: 'user123' } }
-			);
+			const response = await POST(new Request('http://localhost:3000'), {
+				params: { userId: 'user123' },
+			});
 
 			expect(response.status).toBe(500);
 		});
@@ -59,21 +58,20 @@ describe('Cancel Subscription Route Handler', () => {
 						eq: jest.fn().mockReturnValue({
 							single: jest.fn().mockResolvedValue({
 								data: null,
-								error: null
-							})
-						})
-					})
-				})
+								error: null,
+							}),
+						}),
+					}),
+				}),
 			});
 
-			const response = await POST(
-				new Request('http://localhost:3000'),
-				{ params: { userId: 'user123' } }
-			);
+			const response = await POST(new Request('http://localhost:3000'), {
+				params: { userId: 'user123' },
+			});
 
 			expect(response.status).toBe(404);
-			expect(await response.json()).toEqual({ 
-				error: 'No active subscription found' 
+			expect(await response.json()).toEqual({
+				error: 'No active subscription found',
 			});
 		});
 
@@ -84,21 +82,20 @@ describe('Cancel Subscription Route Handler', () => {
 						eq: jest.fn().mockReturnValue({
 							single: jest.fn().mockResolvedValue({
 								data: { status: 'canceled' },
-								error: null
-							})
-						})
-					})
-				})
+								error: null,
+							}),
+						}),
+					}),
+				}),
 			});
 
-			const response = await POST(
-				new Request('http://localhost:3000'),
-				{ params: { userId: 'user123' } }
-			);
+			const response = await POST(new Request('http://localhost:3000'), {
+				params: { userId: 'user123' },
+			});
 
 			expect(response.status).toBe(400);
-			expect(await response.json()).toEqual({ 
-				error: 'Subscription is already canceled' 
+			expect(await response.json()).toEqual({
+				error: 'Subscription is already canceled',
 			});
 		});
 
@@ -107,21 +104,20 @@ describe('Cancel Subscription Route Handler', () => {
 				from: jest.fn().mockReturnValue({
 					update: jest.fn().mockReturnValue({
 						eq: jest.fn().mockReturnValue({
-							error: { code: '40001', message: 'Transaction rollback' }
-						})
-					})
-				})
+							error: { code: '40001', message: 'Transaction rollback' },
+						}),
+					}),
+				}),
 			});
 
-			const response = await POST(
-				new Request('http://localhost:3000'),
-				{ params: { userId: 'user123' } }
-			);
+			const response = await POST(new Request('http://localhost:3000'), {
+				params: { userId: 'user123' },
+			});
 
 			expect(response.status).toBe(500);
-			expect(await response.json()).toEqual({ 
-				error: 'Failed to cancel subscription. Please try again.' 
+			expect(await response.json()).toEqual({
+				error: 'Failed to cancel subscription. Please try again.',
 			});
 		});
 	});
-}); 
+});

@@ -57,7 +57,7 @@ export default function AdminBlogPage() {
 			</div>
 
 			<div className="grid gap-6">
-				{posts?.map((post) => (
+				{posts?.pages?.flat().map((post) => (
 					<Card key={post.id}>
 						<CardHeader>
 							<CardTitle>{post.title}</CardTitle>

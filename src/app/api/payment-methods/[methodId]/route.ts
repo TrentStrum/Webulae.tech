@@ -12,10 +12,7 @@ export async function DELETE(
 		const supabase = createServerClient();
 		if (!supabase) throw new Error('Could not initialize Supabase client');
 
-		const { error } = await supabase
-			.from('payment_methods')
-			.delete()
-			.eq('id', params.methodId);
+		const { error } = await supabase.from('payment_methods').delete().eq('id', params.methodId);
 
 		if (error) {
 			return NextResponse.json({ error: error.message }, { status: 500 });
@@ -26,4 +23,4 @@ export async function DELETE(
 		console.error('Error deleting payment method:', error);
 		return NextResponse.json({ error: 'Failed to delete payment method' }, { status: 500 });
 	}
-} 
+}

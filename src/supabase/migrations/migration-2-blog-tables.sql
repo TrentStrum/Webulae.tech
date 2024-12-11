@@ -124,3 +124,10 @@ as $$
   from comment_likes
   where comment_likes.comment_id = $1
 $$;
+
+-- Update blog_posts table to properly reference profiles
+ALTER TABLE blog_posts
+ADD CONSTRAINT fk_author
+FOREIGN KEY (author_id)
+REFERENCES profiles(id)
+ON DELETE CASCADE;

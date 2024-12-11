@@ -34,14 +34,12 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
 	// Create a response object that we can modify
 	const res = NextResponse.next();
 
-	// Initialize the Supabase client
-	const supabase = createMiddlewareClient<Database>({ req, res });
-
 	// Get the pathname
 	const path = req.nextUrl.pathname;
 
 	// Check if the route is public
 	if (PUBLIC_ROUTES.some((route) => path.startsWith(route))) {
+		// Skip auth for public routes
 		return res;
 	}
 
@@ -49,6 +47,9 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
 	if (path.includes('_next') || path.includes('static') || path.includes('favicon.ico')) {
 		return res;
 	}
+
+	// Initialize the Supabase client
+	const supabase = createMiddlewareClient<Database>({ req, res });
 
 	// Refresh session if expired - required for Server Components
 	const {

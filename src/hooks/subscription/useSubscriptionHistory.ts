@@ -1,11 +1,10 @@
 'use client';
 
 import { useInfiniteQuery } from '@tanstack/react-query';
+
 import { apiClient } from '@/src/lib/apiClient';
 
 import type { SubscriptionEvent, SubscriptionError } from '@/src/types/subscription.types';
-import type { Database } from '@/src/types/supabase';
-import type { SupabaseClient } from '@supabase/supabase-js';
 import type { InfiniteData, UseInfiniteQueryResult } from '@tanstack/react-query';
 
 const ITEMS_PER_PAGE = 10;
@@ -44,8 +43,8 @@ export function useSubscriptionHistory({
 					type,
 					startDate,
 					endDate,
-					page: pageParam
-				}
+					page: pageParam,
+				},
 			});
 			return data;
 		},

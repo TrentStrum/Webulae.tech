@@ -1,8 +1,9 @@
 import { createServerClient } from '@/src/lib/supabase/server';
+
 import { GET } from '../route';
 
 jest.mock('@/src/lib/supabase/server', () => ({
-	createServerClient: jest.fn()
+	createServerClient: jest.fn(),
 }));
 
 describe('Subscription Route Handlers', () => {
@@ -13,9 +14,9 @@ describe('Subscription Route Handlers', () => {
 		payment_methods: [
 			{
 				id: 'pm123',
-				is_default: true
-			}
-		]
+				is_default: true,
+			},
+		],
 	};
 
 	beforeEach(() => {
@@ -30,17 +31,16 @@ describe('Subscription Route Handlers', () => {
 						eq: jest.fn().mockReturnValue({
 							single: jest.fn().mockResolvedValue({
 								data: mockSubscription,
-								error: null
-							})
-						})
-					})
-				})
+								error: null,
+							}),
+						}),
+					}),
+				}),
 			});
 
-			const response = await GET(
-				new Request('http://localhost:3000'),
-				{ params: { userId: 'user123' } }
-			);
+			const response = await GET(new Request('http://localhost:3000'), {
+				params: { userId: 'user123' },
+			});
 			const data = await response.json();
 
 			expect(response.status).toBe(200);
@@ -54,17 +54,16 @@ describe('Subscription Route Handlers', () => {
 						eq: jest.fn().mockReturnValue({
 							single: jest.fn().mockResolvedValue({
 								data: null,
-								error: null
-							})
-						})
-					})
-				})
+								error: null,
+							}),
+						}),
+					}),
+				}),
 			});
 
-			const response = await GET(
-				new Request('http://localhost:3000'),
-				{ params: { userId: 'nonexistent' } }
-			);
+			const response = await GET(new Request('http://localhost:3000'), {
+				params: { userId: 'nonexistent' },
+			});
 
 			expect(response.status).toBe(404);
 		});
@@ -72,14 +71,13 @@ describe('Subscription Route Handlers', () => {
 		it('should handle Supabase client initialization failure', async () => {
 			(createServerClient as jest.Mock).mockReturnValue(null);
 
-			const response = await GET(
-				new Request('http://localhost:3000'),
-				{ params: { userId: 'user123' } }
-			);
+			const response = await GET(new Request('http://localhost:3000'), {
+				params: { userId: 'user123' },
+			});
 
 			expect(response.status).toBe(500);
-			expect(await response.json()).toEqual({ 
-				error: 'Could not initialize Supabase client' 
+			expect(await response.json()).toEqual({
+				error: 'Could not initialize Supabase client',
 			});
 		});
 
@@ -90,19 +88,18 @@ describe('Subscription Route Handlers', () => {
 						eq: jest.fn().mockReturnValue({
 							single: jest.fn().mockResolvedValue({
 								data: { invalid: 'data' }, // Malformed data
-								error: null
-							})
-						})
-					})
-				})
+								error: null,
+							}),
+						}),
+					}),
+				}),
 			});
 
-			const response = await GET(
-				new Request('http://localhost:3000'),
-				{ params: { userId: 'user123' } }
-			);
+			const response = await GET(new Request('http://localhost:3000'), {
+				params: { userId: 'user123' },
+			});
 
 			expect(response.status).toBe(500);
 		});
 	});
-}); 
+});

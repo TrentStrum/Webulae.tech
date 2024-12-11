@@ -1,8 +1,9 @@
 import { createServerClient } from '@/src/lib/supabase/server';
+
 import { DELETE } from '../route';
 
 jest.mock('@/src/lib/supabase/server', () => ({
-	createServerClient: jest.fn()
+	createServerClient: jest.fn(),
 }));
 
 describe('Delete Payment Method Route Handler', () => {
@@ -17,16 +18,15 @@ describe('Delete Payment Method Route Handler', () => {
 					delete: jest.fn().mockReturnValue({
 						eq: jest.fn().mockReturnValue({
 							data: null,
-							error: null
-						})
-					})
-				})
+							error: null,
+						}),
+					}),
+				}),
 			});
 
-			const response = await DELETE(
-				new Request('http://localhost:3000'),
-				{ params: { methodId: 'pm123' } }
-			);
+			const response = await DELETE(new Request('http://localhost:3000'), {
+				params: { methodId: 'pm123' },
+			});
 			const data = await response.json();
 
 			expect(response.status).toBe(200);
@@ -38,16 +38,15 @@ describe('Delete Payment Method Route Handler', () => {
 				from: jest.fn().mockReturnValue({
 					delete: jest.fn().mockReturnValue({
 						eq: jest.fn().mockReturnValue({
-							error: new Error('Database error')
-						})
-					})
-				})
+							error: new Error('Database error'),
+						}),
+					}),
+				}),
 			});
 
-			const response = await DELETE(
-				new Request('http://localhost:3000'),
-				{ params: { methodId: 'pm123' } }
-			);
+			const response = await DELETE(new Request('http://localhost:3000'), {
+				params: { methodId: 'pm123' },
+			});
 
 			expect(response.status).toBe(500);
 		});
@@ -59,21 +58,20 @@ describe('Delete Payment Method Route Handler', () => {
 						eq: jest.fn().mockReturnValue({
 							single: jest.fn().mockResolvedValue({
 								data: null,
-								error: null
-							})
-						})
-					})
-				})
+								error: null,
+							}),
+						}),
+					}),
+				}),
 			});
 
-			const response = await DELETE(
-				new Request('http://localhost:3000'),
-				{ params: { methodId: 'nonexistent' } }
-			);
+			const response = await DELETE(new Request('http://localhost:3000'), {
+				params: { methodId: 'nonexistent' },
+			});
 
 			expect(response.status).toBe(404);
-			expect(await response.json()).toEqual({ 
-				error: 'Payment method not found' 
+			expect(await response.json()).toEqual({
+				error: 'Payment method not found',
 			});
 		});
 
@@ -84,21 +82,20 @@ describe('Delete Payment Method Route Handler', () => {
 						eq: jest.fn().mockReturnValue({
 							single: jest.fn().mockResolvedValue({
 								data: { is_default: true },
-								error: null
-							})
-						})
-					})
-				})
+								error: null,
+							}),
+						}),
+					}),
+				}),
 			});
 
-			const response = await DELETE(
-				new Request('http://localhost:3000'),
-				{ params: { methodId: 'pm123' } }
-			);
+			const response = await DELETE(new Request('http://localhost:3000'), {
+				params: { methodId: 'pm123' },
+			});
 
 			expect(response.status).toBe(400);
-			expect(await response.json()).toEqual({ 
-				error: 'Cannot delete default payment method' 
+			expect(await response.json()).toEqual({
+				error: 'Cannot delete default payment method',
 			});
 		});
 
@@ -107,21 +104,20 @@ describe('Delete Payment Method Route Handler', () => {
 				from: jest.fn().mockReturnValue({
 					delete: jest.fn().mockReturnValue({
 						eq: jest.fn().mockReturnValue({
-							error: { code: '42501', message: 'Insufficient privileges' }
-						})
-					})
-				})
+							error: { code: '42501', message: 'Insufficient privileges' },
+						}),
+					}),
+				}),
 			});
 
-			const response = await DELETE(
-				new Request('http://localhost:3000'),
-				{ params: { methodId: 'pm123' } }
-			);
+			const response = await DELETE(new Request('http://localhost:3000'), {
+				params: { methodId: 'pm123' },
+			});
 
 			expect(response.status).toBe(403);
-			expect(await response.json()).toEqual({ 
-				error: 'Not authorized to delete this payment method' 
+			expect(await response.json()).toEqual({
+				error: 'Not authorized to delete this payment method',
 			});
 		});
 	});
-}); 
+});

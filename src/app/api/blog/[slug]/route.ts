@@ -5,7 +5,7 @@ import { createServerClient } from '@/src/lib/supabase/server';
 import type { RouteContext } from '@/src/types/route.types';
 
 export async function GET(
-	_: Request, 
+	_: Request,
 	{ params }: RouteContext<{ slug: string }>
 ): Promise<NextResponse> {
 	try {

@@ -1,16 +1,10 @@
 import React, { useState, useEffect } from 'react';
 
 import { Button } from '@/src/components/ui/button';
+import { subscriptionService } from '@/src/services/subscriptionService';
 
 import { PaymentMethodCard } from '../../components/PaymentMethodCard';
 import { UsageCard } from '../../components/UsageCard';
-import {
-	getSubscriptionData,
-	handleCancelAutoRenew,
-	handleUpdatePlan,
-	handleDeletePaymentMethod,
-	handleAddPaymentMethod,
-} from '../../services/subscriptionService';
 
 import type { Subscription, PaymentMethod } from '@/src/types/subscription.types';
 
@@ -19,11 +13,18 @@ export function SubscriptionDashboard({ userId }: { userId: string }) {
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 
+	const {
+		handleCancelAutoRenew,
+		handleUpdatePlan,
+		handleDeletePaymentMethod,
+		handleAddPaymentMethod,
+	} = subscriptionService;
+
 	useEffect(() => {
 		const fetchSubscriptionData = async () => {
 			try {
 				setLoading(true);
-				const data = await getSubscriptionData(userId);
+				const data = await subscriptionService.getSubscriptionData(userId);
 				setSubscription(data);
 			} catch (err) {
 				setError('Failed to load subscription data');
@@ -34,6 +35,11 @@ export function SubscriptionDashboard({ userId }: { userId: string }) {
 
 		fetchSubscriptionData();
 	}, [userId]);
+
+	const handlePlanUpdate = () => {
+		const planId = 'selected-plan-id';
+		handleUpdatePlan(userId, planId);
+	};
 
 	if (loading) return <div>Loading subscription details...</div>;
 	if (error) return <div className="error">{error}</div>;
@@ -76,7 +82,7 @@ export function SubscriptionDashboard({ userId }: { userId: string }) {
 				<Button onClick={() => handleCancelAutoRenew(userId)} variant="secondary">
 					Cancel Auto-renew
 				</Button>
-				<Button onClick={() => handleUpdatePlan(userId)} variant="default">
+				<Button onClick={handlePlanUpdate} variant="default">
 					Update Plan
 				</Button>
 			</div>
@@ -92,7 +98,7 @@ export function SubscriptionDashboard({ userId }: { userId: string }) {
 						onDelete={() => handleDeletePaymentMethod(method.id)}
 					/>
 				))}
-				<Button onClick={() => handleAddPaymentMethod()} variant="outline">
+				<Button onClick={() => handleAddPaymentMethod(userId, 'new')} variant="outline">
 					Add Payment Method
 				</Button>
 			</div>

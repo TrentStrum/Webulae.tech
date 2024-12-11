@@ -1,4 +1,4 @@
-import { supabase } from '../lib/supabase/server';
+import { createServerClient } from '../lib/supabase/server';
 
 import type { AuthUser } from '../types/authUser.types';
 import type { AuthChangeEvent, AuthResponse, Session } from '@supabase/supabase-js';
@@ -12,7 +12,7 @@ export const AuthDataAccess = {
 		const {
 			data: { session },
 			error,
-		} = await supabase.auth.getSession();
+		} = await createServerClient().auth.getSession();
 		if (error) throw error;
 		return session;
 	},
@@ -26,8 +26,8 @@ export const AuthDataAccess = {
 				data: { session },
 			},
 		] = await Promise.all([
-			supabase.from('profiles').select('*').eq('id', userId).single(),
-			supabase.auth.getSession(),
+			createServerClient().from('profiles').select('*').eq('id', userId).single(),
+			createServerClient().auth.getSession(),
 		]);
 
 		if (error) throw error;
@@ -49,30 +49,32 @@ export const AuthDataAccess = {
 
 		const {
 			data: { subscription },
-		} = supabase.auth.onAuthStateChange(async (event: AuthChangeEvent, session: Session | null) => {
-			// eslint-disable-next-line no-console
-			console.log('🔄 AuthDataAccess: Auth state changed:', event);
+		} = createServerClient().auth.onAuthStateChange(
+			async (event: AuthChangeEvent, session: Session | null) => {
+				// eslint-disable-next-line no-console
+				console.log('🔄 AuthDataAccess: Auth state changed:', event);
 
-			if (session?.user) {
-				const profile = await AuthDataAccess.getUserProfile(session.user.id);
-				callback(profile);
-			} else {
-				callback(null);
+				if (session?.user) {
+					const profile = await AuthDataAccess.getUserProfile(session.user.id);
+					callback(profile);
+				} else {
+					callback(null);
+				}
 			}
-		});
+		);
 
 		currentAuthListener = subscription;
 		return { data: { subscription } };
 	},
 
 	login: async (email: string, password: string): Promise<AuthResponse> => {
-		return await supabase.auth.signInWithPassword({
+		return await createServerClient().auth.signInWithPassword({
 			email,
 			password,
 		});
 	},
 
 	logout: async () => {
-		return await supabase.auth.signOut();
+		return await createServerClient().auth.signOut();
 	},
 };

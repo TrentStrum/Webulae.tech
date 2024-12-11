@@ -18,7 +18,7 @@ export async function POST(req: Request): Promise<NextResponse> {
 		const { error } = await supabase.from('payment_methods').insert({
 			user_id: userId,
 			payment_method_id: paymentMethodId,
-			is_default: false
+			is_default: false,
 		});
 
 		if (error) {
@@ -30,4 +30,4 @@ export async function POST(req: Request): Promise<NextResponse> {
 		console.error('Error adding payment method:', error);
 		return NextResponse.json({ error: 'Failed to add payment method' }, { status: 500 });
 	}
-} 
+}

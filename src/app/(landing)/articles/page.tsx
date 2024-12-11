@@ -29,6 +29,8 @@ export default function ArticlesPage() {
 		refetch();
 	};
 
+	const posts = blogPosts?.pages?.flat() || [];
+
 	return (
 		<div className="container py-8">
 			<div className="max-w-4xl mx-auto">
@@ -54,12 +56,14 @@ export default function ArticlesPage() {
 
 				{isLoading ? (
 					<BlogPostSkeleton />
-				) : blogPosts?.length === 0 ? (
+				) : posts.length === 0 ? (
 					<p className="text-center text-muted-foreground py-8">No articles found.</p>
 				) : (
 					<>
 						<div className="space-y-6">
-							{blogPosts?.map((post) => <BlogPostCard key={post.id} post={post} />)}
+							{posts.map((post) => (
+								<BlogPostCard key={post.id} post={post} />
+							))}
 						</div>
 						{hasNextPage && (
 							<div className="flex justify-center mt-8">

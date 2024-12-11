@@ -13,7 +13,7 @@ import type {
 // Public navigation items shown to non-authenticated users
 const publicNavigation: NavigationItem[] = [
 	{ name: 'About', href: '/about' },
-	{ name: 'Articles', href: '/articles' },
+	{ name: 'Blog', href: '/blog' },
 	{ name: 'Services', href: '/services' },
 	{ name: 'Contact', href: '/contact' },
 ];
@@ -21,7 +21,7 @@ const publicNavigation: NavigationItem[] = [
 // Navigation items for authenticated clients
 const clientNavigation: NavigationItem[] = [
 	{ name: 'Projects', href: '/projects' },
-	{ name: 'Articles', href: '/articles' },
+	{ name: 'Blog', href: '/blog' },
 	{ name: 'Messages', href: '/messages' },
 ];
 

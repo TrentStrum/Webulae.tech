@@ -19,9 +19,9 @@ export async function POST(
 
 		const { error } = await supabase
 			.from('subscriptions')
-			.update({ 
+			.update({
 				plan_id: planId,
-				updated_at: new Date().toISOString()
+				updated_at: new Date().toISOString(),
 			})
 			.eq('user_id', params.userId);
 
@@ -34,4 +34,4 @@ export async function POST(
 		console.error('Error updating subscription:', error);
 		return NextResponse.json({ error: 'Failed to update subscription' }, { status: 500 });
 	}
-} 
+}

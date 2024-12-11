@@ -1,8 +1,9 @@
 import { createServerClient } from '@/src/lib/supabase/server';
+
 import { POST } from '../route';
 
 jest.mock('@/src/lib/supabase/server', () => ({
-	createServerClient: jest.fn()
+	createServerClient: jest.fn(),
 }));
 
 describe('Payment Methods Route Handler', () => {
@@ -16,9 +17,9 @@ describe('Payment Methods Route Handler', () => {
 				from: jest.fn().mockReturnValue({
 					insert: jest.fn().mockReturnValue({
 						data: null,
-						error: null
-					})
-				})
+						error: null,
+					}),
+				}),
 			});
 
 			const response = await POST(
@@ -26,8 +27,8 @@ describe('Payment Methods Route Handler', () => {
 					method: 'POST',
 					body: JSON.stringify({
 						userId: 'user123',
-						paymentMethodId: 'pm123'
-					})
+						paymentMethodId: 'pm123',
+					}),
 				})
 			);
 			const data = await response.json();
@@ -40,13 +41,13 @@ describe('Payment Methods Route Handler', () => {
 			const response = await POST(
 				new Request('http://localhost:3000', {
 					method: 'POST',
-					body: JSON.stringify({})
+					body: JSON.stringify({}),
 				})
 			);
 
 			expect(response.status).toBe(400);
 			expect(await response.json()).toEqual({
-				error: 'User ID and payment method ID are required'
+				error: 'User ID and payment method ID are required',
 			});
 		});
 
@@ -54,9 +55,9 @@ describe('Payment Methods Route Handler', () => {
 			(createServerClient as jest.Mock).mockReturnValue({
 				from: jest.fn().mockReturnValue({
 					insert: jest.fn().mockReturnValue({
-						error: new Error('Database error')
-					})
-				})
+						error: new Error('Database error'),
+					}),
+				}),
 			});
 
 			const response = await POST(
@@ -64,8 +65,8 @@ describe('Payment Methods Route Handler', () => {
 					method: 'POST',
 					body: JSON.stringify({
 						userId: 'user123',
-						paymentMethodId: 'pm123'
-					})
+						paymentMethodId: 'pm123',
+					}),
 				})
 			);
 
@@ -76,13 +77,13 @@ describe('Payment Methods Route Handler', () => {
 			const response = await POST(
 				new Request('http://localhost:3000', {
 					method: 'POST',
-					body: 'invalid-json'
+					body: 'invalid-json',
 				})
 			);
 
 			expect(response.status).toBe(400);
-			expect(await response.json()).toEqual({ 
-				error: 'Invalid request body' 
+			expect(await response.json()).toEqual({
+				error: 'Invalid request body',
 			});
 		});
 
@@ -92,15 +93,15 @@ describe('Payment Methods Route Handler', () => {
 					method: 'POST',
 					body: JSON.stringify({
 						userId: 'user123',
-						paymentMethodId: '' // Empty payment method ID
-					})
+						paymentMethodId: '', // Empty payment method ID
+					}),
 				})
 			);
 
 			expect(response.status).toBe(400);
-			expect(await response.json()).toEqual({ 
-				error: 'Invalid payment method ID' 
+			expect(await response.json()).toEqual({
+				error: 'Invalid payment method ID',
 			});
 		});
 	});
-}); 
+});

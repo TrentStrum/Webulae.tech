@@ -12,7 +12,8 @@
 		"test:watch": "jest --watch",
 		"test:coverage": "jest --coverage",
 		"format": "prettier --write .",
-		"check-format": "prettier --check ."
+		"check-format": "prettier --check .",
+		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
 		"@emoji-mart/data": "^1.1.2",

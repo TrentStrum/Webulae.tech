@@ -1,135 +1,126 @@
-import { createServerClient } from '@/src/lib/supabase/server';
+import { createRouteClient } from '@/src/lib/supabase/server';
+
 import { GET, POST } from '../route';
 
 jest.mock('@/src/lib/supabase/server', () => ({
-	createServerClient: jest.fn()
+	createRouteClient: jest.fn(),
 }));
 
 describe('Blog Route Handlers', () => {
-	const mockBlogPost = {
-		id: 'post123',
-		title: 'Test Post',
-		content: 'Test Content',
-		author_id: 'author123',
-		slug: 'test-post',
-		published_at: new Date().toISOString()
-	};
+	const mockBlogPosts = [
+		{
+			id: 'post1',
+			title: 'First Post',
+			content: 'Content 1',
+			author_id: 'author1',
+			slug: 'first-post',
+			created_at: new Date().toISOString(),
+			profiles: {
+				username: 'testuser',
+				full_name: 'Test User',
+			},
+		},
+		{
+			id: 'post2',
+			title: 'Second Post',
+			content: 'Content 2',
+			author_id: 'author1',
+			slug: 'second-post',
+			created_at: new Date().toISOString(),
+			profiles: {
+				username: 'testuser',
+				full_name: 'Test User',
+			},
+		},
+	];
 
 	beforeEach(() => {
 		jest.clearAllMocks();
 	});
 
 	describe('GET /api/blog', () => {
-		it('should return blog posts with pagination', async () => {
-			(createServerClient as jest.Mock).mockReturnValue({
+		it('should return all blog posts', async () => {
+			(createRouteClient as jest.Mock).mockReturnValue({
 				from: jest.fn().mockReturnValue({
 					select: jest.fn().mockReturnValue({
-						order: jest.fn().mockReturnValue({
-							range: jest.fn().mockResolvedValue({
-								data: [mockBlogPost],
-								error: null
-							})
-						})
-					})
-				})
-			});
-
-			const request = new Request('http://localhost:3000/api/blog?page=1&limit=10');
-			const response = await GET(request);
-			const data = await response.json();
-
-			expect(response.status).toBe(200);
-			expect(data).toEqual([mockBlogPost]);
-		});
-
-		it('should handle search parameters', async () => {
-			const request = new Request(
-				'http://localhost:3000/api/blog?searchTerm=test&sortBy=newest'
-			);
-			await GET(request);
-
-			expect(createServerClient).toHaveBeenCalled();
-			// Add more specific assertions about how search is handled
-		});
-
-		it('should handle database errors', async () => {
-			(createServerClient as jest.Mock).mockReturnValue({
-				from: jest.fn().mockReturnValue({
-					select: jest.fn().mockReturnValue({
-						order: jest.fn().mockReturnValue({
-							range: jest.fn().mockResolvedValue({
-								error: new Error('Database error')
-							})
-						})
-					})
-				})
+						order: jest.fn().mockResolvedValue({
+							data: mockBlogPosts,
+							error: null,
+						}),
+					}),
+				}),
 			});
 
 			const response = await GET(new Request('http://localhost:3000/api/blog'));
-			expect(response.status).toBe(500);
+			const data = await response.json();
+
+			expect(response.status).toBe(200);
+			expect(data).toEqual(mockBlogPosts);
 		});
 
-		it('should handle invalid pagination parameters', async () => {
-			const response = await GET(
-				new Request('http://localhost:3000/api/blog?page=-1&limit=0')
-			);
+		it('should handle sorting', async () => {
+			const mockSupabaseQuery = {
+				from: jest.fn().mockReturnValue({
+					select: jest.fn().mockReturnValue({
+						order: jest.fn().mockResolvedValue({
+							data: mockBlogPosts,
+							error: null,
+						}),
+					}),
+				}),
+			};
 
-			expect(response.status).toBe(400);
-			expect(await response.json()).toEqual({
-				error: 'Invalid pagination parameters'
+			(createRouteClient as jest.Mock).mockReturnValue(mockSupabaseQuery);
+
+			await GET(new Request('http://localhost:3000/api/blog?sortBy=oldest'));
+
+			expect(mockSupabaseQuery.from).toHaveBeenCalledWith('blog_posts');
+			// Verify order was called with correct params
+			expect(mockSupabaseQuery.from().select().order).toHaveBeenCalledWith('created_at', {
+				ascending: true,
 			});
 		});
 
-		it('should handle sorting by different fields', async () => {
-			const sortFields = ['newest', 'oldest', 'title', 'views'];
-			
-			for (const sortBy of sortFields) {
-				await GET(new Request(`http://localhost:3000/api/blog?sortBy=${sortBy}`));
-				
-				expect(createServerClient).toHaveBeenCalled();
-				// Verify correct sort order was applied
-			}
-		});
+		it('should handle database errors', async () => {
+			(createRouteClient as jest.Mock).mockReturnValue({
+				from: jest.fn().mockReturnValue({
+					select: jest.fn().mockReturnValue({
+						order: jest.fn().mockResolvedValue({
+							data: null,
+							error: new Error('Database error'),
+						}),
+					}),
+				}),
+			});
 
-		it('should handle complex search queries', async () => {
-			const response = await GET(
-				new Request('http://localhost:3000/api/blog?searchTerm=test+multiple+words')
-			);
+			const response = await GET(new Request('http://localhost:3000/api/blog'));
+			const data = await response.json();
 
-			expect(response.status).toBe(200);
-			// Verify search logic handles multiple words correctly
-		});
-
-		it('should respect published status filter', async () => {
-			const response = await GET(
-				new Request('http://localhost:3000/api/blog?status=published')
-			);
-
-			expect(response.status).toBe(200);
-			// Verify only published posts are returned
+			expect(response.status).toBe(500);
+			expect(data).toEqual({ error: 'Failed to fetch posts' });
 		});
 	});
 
 	describe('POST /api/blog', () => {
 		it('should create a new blog post', async () => {
-			(createServerClient as jest.Mock).mockReturnValue({
+			(createRouteClient as jest.Mock).mockReturnValue({
 				from: jest.fn().mockReturnValue({
 					insert: jest.fn().mockReturnValue({
 						select: jest.fn().mockResolvedValue({
-							data: mockBlogPost,
-							error: null
-						})
-					})
-				})
+							data: mockBlogPosts[0],
+							error: null,
+						}),
+					}),
+				}),
 			});
 
 			const response = await POST(
 				new Request('http://localhost:3000/api/blog', {
 					method: 'POST',
 					body: JSON.stringify({
-						title: 'Test Post',
-						content: 'Test Content'
-					})
+						title: 'First Post',
+						content: 'Content 1',
+					}),
 				})
 			);
 
@@ -143,41 +134,41 @@ describe('Blog Route Handlers', () => {
 					body: JSON.stringify({
 						// Missing required fields
 						title: '',
-						content: ''
-					})
+						content: '',
+					}),
 				})
 			);
 
 			expect(response.status).toBe(400);
 			expect(await response.json()).toEqual({
-				error: 'Title and content are required'
+				error: 'Title and content are required',
 			});
 		});
 
 		it('should handle duplicate slugs', async () => {
-			(createServerClient as jest.Mock).mockReturnValue({
+			(createRouteClient as jest.Mock).mockReturnValue({
 				from: jest.fn().mockReturnValue({
 					insert: jest.fn().mockReturnValue({
 						select: jest.fn().mockResolvedValue({
-							error: { code: '23505', message: 'Duplicate slug' }
-						})
-					})
-				})
+							error: { code: '23505', message: 'Duplicate slug' },
+						}),
+					}),
+				}),
 			});
 
 			const response = await POST(
 				new Request('http://localhost:3000/api/blog', {
 					method: 'POST',
 					body: JSON.stringify({
-						title: 'Test Post',
-						content: 'Test Content'
-					})
+						title: 'First Post',
+						content: 'Content 1',
+					}),
 				})
 			);
 
 			expect(response.status).toBe(409);
 			expect(await response.json()).toEqual({
-				error: 'A post with this title already exists'
+				error: 'A post with this title already exists',
 			});
 		});
 
@@ -186,15 +177,15 @@ describe('Blog Route Handlers', () => {
 				new Request('http://localhost:3000/api/blog', {
 					method: 'POST',
 					body: JSON.stringify({
-						title: 'Test Post',
-						content: 'a'.repeat(100001) // Exceeds max length
-					})
+						title: 'First Post',
+						content: 'a'.repeat(100001), // Exceeds max length
+					}),
 				})
 			);
 
 			expect(response.status).toBe(400);
 			expect(await response.json()).toEqual({
-				error: 'Content exceeds maximum length'
+				error: 'Content exceeds maximum length',
 			});
 		});
 
@@ -203,9 +194,9 @@ describe('Blog Route Handlers', () => {
 				new Request('http://localhost:3000/api/blog', {
 					method: 'POST',
 					body: JSON.stringify({
-						title: 'Test Post',
-						content: '<script>alert("xss")</script>Test Content'
-					})
+						title: 'First Post',
+						content: '<script>alert("xss")</script>Content 1',
+					}),
 				})
 			);
 
@@ -213,4 +204,4 @@ describe('Blog Route Handlers', () => {
 			expect(data.content).not.toContain('<script>');
 		});
 	});
-}); 
+});

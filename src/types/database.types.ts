@@ -35,22 +35,16 @@ export interface Database {
 					slug: string;
 					created_at: string;
 					updated_at: string;
+					published_at?: string;
+					excerpt?: string;
+					short_description?: string;
+					category?: string;
 				};
-				Insert: {
-					title: string;
-					content: string;
-					author_id: string;
-					slug: string;
-					created_at?: string;
-					updated_at?: string;
-				};
-				Update: {
-					title?: string;
-					content?: string;
-					author_id?: string;
-					slug?: string;
-					updated_at?: string;
-				};
+				Insert: Omit<
+					Database['public']['Tables']['blog_posts']['Row'],
+					'id' | 'created_at' | 'updated_at'
+				>;
+				Update: Partial<Database['public']['Tables']['blog_posts']['Insert']>;
 			};
 			customers: {
 				Row: {

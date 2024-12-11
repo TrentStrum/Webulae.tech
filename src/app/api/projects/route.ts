@@ -60,7 +60,7 @@ const projectDataAccess: DataAccessInterface<Project> = {
 	},
 
 	async delete(id: string) {
-			const supabase = createServerClient();
+		const supabase = createServerClient();
 		if (!supabase) throw new Error('Could not initialize Supabase client');
 
 		const { error } = await supabase.from('projects').delete().eq('id', id);

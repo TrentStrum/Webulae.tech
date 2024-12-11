@@ -1,8 +1,9 @@
 import { createServerClient } from '@/src/lib/supabase/server';
+
 import { POST } from '../route';
 
 jest.mock('@/src/lib/supabase/server', () => ({
-	createServerClient: jest.fn()
+	createServerClient: jest.fn(),
 }));
 
 describe('Update Subscription Route Handler', () => {
@@ -17,16 +18,16 @@ describe('Update Subscription Route Handler', () => {
 					update: jest.fn().mockReturnValue({
 						eq: jest.fn().mockReturnValue({
 							data: null,
-							error: null
-						})
-					})
-				})
+							error: null,
+						}),
+					}),
+				}),
 			});
 
 			const response = await POST(
 				new Request('http://localhost:3000', {
 					method: 'POST',
-					body: JSON.stringify({ planId: 'new-plan-123' })
+					body: JSON.stringify({ planId: 'new-plan-123' }),
 				}),
 				{ params: { userId: 'user123' } }
 			);
@@ -40,7 +41,7 @@ describe('Update Subscription Route Handler', () => {
 			const response = await POST(
 				new Request('http://localhost:3000', {
 					method: 'POST',
-					body: JSON.stringify({})
+					body: JSON.stringify({}),
 				}),
 				{ params: { userId: 'user123' } }
 			);
@@ -54,16 +55,16 @@ describe('Update Subscription Route Handler', () => {
 				from: jest.fn().mockReturnValue({
 					update: jest.fn().mockReturnValue({
 						eq: jest.fn().mockReturnValue({
-							error: new Error('Database error')
-						})
-					})
-				})
+							error: new Error('Database error'),
+						}),
+					}),
+				}),
 			});
 
 			const response = await POST(
 				new Request('http://localhost:3000', {
 					method: 'POST',
-					body: JSON.stringify({ planId: 'new-plan-123' })
+					body: JSON.stringify({ planId: 'new-plan-123' }),
 				}),
 				{ params: { userId: 'user123' } }
 			);
@@ -76,15 +77,15 @@ describe('Update Subscription Route Handler', () => {
 				new Request('http://localhost:3000', {
 					method: 'POST',
 					body: JSON.stringify({
-						planId: '   ' // Invalid plan ID (whitespace)
-					})
+						planId: '   ', // Invalid plan ID (whitespace)
+					}),
 				}),
 				{ params: { userId: 'user123' } }
 			);
 
 			expect(response.status).toBe(400);
-			expect(await response.json()).toEqual({ 
-				error: 'Invalid plan ID format' 
+			expect(await response.json()).toEqual({
+				error: 'Invalid plan ID format',
 			});
 		});
 
@@ -93,23 +94,23 @@ describe('Update Subscription Route Handler', () => {
 				from: jest.fn().mockReturnValue({
 					update: jest.fn().mockReturnValue({
 						eq: jest.fn().mockReturnValue({
-							error: { code: '23P01', message: 'Concurrent update detected' }
-						})
-					})
-				})
+							error: { code: '23P01', message: 'Concurrent update detected' },
+						}),
+					}),
+				}),
 			});
 
 			const response = await POST(
 				new Request('http://localhost:3000', {
 					method: 'POST',
-					body: JSON.stringify({ planId: 'new-plan-123' })
+					body: JSON.stringify({ planId: 'new-plan-123' }),
 				}),
 				{ params: { userId: 'user123' } }
 			);
 
 			expect(response.status).toBe(409); // Conflict
-			expect(await response.json()).toEqual({ 
-				error: 'Subscription is being modified by another request' 
+			expect(await response.json()).toEqual({
+				error: 'Subscription is being modified by another request',
 			});
 		});
 
@@ -120,25 +121,25 @@ describe('Update Subscription Route Handler', () => {
 						eq: jest.fn().mockReturnValue({
 							single: jest.fn().mockResolvedValue({
 								data: { status: 'canceled' },
-								error: null
-							})
-						})
-					})
-				})
+								error: null,
+							}),
+						}),
+					}),
+				}),
 			});
 
 			const response = await POST(
 				new Request('http://localhost:3000', {
 					method: 'POST',
-					body: JSON.stringify({ planId: 'new-plan-123' })
+					body: JSON.stringify({ planId: 'new-plan-123' }),
 				}),
 				{ params: { userId: 'user123' } }
 			);
 
 			expect(response.status).toBe(400);
-			expect(await response.json()).toEqual({ 
-				error: 'Cannot update canceled subscription' 
+			expect(await response.json()).toEqual({
+				error: 'Cannot update canceled subscription',
 			});
 		});
 	});
-}); 
+});

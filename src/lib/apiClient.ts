@@ -13,7 +13,7 @@ declare module 'axios' {
 
 // Create axios instance with default config
 const axiosInstance = axios.create({
-	baseURL: '/api',
+	baseURL: '/',
 	timeout: 10000,
 	headers: {
 		'Content-Type': 'application/json',
@@ -38,7 +38,7 @@ axiosInstance.interceptors.request.use(
 
 // Response interceptor with retry logic
 axiosInstance.interceptors.response.use(
-	(response) => response,
+	(response) => response.data,
 	async (error: AxiosError) => {
 		const config = error.config;
 
@@ -69,8 +69,8 @@ interface AuthStateChangeEvent {
 export const apiClient = {
 	get: async <T>(url: string, config?: object): Promise<T> => {
 		try {
-			const response = await withTimeout(axiosInstance.get<T>(url, config));
-			return response.data;
+			const response = await withTimeout<T>(axiosInstance.get(url, config));
+			return response;
 		} catch (error) {
 			handleApiError(error);
 			throw error;

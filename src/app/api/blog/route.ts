@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-import { createServerClient } from '@/src/lib/supabase/server';
+import { createRouteClient } from '@/src/lib/supabase/server';
 
 import type { DataAccessInterface } from '@/src/contracts/DataAccess';
 import type { Database } from '@/src/types/database.types';
@@ -9,7 +9,7 @@ type BlogPost = Database['public']['Tables']['blog_posts']['Row'];
 
 const blogDataAccess: DataAccessInterface<BlogPost> = {
 	async getByKey(key: string, value: string, single = true) {
-		const supabase = createServerClient();
+		const supabase = createRouteClient();
 		if (!supabase) throw new Error('Could not initialize Supabase client');
 
 		const query = supabase
@@ -18,6 +18,7 @@ const blogDataAccess: DataAccessInterface<BlogPost> = {
 				`
 				*,
 				author:author_id (
+					id,
 					username,
 					full_name
 				)
@@ -37,16 +38,29 @@ const blogDataAccess: DataAccessInterface<BlogPost> = {
 	},
 
 	async getAll() {
-		const supabase = createServerClient();
+		const supabase = createRouteClient();
 		if (!supabase) throw new Error('Could not initialize Supabase client');
 
-		const { data, error } = await supabase.from('blog_posts').select('*');
+		const { data, error } = await supabase
+			.from('blog_posts')
+			.select(
+				`
+				*,
+				author:author_id (
+					id,
+					username,
+					full_name
+				)
+			`
+			)
+			.order('created_at', { ascending: false });
+
 		if (error) throw new Error(error.message);
 		return data;
 	},
 
 	async create(data: Partial<BlogPost>) {
-		const supabase = createServerClient();
+		const supabase = createRouteClient();
 		if (!supabase) throw new Error('Could not initialize Supabase client');
 
 		const { data: newPost, error } = await supabase
@@ -58,7 +72,7 @@ const blogDataAccess: DataAccessInterface<BlogPost> = {
 	},
 
 	async update(id: string, data: Partial<BlogPost>) {
-		const supabase = createServerClient();
+		const supabase = createRouteClient();
 		if (!supabase) throw new Error('Could not initialize Supabase client');
 
 		const { data: updatedPost, error } = await supabase
@@ -71,7 +85,7 @@ const blogDataAccess: DataAccessInterface<BlogPost> = {
 	},
 
 	async delete(id: string) {
-		const supabase = createServerClient();
+		const supabase = createRouteClient();
 		if (!supabase) throw new Error('Could not initialize Supabase client');
 
 		const { error } = await supabase.from('blog_posts').delete().eq('id', id);
@@ -87,23 +101,41 @@ function isErrorWithMessage(error: unknown): error is { message: string } {
 export async function GET(req: Request): Promise<NextResponse> {
 	try {
 		const { searchParams } = new URL(req.url);
-		const id = searchParams.get('id');
+		const page = parseInt(searchParams.get('page') || '1');
+		const limit = 10;
+		const offset = (page - 1) * limit;
 
-		if (id) {
-			const post = await blogDataAccess.getByKey?.('id', id);
-			if (!post) {
-				return NextResponse.json({ error: 'Blog post not found' }, { status: 404 });
-			}
-			return NextResponse.json(post, { status: 200 });
+		const supabase = createRouteClient();
+		if (!supabase) {
+			return NextResponse.json({ error: 'Database connection failed' }, { status: 500 });
 		}
 
-		const posts = await blogDataAccess.getAll?.();
-		return NextResponse.json(posts, { status: 200 });
-	} catch (error) {
-		if (isErrorWithMessage(error)) {
+		// Get the posts with author information
+		const { data: posts, error } = await supabase
+			.from('blog_posts')
+			.select(
+				`
+				*,
+				author:profiles!blog_posts_author_id_fkey (
+					id,
+					username,
+					full_name,
+					role
+				)
+			`
+			)
+			.order('created_at', { ascending: false })
+			.range(offset, offset + limit - 1);
+
+		if (error) {
+			console.error('Database error:', error);
 			return NextResponse.json({ error: error.message }, { status: 500 });
 		}
-		return NextResponse.json({ error: 'An unexpected error occurred' }, { status: 500 });
+		// Return the posts directly
+		return NextResponse.json(posts);
+	} catch (error) {
+		console.error('Unhandled error:', error);
+		return NextResponse.json({ error: 'Failed to fetch posts' }, { status: 500 });
 	}
 }
 
@@ -111,7 +143,7 @@ export async function GET(req: Request): Promise<NextResponse> {
 export async function POST(req: Request): Promise<NextResponse> {
 	try {
 		const body = await req.json();
-		const { title, content, author } = body;
+		const { title, content, author, shortDescription, category } = body;
 
 		if (!title || !content || !author) {
 			return NextResponse.json(
@@ -124,7 +156,16 @@ export async function POST(req: Request): Promise<NextResponse> {
 			.toLowerCase()
 			.replace(/\s+/g, '-')
 			.replace(/[^\w-]+/g, '');
-		const newPost = await blogDataAccess.create?.({ title, content, author_id: author, slug });
+
+		const newPost = await blogDataAccess.create?.({
+			title,
+			content,
+			author_id: author,
+			slug,
+			short_description: shortDescription,
+			category,
+		});
+
 		return NextResponse.json(newPost, { status: 201 });
 	} catch (error) {
 		if (isErrorWithMessage(error)) {

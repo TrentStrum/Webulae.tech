@@ -41,7 +41,7 @@ export function useSubscription(userId: string): {
 		queryFn: async () => {
 			const data = await apiClient.get<Subscription>(`/api/subscriptions/${userId}`);
 			return data;
-		}
+		},
 	});
 
 	const createSubscription = useMutation<

@@ -11,4 +11,3 @@ global.Response = Response as unknown as typeof global.Response;
 jest.mock('@/src/lib/supabase/server', () => ({
 	createServerClient: jest.fn(),
 }));
-

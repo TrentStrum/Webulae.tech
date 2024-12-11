@@ -26,4 +26,4 @@ export async function POST(
 		console.error('Error cancelling subscription:', error);
 		return NextResponse.json({ error: 'Failed to cancel subscription' }, { status: 500 });
 	}
-} 
+}

@@ -10,6 +10,7 @@ import type {
 	UseQueryResult,
 	UseMutationResult,
 	UseMutationOptions,
+	InfiniteData,
 } from '@tanstack/react-query';
 
 interface UseBlogPostsParams {
@@ -20,21 +21,28 @@ interface UseBlogPostsParams {
 export function useBlogPosts({
 	searchTerm,
 	sortBy,
-}: UseBlogPostsParams): UseInfiniteQueryResult<BlogPost[], Error> {
-	return useInfiniteQuery({
+}: UseBlogPostsParams): UseInfiniteQueryResult<InfiniteData<BlogPost[]>, Error> {
+	return useInfiniteQuery<BlogPost[]>({
 		queryKey: ['blog-posts', searchTerm, sortBy],
-		initialPageParam: 0,
+		initialPageParam: 1,
 		queryFn: async ({ pageParam }) => {
-			const response = await apiClient.get<BlogPost[]>('/blog', {
-				params: {
-					page: pageParam,
-					search: searchTerm,
-					sort: sortBy,
-				},
-			});
-			return response;
+			try {
+				const posts = await apiClient.get<BlogPost[]>('/api/blog', {
+					params: {
+						page: pageParam,
+						searchTerm,
+						sortBy,
+					},
+				});
+				return posts;
+			} catch (error) {
+				console.error('API Error:', error);
+				throw error;
+			}
 		},
-		getNextPageParam: (lastPage, pages) => (lastPage.length > 0 ? pages.length : undefined),
+		getNextPageParam: (lastPage: BlogPost[], pages: BlogPost[][]) => {
+			return lastPage?.length === 10 ? pages.length + 1 : undefined;
+		},
 	});
 }
 
@@ -68,7 +76,7 @@ export function useUpdateBlogPost(
 ): UseMutationResult<BlogPost, Error, BlogPostFormData> {
 	return useMutation({
 		mutationFn: async (data: BlogPostFormData) => {
-			const response = await apiClient.put<BlogPost>(`/api/admin/blog/${postId}`, data);
+			const response = await apiClient.put<BlogPost>(`/admin/blog/${postId}`, data);
 			return response;
 		},
 	});
@@ -79,7 +87,7 @@ export function useDeleteBlogPost(
 ): UseMutationResult<void, Error, string> {
 	return useMutation({
 		mutationFn: async (id: string): Promise<void> => {
-			await apiClient.delete(`/api/admin/blog/${id}`);
+			await apiClient.delete(`/admin/blog/${id}`);
 		},
 		...options,
 	});
@@ -89,11 +97,11 @@ export function useBlogPostWithViews(slug: string): UseQueryResult<BlogPost, Err
 	return useQuery({
 		queryKey: ['blog', 'post', slug],
 		queryFn: async () => {
-			const response = await apiClient.get<BlogPost>(`/api/blog/${slug}`);
+			const response = await apiClient.get<BlogPost>(`/blog/${slug}`);
 
 			// Increment view count if post exists
 			if (response?.id) {
-				await apiClient.post('/api/blog/views', {
+				await apiClient.post('/blog/views', {
 					post_id: response.id,
 				});
 			}

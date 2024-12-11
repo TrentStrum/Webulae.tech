@@ -1,10 +1,10 @@
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 
-import type { Database } from '@/src/types/supabase';
-import type { SupabaseClient } from '@supabase/supabase-js';
+import type { Database } from '@/src/types/database.types';
 
-// For client-side usage
-export function createClient(): SupabaseClient<Database> {
+type ClientType = ReturnType<typeof createClientComponentClient<Database>>;
+
+export function createClient(): ClientType {
 	return createClientComponentClient<Database>();
 }
 
