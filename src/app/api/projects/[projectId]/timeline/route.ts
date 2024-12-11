@@ -1,4 +1,4 @@
-import { supabase } from '@/src/lib/supabase';
+import { createServerClient } from '@/src/lib/supabase/server';
 
 import type { DataAccessInterface } from '@/src/contracts/DataAccess';
 import type { Database } from '@/src/types/database.types';
@@ -7,7 +7,9 @@ type ProjectTimeline = Database['public']['Tables']['project_timeline']['Row'];
 
 export const timelineDataAccess: DataAccessInterface<ProjectTimeline> = {
 	async getAll(): Promise<ProjectTimeline[]> {
-		if (!supabase) throw new Error('Supabase client not initialized');
+		const supabase = createServerClient();
+		if (!supabase) throw new Error('Could not initialize Supabase client');
+
 		const { data, error } = await supabase.from('project_timeline').select('*');
 		if (error) throw new Error(`Error fetching all timelines: ${error.message}`);
 		return data;
@@ -18,7 +20,9 @@ export const timelineDataAccess: DataAccessInterface<ProjectTimeline> = {
 		value: string,
 		single = true
 	): Promise<ProjectTimeline | ProjectTimeline[] | null> {
-		if (!supabase) throw new Error('Supabase client not initialized');
+		const supabase = createServerClient();
+		if (!supabase) throw new Error('Could not initialize Supabase client');
+
 		const query = supabase.from('project_timeline').select('*').eq(key, value);
 
 		try {
@@ -37,9 +41,10 @@ export const timelineDataAccess: DataAccessInterface<ProjectTimeline> = {
 		}
 	},
 
-	// Create a new timeline entry
 	async create(data: Partial<ProjectTimeline>): Promise<ProjectTimeline> {
-		if (!supabase) throw new Error('Supabase client not initialized');
+		const supabase = createServerClient();
+		if (!supabase) throw new Error('Could not initialize Supabase client');
+
 		try {
 			const { data: newTimeline, error } = await supabase
 				.from('project_timeline')
@@ -54,9 +59,10 @@ export const timelineDataAccess: DataAccessInterface<ProjectTimeline> = {
 		}
 	},
 
-	// Update an existing timeline entry
 	async update(id: string, data: Partial<ProjectTimeline>): Promise<ProjectTimeline> {
-		if (!supabase) throw new Error('Supabase client not initialized');
+		const supabase = createServerClient();
+		if (!supabase) throw new Error('Could not initialize Supabase client');
+
 		try {
 			const { data: updatedTimeline, error } = await supabase
 				.from('project_timeline')
@@ -72,9 +78,10 @@ export const timelineDataAccess: DataAccessInterface<ProjectTimeline> = {
 		}
 	},
 
-	// Delete a timeline entry
 	async delete(id: string): Promise<void> {
-		if (!supabase) throw new Error('Supabase client not initialized');
+		const supabase = createServerClient();
+		if (!supabase) throw new Error('Could not initialize Supabase client');
+
 		try {
 			const { error } = await supabase.from('project_timeline').delete().eq('id', id);
 			if (error) throw new Error(`Error deleting timeline with ID ${id}: ${error.message}`);

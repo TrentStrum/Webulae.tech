@@ -1,9 +1,12 @@
 import { NextResponse } from 'next/server';
 
-import { supabase } from '@/src/lib/supabase/server';
+import { createServerClient } from '@/src/lib/supabase/server';
 
 export async function GET(): Promise<NextResponse> {
 	try {
+		const supabase = createServerClient();
+		if (!supabase) throw new Error('Could not initialize Supabase client');
+
 		const {
 			data: { session },
 		} = await supabase.auth.getSession();

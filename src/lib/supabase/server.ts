@@ -1,13 +1,12 @@
-import { createClient } from '@supabase/supabase-js';
+import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { cookies } from 'next/headers';
 
-import type { Database } from '@/src/types/database.types';
+import type { Database } from '@/src/types/supabase';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-export function createServerSupabase(): SupabaseClient<Database> {
-	return createClient<Database>(
-		process.env.NEXT_PUBLIC_SUPABASE_URL!,
-		process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-	);
+// For server-side usage
+export function createServerClient(): SupabaseClient<Database> {
+	return createServerComponentClient<Database>({ cookies });
 }
 
-export const supabase = createServerSupabase();
+export const supabase = createServerClient();

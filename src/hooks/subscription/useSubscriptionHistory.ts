@@ -1,8 +1,7 @@
 'use client';
 
 import { useInfiniteQuery } from '@tanstack/react-query';
-
-import { supabaseClient as supabase } from '../../lib/supabaseClient';
+import { apiClient } from '@/src/lib/apiClient';
 
 import type { SubscriptionEvent, SubscriptionError } from '@/src/types/subscription.types';
 import type { Database } from '@/src/types/supabase';
@@ -30,8 +29,6 @@ export function useSubscriptionHistory({
 	startDate,
 	endDate,
 }: Omit<FetchEventsParams, 'page'>): UseSubscriptionHistoryReturn {
-	const client = supabase as unknown as SupabaseClient<Database>;
-
 	return useInfiniteQuery<
 		SubscriptionEvent[],
 		SubscriptionError,
@@ -41,24 +38,16 @@ export function useSubscriptionHistory({
 	>({
 		queryKey: ['subscription-history', subscriptionId, type, startDate, endDate],
 		queryFn: async ({ pageParam = 0 }) => {
-			const { data, error } = await client
-				.from('subscription_events')
-				.select('*')
-				.eq('subscription_id', subscriptionId)
-				.order('created_at', { ascending: false })
-				.range(pageParam * ITEMS_PER_PAGE, (pageParam + 1) * ITEMS_PER_PAGE - 1);
-
-			if (error) throw { code: error.code, message: error.message };
-
-			return (
-				data?.map((event) => ({
-					id: event.id,
-					subscriptionId: event.subscription_id,
-					type: event.type,
-					data: event.data,
-					createdAt: event.created_at,
-				})) ?? []
-			);
+			const data = await apiClient.get<SubscriptionEvent[]>('/api/subscriptions/history', {
+				params: {
+					subscriptionId,
+					type,
+					startDate,
+					endDate,
+					page: pageParam
+				}
+			});
+			return data;
 		},
 		initialPageParam: 0,
 		getNextPageParam: (lastPage, allPages) =>

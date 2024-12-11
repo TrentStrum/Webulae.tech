@@ -1,13 +1,12 @@
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
-import type { Database } from '@/src/types/database.types';
+import { createServerClient } from '@/src/lib/supabase/server';
 
 export async function POST(req: Request): Promise<NextResponse> {
 	try {
 		const { email, password } = await req.json();
-		const supabase = createRouteHandlerClient<Database>({ cookies });
+		const supabase = createServerClient();
+		if (!supabase) throw new Error('Could not initialize Supabase client');
 
 		const { data, error } = await supabase.auth.signInWithPassword({
 			email,

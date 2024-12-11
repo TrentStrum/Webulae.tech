@@ -1,13 +1,13 @@
 import { NextResponse } from 'next/server';
 
-import { createClient } from '@/src/lib/supabase/client';
+import { createServerClient } from '@/src/lib/supabase/server';
 
 export async function GET(
 	req: Request,
 	{ params }: { params: { id: string } }
 ): Promise<NextResponse> {
 	try {
-		const supabase = createClient();
+		const supabase = createServerClient();
 		if (!supabase) throw new Error('Could not initialize Supabase client');
 
 		const { id } = params;
@@ -39,7 +39,7 @@ export async function PUT(
 	{ params }: { params: { id: string } }
 ): Promise<NextResponse> {
 	try {
-		const supabase = createClient();
+		const supabase = createServerClient();
 		if (!supabase) throw new Error('Could not initialize Supabase client');
 
 		const { id } = params;

@@ -7,7 +7,7 @@ import { authService } from '@/src/services/authService';
 
 import { useToast } from '../helpers/use-toast';
 
-import type { AuthResponse } from '@supabase/supabase-js';
+import type { AuthResponse, AuthError } from '@supabase/supabase-js';
 import type { UseMutationResult } from '@tanstack/react-query';
 
 type LoginCredentials = {
@@ -24,7 +24,7 @@ export function useLoginMutation(): UseMutationResult<AuthResponse, Error, Login
 		mutationFn: async ({ email, password }) => {
 			const response = await authService.login(email, password);
 			if (response.error) {
-				throw new Error(response.error);
+				throw new Error(response.error.message);
 			}
 			return response;
 		},
@@ -57,7 +57,7 @@ export function useLoginMutation(): UseMutationResult<AuthResponse, Error, Login
 	});
 }
 
-export function useLogoutMutation(): UseMutationResult<{ error: null }, Error, void> {
+export function useLogoutMutation(): UseMutationResult<{ error: AuthError | null }, Error, void> {
 	const queryClient = useQueryClient();
 	const router = useRouter();
 	const { toast } = useToast();

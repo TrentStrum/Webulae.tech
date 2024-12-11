@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-import { supabaseClient } from '@/src/lib/supabaseClient';
+import { createServerClient } from '@/src/lib/supabase/server';
 
 export async function GET(
 	req: Request,
@@ -9,7 +9,10 @@ export async function GET(
 	const projectId = params.projectId;
 
 	try {
-		const { data, error } = await supabaseClient
+		const supabase = createServerClient();
+		if (!supabase) throw new Error('Could not initialize Supabase client');
+
+		const { data, error } = await supabase
 			.from('projects')
 			.select('*')
 			.eq('id', projectId)

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-import { supabase } from '@/src/lib/supabase/server';
+import { createServerClient } from '@/src/lib/supabase/server';
 
 import type { DataAccessInterface } from '@/src/contracts/DataAccess';
 import type { Database } from '@/src/types/database.types';
@@ -9,6 +9,9 @@ type Project = Database['public']['Tables']['projects']['Row'];
 
 const projectDataAccess: DataAccessInterface<Project> = {
 	async getByKey(key: string, value: string, single = true) {
+		const supabase = createServerClient();
+		if (!supabase) throw new Error('Could not initialize Supabase client');
+
 		const query = supabase.from('projects').select('*').eq(key, value);
 
 		if (single) {
@@ -23,12 +26,18 @@ const projectDataAccess: DataAccessInterface<Project> = {
 	},
 
 	async getAll() {
+		const supabase = createServerClient();
+		if (!supabase) throw new Error('Could not initialize Supabase client');
+
 		const { data, error } = await supabase.from('projects').select('*');
 		if (error) throw new Error(`Error fetching all projects: ${error.message}`);
 		return data;
 	},
 
 	async create(data: Partial<Project>) {
+		const supabase = createServerClient();
+		if (!supabase) throw new Error('Could not initialize Supabase client');
+
 		const { data: newProject, error } = await supabase
 			.from('projects')
 			.insert(data as Project)
@@ -38,6 +47,9 @@ const projectDataAccess: DataAccessInterface<Project> = {
 	},
 
 	async update(id: string, data: Partial<Project>) {
+		const supabase = createServerClient();
+		if (!supabase) throw new Error('Could not initialize Supabase client');
+
 		const { data: updatedProject, error } = await supabase
 			.from('projects')
 			.update(data)
@@ -48,6 +60,9 @@ const projectDataAccess: DataAccessInterface<Project> = {
 	},
 
 	async delete(id: string) {
+			const supabase = createServerClient();
+		if (!supabase) throw new Error('Could not initialize Supabase client');
+
 		const { error } = await supabase.from('projects').delete().eq('id', id);
 		if (error) throw new Error(`Error deleting project with ID ${id}: ${error.message}`);
 	},

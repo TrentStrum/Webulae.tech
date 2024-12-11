@@ -2,7 +2,7 @@ import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 
-import { supabase } from '@/src/lib/supabase/server';
+import { createServerClient } from '@/src/lib/supabase/server';
 
 import type { SubscriptionStatus } from '@/src/types';
 
@@ -52,6 +52,9 @@ export async function POST(req: Request): Promise<NextResponse> {
 }
 
 async function handleSubscriptionChange(subscription: Stripe.Subscription): Promise<void> {
+	const supabase = createServerClient();
+	if (!supabase) throw new Error('Could not initialize Supabase client');
+
 	const customerId = subscription.customer as string;
 	const status = subscription.status;
 	const subscriptionId = subscription.id;
@@ -96,6 +99,9 @@ async function handleSubscriptionChange(subscription: Stripe.Subscription): Prom
 }
 
 async function handleSubscriptionDeletion(subscription: Stripe.Subscription): Promise<void> {
+	const supabase = createServerClient();
+	if (!supabase) throw new Error('Could not initialize Supabase client');
+
 	await supabase
 		.from('subscriptions')
 		.update({ status: 'canceled' })
@@ -111,6 +117,9 @@ async function handleSubscriptionDeletion(subscription: Stripe.Subscription): Pr
 }
 
 async function handleFailedPayment(invoice: Stripe.Invoice): Promise<void> {
+	const supabase = createServerClient();
+	if (!supabase) throw new Error('Could not initialize Supabase client');
+
 	const subscriptionId = invoice.subscription as string;
 
 	await supabase

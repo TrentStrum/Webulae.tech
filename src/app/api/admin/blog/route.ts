@@ -1,45 +1,23 @@
 import { NextResponse } from 'next/server';
 
-import { supabase } from '@/src/lib/supabase';
+import { createServerClient } from '@/src/lib/supabase/server';
 
-export async function GET(req: Request): Promise<NextResponse> {
+export async function GET(): Promise<NextResponse> {
 	try {
-		const { searchParams } = new URL(req.url);
-		const searchTerm = searchParams.get('searchTerm') || '';
-		const sortBy = searchParams.get('sortBy') || 'newest';
-		const offset = parseInt(searchParams.get('offset') || '0', 10);
-		const limit = parseInt(searchParams.get('limit') || '10', 10);
+		const supabase = createServerClient();
+		if (!supabase) throw new Error('Could not initialize Supabase client');
 
-		let query = supabase.from('blog_posts').select('*');
+		const { data: posts, error } = await supabase
+			.from('blog_posts')
+			.select('*')
+			.order('created_at', { ascending: false });
 
-		// Search filter
-		if (searchTerm) {
-			query = query.or(`title.ilike.%${searchTerm}%,content.ilike.%${searchTerm}%`);
+		if (error) {
+			console.error('Error fetching blog posts:', error);
+			return NextResponse.json({ error: 'Failed to fetch blog posts' }, { status: 500 });
 		}
 
-		// Sorting
-		switch (sortBy) {
-			case 'oldest':
-				query = query.order('published_at', { ascending: true });
-				break;
-			case 'a-z':
-				query = query.order('title', { ascending: true });
-				break;
-			case 'z-a':
-				query = query.order('title', { ascending: false });
-				break;
-			case 'newest':
-			default:
-				query = query.order('published_at', { ascending: false });
-				break;
-		}
-
-		query = query.range(offset, offset + limit - 1);
-
-		const { data, error } = await query;
-		if (error) throw error;
-
-		return NextResponse.json(data, { status: 200 });
+		return NextResponse.json(posts, { status: 200 });
 	} catch (error) {
 		console.error('Error fetching blog posts:', error);
 		return NextResponse.json({ error: 'Failed to fetch blog posts' }, { status: 500 });
@@ -48,8 +26,11 @@ export async function GET(req: Request): Promise<NextResponse> {
 
 export async function POST(req: Request): Promise<NextResponse> {
 	try {
-		const data = await req.json();
-		const { title, content, published_at = new Date().toISOString() } = data;
+		const supabase = createServerClient();
+		if (!supabase) throw new Error('Could not initialize Supabase client');
+
+		const body = await req.json();
+		const { title, content, published_at = new Date().toISOString() } = body;
 
 		// Validate required fields
 		if (!title || !content) {

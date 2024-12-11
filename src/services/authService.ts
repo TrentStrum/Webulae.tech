@@ -1,119 +1,32 @@
-import { AuthDataAccess } from '@/src/dataAccess/authDataAccess';
-import { sessionUtils } from '@/src/lib/auth/session';
-import { tokenUtils } from '@/src/lib/auth/token';
-import { supabaseClient } from '@/src/lib/supabaseClient';
-import { logger } from '@/src/utils/logger';
+import { apiClient } from '@/src/lib/apiClient';
+import { createClient } from '@/src/lib/supabase/client';
 
-import type { AuthUser } from '@/src/types/authUser.types';
+import type { AuthUser } from '@/src/types/user.types';
+import type { Session } from '@supabase/supabase-js';
 
 export const authService = {
-	// Session Management
-	getSession: async () => {
-		logger.info('Authentication successful');
-		const session = await AuthDataAccess.getSession();
-		logger.info('Session result:', session);
-		return session;
-	},
-
-	getUserProfile: async (userId: string) => {
-		logger.info('Getting user profile for ID:', userId);
-		const profile = await AuthDataAccess.getUserProfile(userId);
-		logger.info('Profile result:', profile);
-		return profile;
-	},
-
-	// Authentication State
-	onAuthStateChange: (callback: (user: AuthUser | null) => void) => {
-		logger.info('Setting up auth state listener');
-		return AuthDataAccess.onAuthStateChange(callback);
-	},
-
-	// Authentication Actions
+	// Direct Supabase auth operations
 	login: async (email: string, password: string) => {
-		logger.info('Attempting login');
-		try {
-			const response = await supabaseClient.auth.signInWithPassword({ email, password });
-			if (!response) throw new Error('No response from auth service');
-
-			if (response.error) {
-				logger.error('Login failed:', response.error);
-				throw response.error;
-			}
-
-			const { data } = response;
-			if (data.session?.access_token) {
-				tokenUtils.setToken(data.session.access_token);
-				sessionUtils.startSession();
-			}
-
-			logger.info('Login successful');
-			return response;
-		} catch (error) {
-			logger.error('Login failed:', error);
-			throw error;
-		}
+		const supabase = createClient();
+		return supabase.auth.signInWithPassword({ email, password });
 	},
 
 	logout: async () => {
-		logger.info('Attempting logout');
-		try {
-			const response = await supabaseClient.auth.signOut();
-			if (!response) throw new Error('No response from auth service');
-			if (response.error) throw response.error;
-
-			tokenUtils.removeToken();
-			sessionUtils.endSession();
-			logger.info('Logout complete');
-			return { error: null };
-		} catch (error) {
-			logger.error('Logout failed:', error);
-			throw error;
-		}
+		const supabase = createClient();
+		return supabase.auth.signOut();
 	},
 
-	// Password Management
-	resetPassword: async (email: string) => {
-		try {
-			const response = await supabaseClient.auth.resetPasswordForEmail(email, {
-				redirectTo: `${window.location.origin}/auth/reset-password`,
-			});
-			if (!response) throw new Error('No response from auth service');
-			if (response.error) throw response.error;
-			return { success: true };
-		} catch (error) {
-			logger.error('Error resetting password:', error);
-			return { success: false, error };
-		}
+	onAuthStateChange: (callback: (event: string, session: Session | null) => void) => {
+		const supabase = createClient();
+		return supabase.auth.onAuthStateChange(callback);
 	},
 
-	updatePassword: async (newPassword: string) => {
-		try {
-			const response = await supabaseClient.auth.updateUser({
-				password: newPassword,
-			});
-			if (!response) throw new Error('No response from auth service');
-			if (response.error) throw response.error;
-			return { success: true };
-		} catch (error) {
-			logger.error('Error updating password:', error);
-			return { success: false, error };
-		}
+	// API route operations
+	getUserProfile: async (userId: string) => {
+		return apiClient.get<AuthUser>(`/api/users/${userId}/profile`);
 	},
 
-	// Session Refresh
-	refreshSession: async () => {
-		try {
-			const response = await supabaseClient.auth.refreshSession();
-			if (!response) throw new Error('No response from auth service');
-			const { data, error } = response;
-			if (error) throw error;
-			if (data.session?.access_token) {
-				tokenUtils.setToken(data.session.access_token);
-			}
-			return { success: true, session: data.session };
-		} catch (error) {
-			logger.error('Error refreshing session:', error);
-			return { success: false, error };
-		}
+	updateProfile: async (userId: string, data: Partial<AuthUser>) => {
+		return apiClient.patch(`/api/users/${userId}/profile`, data);
 	},
 };

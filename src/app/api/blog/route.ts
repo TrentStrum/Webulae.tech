@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-import { supabase } from '@/src/lib/supabase/server';
+import { createServerClient } from '@/src/lib/supabase/server';
 
 import type { DataAccessInterface } from '@/src/contracts/DataAccess';
 import type { Database } from '@/src/types/database.types';
@@ -9,6 +9,9 @@ type BlogPost = Database['public']['Tables']['blog_posts']['Row'];
 
 const blogDataAccess: DataAccessInterface<BlogPost> = {
 	async getByKey(key: string, value: string, single = true) {
+		const supabase = createServerClient();
+		if (!supabase) throw new Error('Could not initialize Supabase client');
+
 		const query = supabase
 			.from('blog_posts')
 			.select(
@@ -34,12 +37,18 @@ const blogDataAccess: DataAccessInterface<BlogPost> = {
 	},
 
 	async getAll() {
+		const supabase = createServerClient();
+		if (!supabase) throw new Error('Could not initialize Supabase client');
+
 		const { data, error } = await supabase.from('blog_posts').select('*');
 		if (error) throw new Error(error.message);
 		return data;
 	},
 
 	async create(data: Partial<BlogPost>) {
+		const supabase = createServerClient();
+		if (!supabase) throw new Error('Could not initialize Supabase client');
+
 		const { data: newPost, error } = await supabase
 			.from('blog_posts')
 			.insert(data as BlogPost)
@@ -49,6 +58,9 @@ const blogDataAccess: DataAccessInterface<BlogPost> = {
 	},
 
 	async update(id: string, data: Partial<BlogPost>) {
+		const supabase = createServerClient();
+		if (!supabase) throw new Error('Could not initialize Supabase client');
+
 		const { data: updatedPost, error } = await supabase
 			.from('blog_posts')
 			.update(data)
@@ -59,6 +71,9 @@ const blogDataAccess: DataAccessInterface<BlogPost> = {
 	},
 
 	async delete(id: string) {
+		const supabase = createServerClient();
+		if (!supabase) throw new Error('Could not initialize Supabase client');
+
 		const { error } = await supabase.from('blog_posts').delete().eq('id', id);
 		if (error) throw new Error(error.message);
 	},

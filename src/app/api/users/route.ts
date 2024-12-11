@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-import { supabase } from '@/src/lib/supabase/server';
+import { createServerClient } from '@/src/lib/supabase/server';
 
 import type { DataAccessInterface } from '@/src/contracts/DataAccess';
 import type { Database } from '@/src/types/database.types';
@@ -9,6 +9,9 @@ type User = Database['public']['Tables']['profiles']['Row'];
 
 const userDataAccess: DataAccessInterface<User> = {
 	async getByKey(key: string, value: string, single = true) {
+		const supabase = createServerClient();
+		if (!supabase) throw new Error('Could not initialize Supabase client');
+
 		const query = supabase.from('profiles').select('*').eq(key, value);
 
 		if (single) {
@@ -23,12 +26,18 @@ const userDataAccess: DataAccessInterface<User> = {
 	},
 
 	async getAll() {
+		const supabase = createServerClient();
+		if (!supabase) throw new Error('Could not initialize Supabase client');
+
 		const { data, error } = await supabase.from('profiles').select('*');
 		if (error) throw new Error(`Error fetching all users: ${error.message}`);
 		return data;
 	},
 
 	async create(data: Partial<User>) {
+		const supabase = createServerClient();
+		if (!supabase) throw new Error('Could not initialize Supabase client');
+
 		const { data: newUser, error } = await supabase
 			.from('profiles')
 			.insert(data as User)
@@ -38,6 +47,9 @@ const userDataAccess: DataAccessInterface<User> = {
 	},
 
 	async update(id: string, data: Partial<User>) {
+		const supabase = createServerClient();
+		if (!supabase) throw new Error('Could not initialize Supabase client');
+
 		const { data: updatedUser, error } = await supabase
 			.from('profiles')
 			.update(data)
@@ -48,6 +60,9 @@ const userDataAccess: DataAccessInterface<User> = {
 	},
 
 	async delete(id: string) {
+		const supabase = createServerClient();
+		if (!supabase) throw new Error('Could not initialize Supabase client');
+
 		const { error } = await supabase.from('profiles').delete().eq('id', id);
 		if (error) throw new Error(`Error deleting user with ID ${id}: ${error.message}`);
 	},

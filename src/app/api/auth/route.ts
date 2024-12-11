@@ -1,11 +1,14 @@
 import { NextResponse } from 'next/server';
 
-import { supabase } from '@/src/lib/supabase/server';
+import { createServerClient } from '@/src/lib/supabase/server';
 
 import type { NextRequest } from 'next/server';
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
 	try {
+		const supabase = createServerClient();
+		if (!supabase) throw new Error('Could not initialize Supabase client');
+
 		const requestUrl = new URL(request.url);
 		const code = requestUrl.searchParams.get('code');
 		const next = requestUrl.searchParams.get('next') || '/';

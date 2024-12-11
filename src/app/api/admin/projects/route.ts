@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
 
-import { getSupabaseClient } from '@/src/lib/helpers';
+import { createServerClient } from '@/src/lib/supabase/server';
 
 export async function GET(): Promise<NextResponse> {
 	try {
-		const supabase = getSupabaseClient();
+		const supabase = createServerClient();
 		if (!supabase) throw new Error('Could not initialize Supabase client');
 
 		const { data: projects, error } = await supabase.from('projects').select('*');
@@ -23,7 +23,7 @@ export async function GET(): Promise<NextResponse> {
 export async function POST(req: Request): Promise<NextResponse> {
 	try {
 		const body = await req.json();
-		const supabase = getSupabaseClient();
+		const supabase = createServerClient();
 		if (!supabase) throw new Error('Could not initialize Supabase client');
 		const { data: newProject, error } = await supabase.from('projects').insert(body).single();
 
@@ -47,7 +47,7 @@ export async function PUT(req: Request): Promise<NextResponse> {
 			return NextResponse.json({ error: 'Project ID is required' }, { status: 400 });
 		}
 
-		const supabase = getSupabaseClient();
+		const supabase = createServerClient();
 		if (!supabase) throw new Error('Could not initialize Supabase client');
 
 		const { data: updatedProject, error } = await supabase
@@ -76,7 +76,7 @@ export async function DELETE(req: Request): Promise<NextResponse> {
 			return NextResponse.json({ error: 'Project ID is required' }, { status: 400 });
 		}
 
-		const supabase = getSupabaseClient();
+		const supabase = createServerClient();
 		if (!supabase) throw new Error('Could not initialize Supabase client');
 
 		const { error } = await supabase.from('projects').delete().eq('id', id);

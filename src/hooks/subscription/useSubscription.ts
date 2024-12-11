@@ -3,8 +3,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { useToast } from '@/src/hooks/helpers/use-toast';
-
-import { supabaseClient as supabase } from '../../lib/supabaseClient';
+import { apiClient } from '@/src/lib/apiClient';
 
 import type { Subscription, SubscriptionError } from '@/src/types/subscription.types';
 import type { UseMutationResult } from '@tanstack/react-query';
@@ -40,32 +39,9 @@ export function useSubscription(userId: string): {
 	} = useQuery<Subscription, SubscriptionError>({
 		queryKey: ['subscription', userId],
 		queryFn: async () => {
-			const { data, error } = await supabase
-				.from('subscriptions')
-				.select('*')
-				.eq('user_id', userId)
-				.single();
-
-			if (error) throw { code: error.code, message: error.message };
-
-			return {
-				...data,
-				nextBillingDate: data.next_billing_date,
-				projectsUsed: data.projects_used,
-				projectsLimit: data.projects_limit,
-				storageUsed: data.storage_used,
-				storageLimit: data.storage_limit,
-				stripeSubscriptionId: data.stripe_subscription_id,
-				apiCallsUsed: data.api_calls_used,
-				apiCallsLimit: data.api_calls_limit,
-				paymentMethods: [],
-				userId: data.user_id,
-				planId: data.plan_id,
-				status: data.status,
-				createdAt: data.created_at,
-				updatedAt: data.updated_at,
-			} as unknown as Subscription;
-		},
+			const data = await apiClient.get<Subscription>(`/api/subscriptions/${userId}`);
+			return data;
+		}
 	});
 
 	const createSubscription = useMutation<

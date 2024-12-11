@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 
 import { useToast } from '@/src/hooks/helpers/use-toast';
-import { supabase } from '@/src/lib/supabase/server';
+import { apiClient } from '@/src/lib/apiClient';
 
 export const useLogout = (): {
 	logout: () => Promise<void>;
@@ -16,9 +16,7 @@ export const useLogout = (): {
 
 	const { mutateAsync, isPending } = useMutation({
 		mutationFn: async (): Promise<void> => {
-			if (!supabase) throw new Error('Supabase client not initialized');
-			const { error } = await supabase.auth.signOut();
-			if (error) throw error;
+			await apiClient.post('/api/auth/logout');
 
 			localStorage.clear();
 			sessionStorage.clear();
