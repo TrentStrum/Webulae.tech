@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/ca
 import { LoadingSpinner } from '@/src/components/ui/loading-spinner';
 import { useToast } from '@/src/hooks/helpers/use-toast';
 import { useBlogPosts, useDeleteBlogPost } from '@/src/hooks/react-query/useBlog';
-import { useAuth } from '@/src/hooks/useAuth';
+import { useAuth } from '@/src/hooks/auth/useAuth';
 
 export default function AdminBlogPage() {
 	const router = useRouter();

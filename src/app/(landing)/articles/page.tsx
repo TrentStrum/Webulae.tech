@@ -4,7 +4,7 @@ import { SlidersHorizontal, Search } from 'lucide-react';
 import { useState } from 'react';
 
 import { BlogPostCard } from '@/src/components/blog/BlogPostCard';
-import { BlogPostSkeleton } from '@/src/components/blog/BlogPostSkeleton';
+import { BlogPostSkeleton } from '@/src/components/skeletons/blogPage-skeleton';
 import { Filters } from '@/src/components/blog/Filters';
 import { Button } from '@/src/components/ui/button';
 import { Input } from '@/src/components/ui/input';

@@ -4,8 +4,8 @@ import { Search, SlidersHorizontal, ChevronLeft, ChevronRight } from 'lucide-rea
 import { useState } from 'react';
 
 import { BlogPostCard } from '@/src/components/blog/BlogPostCard';
-import { BlogPostSkeleton } from '@/src/components/blog/BlogPostSkeleton';
 import { Filters } from '@/src/components/blog/Filters';
+import { BlogPostSkeleton } from '@/src/components/skeletons/blogPage-skeleton';
 import { Button } from '@/src/components/ui/button';
 import { Input } from '@/src/components/ui/input';
 import { useBlogPosts } from '@/src/hooks/react-query/useBlog';

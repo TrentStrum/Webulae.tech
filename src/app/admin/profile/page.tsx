@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 
 import { Button } from '@/src/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card';
-import { useAuth } from '@/src/hooks/useAuth';
+import { useAuth } from '@/src/hooks/auth/useAuth';
 
 export default function ProfilePage() {
 	const { user, loading } = useAuth();

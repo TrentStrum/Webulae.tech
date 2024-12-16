@@ -33,7 +33,6 @@ const DEFAULT_ROLE_REDIRECTS = {
 export async function middleware(req: NextRequest): Promise<NextResponse> {
 	// Create a response object that we can modify
 	const res = NextResponse.next();
-
 	// Get the pathname
 	const path = req.nextUrl.pathname;
 
