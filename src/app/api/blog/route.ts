@@ -1,63 +1,69 @@
 import { NextResponse } from 'next/server';
+import { supabase } from '@/src/lib/supabase';
 
-import { supabase } from '@/src/lib/supabase/server';
-
-export async function GET(request: Request): Promise<NextResponse> {
+export async function GET(request: Request) {
 	try {
 		const { searchParams } = new URL(request.url);
 		const page = parseInt(searchParams.get('page') || '1');
 		const searchTerm = searchParams.get('searchTerm') || '';
 		const sortBy = searchParams.get('sortBy') || 'newest';
-		const limit = 20;
-		const from = (page - 1) * limit;
-		const to = from + limit - 1;
+		const limit = 10;
+
+		console.log('API Route - Query params:', { page, searchTerm, sortBy });
 
 		let query = supabase
 			.from('blog_posts')
 			.select(`
-				id,
-				title,
-				content,
-				author_id,
-				slug,
-				created_at,
-				updated_at,
-				published_at,
-				excerpt,
-				short_description,
-				category,
-				author:profiles(id, username, full_name)
-			`, { count: 'exact' });
+				*,
+				profiles (
+					username,
+					full_name
+				)
+			`);
 
+		// Apply search if provided
 		if (searchTerm) {
 			query = query.or(`title.ilike.%${searchTerm}%,content.ilike.%${searchTerm}%`);
 		}
 
-		const { count } = await query;
+		// Apply sorting
+		query = query.order('created_at', { ascending: sortBy === 'oldest' });
 
+		// Get total count
+		const { count } = await query.count();
+
+		// Get paginated data
 		const { data: posts, error } = await query
-			.order('created_at', { ascending: sortBy === 'oldest' })
-			.range(from, to);
+			.range((page - 1) * limit, page * limit - 1);
 
-		if (error) {
-			console.error('Database query error:', error);
-			return NextResponse.json({ error: error.message }, { status: 500 });
-		}
+		if (error) throw error;
 
-		return NextResponse.json({
-			posts,
+		// Structure the response
+		const response = {
+			data: {
+				featured: posts?.[0],
+				categories: posts?.slice(1).reduce((acc, post) => {
+					const category = post.category || 'Uncategorized';
+					if (!acc[category]) acc[category] = [];
+					acc[category].push(post);
+					return acc;
+				}, {} as Record<string, typeof posts>),
+			},
 			pagination: {
 				page,
 				limit,
-				total: count || 0,
-				hasMore: count ? from + posts.length < count : false,
+				total: count,
+				hasMore: count > page * limit,
 			},
-		});
+		};
 
+		console.log('API Response:', response);
+
+		return NextResponse.json(response);
 	} catch (error) {
-		console.error('Unexpected error in blog API:', error);
+		console.error('API Error:', error);
 		return NextResponse.json(
-			{ error: 'An unexpected error occurred' },
+			{ error: 'Failed to fetch blog posts' },
 			{ status: 500 }
 		);
 	}

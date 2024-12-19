@@ -1,16 +1,17 @@
-import Link from 'next/link';
+'use client';
 
 import { Button } from '@/src/components/ui/button';
+import Link from 'next/link';
 
-const AuthButton = () => (
-	<div className="space-x-2">
-		<Button variant="ghost" asChild>
-			<Link href="/auth/login">Log in</Link>
-		</Button>
-		<Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90">
-			<Link href="/auth/signup">Sign up</Link>
-		</Button>
-	</div>
-);
-
-export default AuthButton;
+export default function AuthButtons(): JSX.Element {
+	return (
+		<div className="flex gap-2 px-3">
+			<Button variant="ghost" asChild>
+				<Link href="/sign-in">Sign In</Link>
+			</Button>
+			<Button asChild>
+				<Link href="/sign-up">Sign Up</Link>
+			</Button>
+		</div>
+	);
+}

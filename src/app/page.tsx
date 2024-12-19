@@ -1,6 +1,5 @@
-'use client';
 
-import { useUser } from '@clerk/nextjs';
+import { auth } from '@clerk/nextjs/server';
 
 import { Features } from '@/src/components/sections/features';
 import { Hero } from '@/src/components/sections/hero';
@@ -10,24 +9,23 @@ import AdminDashboard from './admin/dashboard/page';
 import ClientDashboard from './client/dashboard/page';
 import DeveloperDashboard from './developer/dashboard/page';
 
-export default function Home() {
-	const { user, isLoaded } = useUser();
+export default async function Home() {
+	const { userId, orgRole } = await auth();
 
-	if (!isLoaded) return null;
-
-	if (user?.publicMetadata?.role) {
-		const role = user.publicMetadata.role as string;
-		switch (role) {
-			case 'admin':
+	// If user is authenticated and has a role, show their dashboard
+	if (userId && orgRole) {
+		switch (orgRole) {
+			case 'org:admin':
 				return <AdminDashboard />;
-			case 'developer':
+			case 'org:developer':
 				return <DeveloperDashboard />;
-			case 'client':
+			case 'org:member':
 			default:
 				return <ClientDashboard />;
 		}
 	}
 
+	// For unauthenticated users or users without roles, show public landing page
 	return (
 		<main>
 			<Hero />

@@ -15,6 +15,9 @@ const nextConfig = {
 		ignoreDuringBuilds: false,
 	},
 	output: 'standalone',
+	experimental: {
+		serverActions: true,
+	},
 };
 
 module.exports = nextConfig;

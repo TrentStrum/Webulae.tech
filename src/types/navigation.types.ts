@@ -1,13 +1,13 @@
-import type { AuthUser } from './authUser.types';
+import type { UserResource } from '@clerk/types';
 
-export type NavigationGuard = (user: AuthUser | null) => boolean;
+export type NavigationGuard = (user: UserResource | null | undefined) => boolean;
 
-export type NavigationItem = {
+export interface NavigationItem {
 	name: string;
 	href: string;
-};
+}
 
-export type NavigationOptions = {
+export interface NavigationOptions {
 	navigationItems: NavigationItem[];
 	isActive: (href: string) => boolean;
-};
+}

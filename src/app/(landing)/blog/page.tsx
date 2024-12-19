@@ -1,7 +1,7 @@
 'use client';
 
 import { Search, SlidersHorizontal, ChevronLeft, ChevronRight } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import { BlogPostCard } from '@/src/components/blog/BlogPostCard';
 import { Filters } from '@/src/components/blog/Filters';
@@ -10,6 +10,7 @@ import { Button } from '@/src/components/ui/button';
 import { Input } from '@/src/components/ui/input';
 import { useBlogPosts } from '@/src/hooks/react-query/useBlog';
 
+import type { BlogResponse } from '@/src/hooks/react-query/useBlog';
 import type { BlogPost } from '@/src/types/blog.types';
 
 export default function BlogPage() {
@@ -24,29 +25,42 @@ export default function BlogPage() {
 		hasNextPage,
 		fetchNextPage,
 		refetch,
+		error,
 	} = useBlogPosts({ searchTerm, sortBy });
 
-	// Add logging for raw data
+	useEffect(() => {
+		if (error) {
+			console.error('Blog posts error:', error);
+		}
+	}, [error]);
+
 	console.log('Raw blogPosts data:', blogPosts);
 
-	const posts = blogPosts?.pages?.flatMap(page => page.posts) || [];
+	// Fix the type error by properly typing the data
+	const posts = blogPosts?.pages?.flatMap((page: BlogResponse) => {
+		const allPosts: BlogPost[] = [];
+		if (page.data.featured) allPosts.push(page.data.featured);
+		Object.values(page.data.categories).forEach(categoryPosts => {
+			allPosts.push(...categoryPosts);
+		});
+		return allPosts;
+	}) || [];
 	console.log('Flattened posts:', posts);
 
-	const featuredPost = posts[0];
+	const featuredPost = blogPosts?.pages?.[0]?.data.featured;
 	console.log('Featured post:', featuredPost);
 
 	const remainingPosts = posts.slice(1);
 	console.log('Remaining posts:', remainingPosts);
 
-	// Group posts by category
-	const postsByCategory = remainingPosts.reduce<Record<string, BlogPost[]>>((acc, post) => {
-		const category = post.category || 'Uncategorized';
-		if (!acc[category]) {
-			acc[category] = [];
-		}
-		acc[category].push(post);
+	// Fix the reduce function types
+	const postsByCategory = blogPosts?.pages?.reduce((acc, page) => {
+		Object.entries(page.data.categories).forEach(([category, posts]) => {
+			if (!acc[category]) acc[category] = [];
+			acc[category].push(...posts);
+		});
 		return acc;
-	}, {});
+	}, {} as Record<string, BlogPost[]>) || {};
 
 	console.log('Posts grouped by category:', postsByCategory);
 
@@ -100,7 +114,7 @@ export default function BlogPage() {
 					)}
 
 					{/* Posts by Category */}
-					{Object.entries(postsByCategory).map(([category, categoryPosts]) => (
+					{(Object.entries(postsByCategory) as [string, BlogPost[]][]).map(([category, categoryPosts]) => (
 						<section key={category} className="space-y-4">
 							<div className="flex justify-between items-center">
 								<h2 className="text-2xl font-semibold">{category}</h2>
@@ -126,7 +140,7 @@ export default function BlogPage() {
 									id={`category-${category}`}
 									className="flex overflow-x-auto gap-6 pb-4 scrollbar-hide snap-x snap-mandatory"
 								>
-									{categoryPosts.map((post) => (
+									{categoryPosts.map((post: BlogPost) => (
 										<div key={post.id} className="min-w-[300px] md:min-w-[350px] snap-start">
 											<BlogPostCard post={post} />
 										</div>

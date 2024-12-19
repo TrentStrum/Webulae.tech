@@ -1,19 +1,44 @@
 'use client';
 
-import { useState } from 'react';
+import { useUser } from '@clerk/nextjs';
+import { useState, useEffect } from 'react';
+
+import { apiClient } from '@/src/lib/apiClient';
 
 import type { DatabaseProfile } from '@/src/types/user.types';
 
 interface AuthState {
 	user: DatabaseProfile | null;
-	loading: boolean;
+	isPending: boolean;
 	setUser: (user: DatabaseProfile | null) => void;
-	setLoading: (loading: boolean) => void;
 }
 
 export function useAuthState(): AuthState {
+	const { user: clerkUser, isLoaded: clerkLoaded } = useUser();
 	const [user, setUser] = useState<DatabaseProfile | null>(null);
-	const [loading, setLoading] = useState(true);
+	const [isPending, setIsPending] = useState(true);
 
-	return { user, loading, setUser, setLoading };
+	useEffect(() => {
+		async function fetchDatabaseProfile(): Promise<void> {
+			if (!clerkUser?.id || !clerkLoaded) {
+				setUser(null);
+				setIsPending(false);
+				return;
+			}
+
+			try {
+				const { data: profile } = await apiClient.get<DatabaseProfile>(`/api/profiles/${clerkUser.id}`);
+				setUser(profile);
+			} catch (error) {
+				console.error('Error fetching database profile:', error);
+				setUser(null);
+			} finally {
+				setIsPending(false);
+			}
+		}
+
+		void fetchDatabaseProfile();
+	}, [clerkUser?.id, clerkLoaded]);
+
+	return { user, isPending, setUser };
 }

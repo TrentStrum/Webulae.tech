@@ -1,51 +1,37 @@
 'use client';
 
+import { useUser } from '@clerk/nextjs';
 import { Plus, Users } from 'lucide-react';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { redirect } from 'next/navigation';
 
 import { DashboardSkeleton } from '@/src/components/skeletons/dashboard-skeleton';
 import { Badge } from '@/src/components/ui/badge';
 import { Button } from '@/src/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card';
-import { useAuth } from '@/src/hooks/auth/useAuth';
 import { useDashboardStats } from '@/src/hooks/helpers/use-dashboard-stats';
 
 export default function AdminDashboard() {
-	const { projectStats, userStats, isLoading: isLoadingStats, error } = useDashboardStats();
-	const [isCheckingAccess, setIsCheckingAccess] = useState(true);
-	const { user, loading: isLoadingAuth } = useAuth();
+	const { projectStats, userStats, isLoading, error } = useDashboardStats();
+	const { user, isLoaded, isSignedIn } = useUser();
 
-	useEffect(() => {
-		const checkAccess = async () => {
-			if (!isLoadingAuth && !user) {
-				window.location.replace('/auth/login');
-				return;
-			}
 
-			if (user && user.role !== 'admin') {
-				window.location.replace('/');
-				return;
-			}
-
-			setIsCheckingAccess(false);
-		};
-
-		checkAccess();
-	}, [user, isLoadingAuth]);
-
-	if (isCheckingAccess || isLoadingStats || isLoadingAuth) {
-		return <DashboardSkeleton />;
+	if (!isLoaded || !isSignedIn) {
+		return redirect('/sign-in');
 	}
 
 	if (error) {
 		return <div>Error loading dashboard data</div>;
 	}
 
+	if (isLoading) {
+		return <DashboardSkeleton />;
+	}
+
 	return (
 		<div className="container py-8">
 			<div className="flex justify-between items-center mb-8">
-				<h1 className="text-3xl font-bold">{`${user?.full_name}'s Dashboard`}</h1>
+				<h1 className="text-3xl font-bold">{`${user.fullName}'s Dashboard`}</h1>
 				<div className="space-x-4">
 					<Button asChild>
 						<Link href="/admin/projects/new">

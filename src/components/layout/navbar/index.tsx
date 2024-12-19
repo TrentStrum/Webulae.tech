@@ -1,10 +1,11 @@
 'use client';
 
+import { useUser } from '@clerk/nextjs';
 import { useEffect, useState } from 'react';
 
-import { useAuth } from '@/src/contexts/AuthContext';
 import { useMobileMenu } from '@/src/hooks/helpers/use-mobile-menu';
 import { useNavigation } from '@/src/hooks/helpers/use-navigation';
+import { mapClerkUser } from '@/src/lib/clerk';
 
 import { NavbarActions } from './navbar-actions';
 import { NavbarBrand } from './navbar-brand';
@@ -14,13 +15,15 @@ import { NavbarMobileMenu } from './navbar-mobile-menu';
 
 export function Navbar() {
 	const [isMounted, setIsMounted] = useState(false);
-	const { user } = useAuth();
+	const { user, isLoaded } = useUser();
 	const { isOpen, setIsOpen } = useMobileMenu();
 	const { navigationItems } = useNavigation();
 
 	useEffect(() => {
 		setIsMounted(true);
 	}, []);
+
+	const mappedUser = user ? mapClerkUser(user) : null;
 
 	return (
 		<nav className="sticky top-0 z-50">
@@ -33,17 +36,19 @@ export function Navbar() {
 						</div>
 
 						<div className="flex items-center gap-2">
-							{user ? (
-								<NavbarActions user={user} isMounted={isMounted} />
-							) : (
-								<NavbarActions isMounted={isMounted} />
+							{isLoaded && (
+								mappedUser ? (
+									<NavbarActions user={mappedUser} isMounted={isMounted} />
+								) : (
+									<NavbarActions isMounted={isMounted} />
+								)
 							)}
 							<NavbarMobileMenu isOpen={isOpen} setIsOpen={setIsOpen} />
 						</div>
 					</div>
 				</div>
 			</div>
-			<NavbarMobileContent isOpen={isOpen} user={user} items={navigationItems} />
+			<NavbarMobileContent isOpen={isOpen} user={mappedUser} items={navigationItems} />
 		</nav>
 	);
 }

@@ -1,14 +1,14 @@
 'use client';
 
+import { useUser } from '@clerk/nextjs';
 import { usePathname, useRouter } from 'next/navigation';
-
-import { useAuthState } from '../../hooks/auth/useAuthState';
 
 import type {
 	NavigationGuard,
 	NavigationOptions,
 	NavigationItem,
 } from '@/src/types/navigation.types';
+// import type { UserResource } from '@clerk/types';
 
 // Public navigation items shown to non-authenticated users
 const publicNavigation: NavigationItem[] = [
@@ -42,12 +42,13 @@ const adminNavigation: NavigationItem[] = [
 
 export function useNavigation(): NavigationOptions {
 	const pathname = usePathname();
-	const { user } = useAuthState();
+	const { user, isLoaded } = useUser();
 
 	const getNavigationItems = (): NavigationItem[] => {
-		if (!user) return publicNavigation;
+		if (!isLoaded || !user) return publicNavigation;
 
-		switch (user.role) {
+		const role = (user.publicMetadata as { role?: string })?.role;
+		switch (role) {
 			case 'admin':
 				return adminNavigation;
 			case 'developer':
@@ -96,7 +97,7 @@ export function useNavigation(): NavigationOptions {
 }
 
 export function useNavigationGuard(path: string, guard: NavigationGuard): void {
-	const { user } = useAuthState();
+	const { user } = useUser();
 	const pathname = usePathname();
 	const router = useRouter();
 

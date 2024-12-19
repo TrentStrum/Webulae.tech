@@ -25,7 +25,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 					enableSystem
 					disableTransitionOnChange
 				>
-					<ClerkProvider>
+					<ClerkProvider
+						appearance={{
+							// your appearance config
+						}}
+						dynamic
+					>
 						<ClientProviders>
 							<ErrorBoundary>
 								<div className="flex min-h-screen flex-col">
