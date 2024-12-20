@@ -1,5 +1,6 @@
-import { withTimeout } from './helpers';
 import axios from 'axios';
+
+import { withTimeout } from './helpers';
 
 import type { AxiosRequestConfig } from 'axios';
 

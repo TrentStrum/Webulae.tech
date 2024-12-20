@@ -166,6 +166,82 @@ export interface Database {
 					is_default?: boolean;
 				};
 			};
+			organizations: {
+				Row: {
+					id: string;
+					clerk_org_id: string;
+					name: string;
+					owner_id: string;
+					subscription_status: 'active' | 'inactive';
+					subscription_plan: 'basic' | 'pro' | 'enterprise';
+					created_at: string;
+					updated_at: string;
+				};
+				Insert: {
+					clerk_org_id: string;
+					name: string;
+					owner_id: string;
+					subscription_status: 'active' | 'inactive';
+					subscription_plan: 'basic' | 'pro' | 'enterprise';
+				};
+				Update: {
+					clerk_org_id?: string;
+					name?: string;
+					owner_id?: string;
+					subscription_status?: 'active' | 'inactive';
+					subscription_plan?: 'basic' | 'pro' | 'enterprise';
+				};
+			};
+			users: {
+				Row: {
+					id: string;
+					clerk_id: string;
+					clerk_org_id: string;
+					email: string;
+					full_name: string | null;
+					role: 'owner' | 'professional' | 'client';
+					created_at: string;
+					updated_at: string;
+				};
+				Insert: {
+					clerk_id: string;
+					clerk_org_id: string;
+					email: string;
+					full_name: string | null;
+					role: 'owner' | 'professional' | 'client';
+				};
+				Update: {
+					clerk_org_id?: string;
+					email?: string;
+					full_name?: string | null;
+					role?: 'owner' | 'professional' | 'client';
+				};
+			};
+			invitations: {
+				Row: {
+					id: string;
+					organization_id: string;
+					token: string;
+					email: string;
+					expires_at: string;
+					role: 'client';
+					created_at: string;
+					used_at: string | null;
+				};
+				Insert: {
+					organization_id: string;
+					token: string;
+					email: string;
+					expires_at: string;
+					role: 'client';
+				};
+				Update: {
+					token?: string;
+					email?: string;
+					expires_at?: string;
+					role?: 'client';
+				};
+			};
 			// Add other tables as needed
 		};
 	};
@@ -184,4 +260,26 @@ export type DatabaseProfile = {
 	created_at: string;
 	updated_at: string;
 	last_sign_in_at: string | null;
+};
+
+export type Organization = {
+	id: string;
+	clerk_org_id: string;
+	name: string;
+	subscription_status: 'active' | 'inactive' | 'past_due';
+	subscription_plan?: string;
+	stripe_customer_id?: string;
+	created_at: string;
+	updated_at: string;
+};
+
+export type User = {
+	id: string;
+	clerk_id: string;
+	clerk_org_id: string;
+	email: string;
+	full_name?: string;
+	role: 'professional' | 'client';
+	created_at: string;
+	updated_at: string;
 };

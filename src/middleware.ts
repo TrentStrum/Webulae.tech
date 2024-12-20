@@ -9,7 +9,7 @@ const isPublicRoute = createRouteMatcher([
 	'/contact',
 	'/sign-in(.*)',
 	'/sign-up(.*)',
-	'/api/webhooks/clerk',
+	'/api/webhooks(.*)',
 	'/api/blog(.*)',
 	'/sso-callback',
 ]);
@@ -17,33 +17,45 @@ const isPublicRoute = createRouteMatcher([
 const isAdminRoute = createRouteMatcher(['/admin(.*)']);
 const isDeveloperRoute = createRouteMatcher(['/developer(.*)']);
 const isClientRoute = createRouteMatcher(['/client(.*)']);
-
+const isOrgSettingsRoute = createRouteMatcher(['/organization/settings(.*)']);
 
 export default clerkMiddleware(async (auth, request) => {
-
-
 	// Check public routes
 	if (isPublicRoute(request)) {
 		return NextResponse.next();
 	}
 
-	const { userId, redirectToSignIn, orgRole } = await auth();
+	const { userId, redirectToSignIn, orgRole, orgId } = await auth();
 
 	if (!userId) {
 		return redirectToSignIn();
 	}
 
+	// Organization settings checks
+	if (isOrgSettingsRoute(request)) {
+		if (!orgId) {
+			return NextResponse.redirect(new URL('/select-organization', request.url));
+		}
+
+		if (!(orgRole === 'org:admin' || orgRole === 'org:developer')) {
+			return NextResponse.redirect(new URL('/dashboard', request.url));
+		}
+	}
+
+	// Role-based route checks
 	if (isAdminRoute(request) && orgRole !== 'org:admin') {
 		return NextResponse.redirect(new URL('/', request.url));
 	}
 
-	if ((isDeveloperRoute(request) && orgRole !== 'org:developer') || 'org:admin') {
+	if (isDeveloperRoute(request) && !(orgRole === 'org:developer' || orgRole === 'org:admin')) {
 		return NextResponse.redirect(new URL('/', request.url));
 	}
 
-	if ((isClientRoute(request) && orgRole !== 'org:member') || 'org:developer' || 'org:admin') {
+	if (isClientRoute(request) && !(orgRole === 'org:member' || orgRole === 'org:developer' || orgRole === 'org:admin')) {
 		return NextResponse.redirect(new URL('/', request.url));
 	}
+
+	return NextResponse.next();
 });
 
 export const config = {

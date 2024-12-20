@@ -1,9 +1,9 @@
-
 import { auth } from '@clerk/nextjs/server';
 
 import { Features } from '@/src/components/sections/features';
 import { Hero } from '@/src/components/sections/hero';
 import { Pricing } from '@/src/components/sections/pricing';
+import { HeroSkeleton } from '@/src/components/skeletons/hero-skeleton';
 
 import AdminDashboard from './admin/dashboard/page';
 import ClientDashboard from './client/dashboard/page';

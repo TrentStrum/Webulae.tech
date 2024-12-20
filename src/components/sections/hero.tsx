@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 
 import { Button } from '@/src/components/ui/button';
 
-import { DashboardSkeleton } from '../skeletons/dashboard-skeleton';
+import { HeroSkeleton } from '../skeletons/hero-skeleton';
 
 
 export function Hero() {
@@ -22,7 +22,7 @@ export function Hero() {
 	};
 
 	if (!isLoaded) {
-		return <DashboardSkeleton />;
+		return <HeroSkeleton />;
 	}
 
 	return (
