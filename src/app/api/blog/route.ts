@@ -1,70 +1,77 @@
+import { createServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
-import { supabase } from '@/src/lib/supabase';
 
-export async function GET(request: Request) {
+export async function GET(request: Request): Promise<NextResponse> {
 	try {
 		const { searchParams } = new URL(request.url);
-		const page = parseInt(searchParams.get('page') || '1');
-		const searchTerm = searchParams.get('searchTerm') || '';
-		const sortBy = searchParams.get('sortBy') || 'newest';
+		const page = Math.max(1, parseInt(searchParams.get('page') || '1'));
+		const searchTerm = searchParams.get('search') || '';
+		const sortBy = searchParams.get('sort') || 'newest';
 		const limit = 10;
 
-		console.log('API Route - Query params:', { page, searchTerm, sortBy });
+		const cookieStore = cookies();
+		const supabase = createServerClient(
+			process.env.NEXT_PUBLIC_SUPABASE_URL!,
+			process.env.SUPABASE_SERVICE_ROLE_KEY!,
+			{
+				cookies: cookieStore,
+				auth: {
+					persistSession: false,
+					autoRefreshToken: false,
+				},
+			}
+		);
 
-		let query = supabase
+		// Get all posts to handle categories properly
+		const { data: posts, error } = await supabase
 			.from('blog_posts')
-			.select(`
-				*,
-				profiles (
-					username,
-					full_name
-				)
-			`);
+			.select('*, profiles(username, full_name)')
+			.order('created_at', { ascending: sortBy === 'oldest' });
 
-		// Apply search if provided
-		if (searchTerm) {
-			query = query.or(`title.ilike.%${searchTerm}%,content.ilike.%${searchTerm}%`);
+		if (error) {
+			console.error('Supabase error:', error);
+			return NextResponse.json({ error: 'Failed to fetch blog posts' }, { status: 500 });
 		}
 
-		// Apply sorting
-		query = query.order('created_at', { ascending: sortBy === 'oldest' });
+		// Filter by search term if provided
+		let filteredPosts = posts || [];
+		if (searchTerm) {
+			filteredPosts = filteredPosts.filter(post =>
+				post.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+				post.content?.toLowerCase().includes(searchTerm.toLowerCase())
+			);
+		}
 
-		// Get total count
-		const { count } = await query.count();
+		// Paginate the results
+		const start = (page - 1) * limit;
+		const end = start + limit;
+		const paginatedPosts = filteredPosts.slice(start, end);
 
-		// Get paginated data
-		const { data: posts, error } = await query
-			.range((page - 1) * limit, page * limit - 1);
-
-		if (error) throw error;
-
-		// Structure the response
 		const response = {
 			data: {
-				featured: posts?.[0],
-				categories: posts?.slice(1).reduce((acc, post) => {
-					const category = post.category || 'Uncategorized';
-					if (!acc[category]) acc[category] = [];
-					acc[category].push(post);
-					return acc;
-				}, {} as Record<string, typeof posts>),
+				featured: paginatedPosts[0] || null,
+				categories: paginatedPosts.slice(1).reduce(
+					(acc, post) => {
+						const category = post.category || 'Uncategorized';
+						if (!acc[category]) acc[category] = [];
+						acc[category].push(post);
+						return acc;
+					},
+					{} as Record<string, typeof posts>
+				),
 			},
 			pagination: {
 				page,
 				limit,
-				total: count,
-				hasMore: count > page * limit,
+				total: filteredPosts.length,
+				hasMore: end < filteredPosts.length,
 			},
 		};
-
-		console.log('API Response:', response);
 
 		return NextResponse.json(response);
 	} catch (error) {
 		console.error('API Error:', error);
-		return NextResponse.json(
-			{ error: 'Failed to fetch blog posts' },
-			{ status: 500 }
-		);
+		return NextResponse.json({ error: 'Failed to fetch blog posts' }, { status: 500 });
 	}
 }

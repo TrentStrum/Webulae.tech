@@ -1,9 +1,19 @@
 'use client';
 
-import { Button } from '@/src/components/ui/button';
+import { useAuth } from '@clerk/nextjs';
 import Link from 'next/link';
 
+import { Button } from '@/src/components/ui/button';
+
 export default function AuthButtons(): JSX.Element {
+	const { isSignedIn, isLoaded } = useAuth();
+
+	// Don't show anything while loading to prevent flash
+	if (!isLoaded) return <></>;
+
+	// If signed in, don't show auth buttons
+	if (isSignedIn) return <></>;
+
 	return (
 		<div className="flex gap-2 px-3">
 			<Button variant="ghost" asChild>

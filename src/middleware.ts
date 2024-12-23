@@ -1,66 +1,51 @@
-import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
+import { authMiddleware } from '@clerk/nextjs';
+import { clerkClient } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 
-const isPublicRoute = createRouteMatcher([
-	'/',
-	'/about',
-	'/blog(.*)',
-	'/services',
-	'/contact',
-	'/sign-in(.*)',
-	'/sign-up(.*)',
-	'/api/webhooks(.*)',
-	'/api/blog(.*)',
-	'/sso-callback',
-]);
+import type { NextRequest } from 'next/server';
 
-const isAdminRoute = createRouteMatcher(['/admin(.*)']);
-const isDeveloperRoute = createRouteMatcher(['/developer(.*)']);
-const isClientRoute = createRouteMatcher(['/client(.*)']);
-const isOrgSettingsRoute = createRouteMatcher(['/organization/settings(.*)']);
-
-export default clerkMiddleware(async (auth, request) => {
-	// Check public routes
-	if (isPublicRoute(request)) {
-		return NextResponse.next();
-	}
-
-	const { userId, redirectToSignIn, orgRole, orgId } = await auth();
-
-	if (!userId) {
-		return redirectToSignIn();
-	}
-
-	// Organization settings checks
-	if (isOrgSettingsRoute(request)) {
-		if (!orgId) {
-			return NextResponse.redirect(new URL('/select-organization', request.url));
+export default authMiddleware({
+	async afterAuth(auth, req: NextRequest) {
+		// Allow public access to blog API
+		if (req.nextUrl.pathname.startsWith('/api/blog')) {
+			return; // Allow the request to proceed
 		}
 
-		if (!(orgRole === 'org:admin' || orgRole === 'org:developer')) {
-			return NextResponse.redirect(new URL('/dashboard', request.url));
+		// Handle other private API routes
+		if (!auth.userId && req.nextUrl.pathname.startsWith('/api')) {
+			return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 		}
-	}
 
-	// Role-based route checks
-	if (isAdminRoute(request) && orgRole !== 'org:admin') {
-		return NextResponse.redirect(new URL('/', request.url));
-	}
+		// Check organization access
+		if (auth.userId && req.nextUrl.pathname.startsWith('/api/organizations')) {
+			const orgId = req.nextUrl.pathname.split('/')[3];
+			const memberships = await clerkClient.organizations.getOrganizationMembershipList({
+				organizationId: orgId,
+			});
 
-	if (isDeveloperRoute(request) && !(orgRole === 'org:developer' || orgRole === 'org:admin')) {
-		return NextResponse.redirect(new URL('/', request.url));
-	}
+			if (!memberships.filter(m => m.publicUserData?.userId === auth.userId).length) {
+				return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+			}
+		}
 
-	if (isClientRoute(request) && !(orgRole === 'org:member' || orgRole === 'org:developer' || orgRole === 'org:admin')) {
-		return NextResponse.redirect(new URL('/', request.url));
-	}
+		// Check permissions for protected routes
+		if (auth.userId && req.nextUrl.pathname.startsWith('/api/admin')) {
+			const user = await clerkClient.users.getUser(auth.userId);
+			const role = user.publicMetadata.role as string;
 
-	return NextResponse.next();
+			if (!role || !['admin'].includes(role)) {
+				return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+			}
+		}
+	},
+	publicRoutes: [
+		"/", 
+		"/api/webhooks(.*)",
+		"/api/blog(.*)",
+		"/blog(.*)",
+	],
 });
 
 export const config = {
-	matcher: [
-		// Add your matchers but exclude API routes
-		"/((?!api|_next/static|_next/image|favicon.ico).*)",
-	],
+	matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
 };

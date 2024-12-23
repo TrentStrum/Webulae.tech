@@ -1,6 +1,6 @@
-import { supabaseClient } from '../lib/supabaseClient';
+import { supabaseClient } from '@/src/lib/supabase/client';
 
-import type { AuthUser } from '../types/user.types';
+import type { AuthUser } from '@/src/types/user.types';
 import type { Session } from '@supabase/supabase-js';
 
 // Get the current session

@@ -1,9 +1,9 @@
 import type { DatabaseProfile } from '@/src/types/user.types';
-import type { User } from '@clerk/nextjs';
+import type { UserResource } from '@clerk/types';
 
 type UserRole = 'admin' | 'developer' | 'client';
 
-export const mapClerkUser = (user: NonNullable<User>): DatabaseProfile => ({
+export const mapClerkUser = (user: NonNullable<UserResource>): DatabaseProfile => ({
 	id: user.id,
 	email: user.primaryEmailAddress?.emailAddress || '',
 	username: user.username,

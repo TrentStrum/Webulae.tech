@@ -1,3 +1,2 @@
-export * from './useAuth';
-export * from './usePasswordValidation';
-export * from './useRateLimit';
+export * from './use-auth-state';
+export * from './use-rate-limit';

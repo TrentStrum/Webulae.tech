@@ -4,7 +4,11 @@ export type Message = {
 	content: string; // Main content of the message
 	status: 'unread' | 'read'; // Status of the message (e.g., unread or read)
 	created_at: string; // Timestamp of when the message was created
-	sender_id: string; // ID of the user who sent the message
+	sender: {
+		id: string;
+		full_name: string;
+		username: string;
+	}; // ID of the user who sent the message
 	recipient_id: string; // ID of the user who received the message
 	project_id: string; // ID of the project the message belongs to
 	profiles: {

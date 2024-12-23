@@ -1,27 +1,41 @@
-export type Permission =
-	| 'view:dashboard'
-	| 'manage:users'
-	| 'manage:settings'
-	| 'view:reports'
-	| 'manage:billing';
+import { useOrganization } from '@clerk/nextjs';
 
-type RolePermissions = {
-	[key: string]: Permission[];
+import type { OrganizationMembershipResource } from '@clerk/types';
+
+export type Permission = 
+	| 'users:write'
+	| 'users:read'
+	| 'developer:access'
+	| 'admin:access'
+	| 'settings:read'
+	| 'settings:write'
+	| 'analytics:read'
+	| 'members:invite';
+
+type Role = 'org:admin' | 'org:developer' | 'org:member' | null;
+
+const rolePermissions: Record<NonNullable<Role>, Permission[]> = {
+	'org:admin': ['users:write', 'users:read', 'admin:access'],
+	'org:developer': ['developer:access', 'users:read'],
+	'org:member': ['users:read']
 };
 
-export const ROLE_PERMISSIONS: RolePermissions = {
-	'org:admin': [
-		'view:dashboard',
-		'manage:users',
-		'manage:settings',
-		'view:reports',
-		'manage:billing',
-	],
-	'org:developer': ['view:dashboard', 'manage:users', 'view:reports'],
-	'org:member': ['view:dashboard'],
-};
-
-export function hasPermission(role: string | null, permission: Permission): boolean {
+export function hasPermission(role: Role, permission: Permission): boolean {
 	if (!role) return false;
-	return ROLE_PERMISSIONS[role]?.includes(permission) ?? false;
+	return rolePermissions[role]?.includes(permission) ?? false;
+}
+
+interface PermissionsAPI {
+	can: (permission: Permission) => boolean;
+}
+
+export function usePermissions(): PermissionsAPI {
+	const { organization } = useOrganization();
+	
+	const can = (permission: Permission): boolean => {
+		const role = (organization as unknown as OrganizationMembershipResource)?.role ?? null;
+		return hasPermission(role as Role, permission);
+	};
+	
+	return { can };
 }

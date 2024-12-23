@@ -18,8 +18,8 @@ import {
 	SelectContent,
 	SelectItem,
 } from '@/src/components/ui/select';
-import { useToast } from '@/src/hooks';
-import { useUploadDocument } from '@/src/hooks/react-query/useDocuments';
+import { useToast } from '@/src/hooks/helpers/use-toast';
+import { useUploadDocument } from '@/src/hooks/react-query/documents/mutations';
 
 interface DocumentUploaderProps {
 	projectId: string;

@@ -1,6 +1,6 @@
 'use client';
 
-import { usePermissions } from '@/src/hooks/usePermissions';
+import { usePermissions } from '@/src/hooks/helpers/usePermissions';
 
 import type { Permission } from '@/src/lib/permissions';
 

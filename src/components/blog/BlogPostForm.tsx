@@ -15,7 +15,7 @@ import {
 } from '@/src/components/ui/form';
 import { Input } from '@/src/components/ui/input';
 import { Textarea } from '@/src/components/ui/textarea';
-import { useCreateBlogPost } from '@/src/hooks/react-query/useBlog';
+import { useCreateBlogPost } from '@/src/hooks/react-query/blog';
 
 const formSchema = z.object({
 	title: z.string().min(1, 'Title is required'),

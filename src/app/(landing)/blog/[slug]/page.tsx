@@ -3,8 +3,8 @@
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
 
-import { BlogPostSkeleton } from '@/src/components/skeletons/blogPost-skeleton';
-import { useBlogPost } from '@/src/hooks/react-query/useBlog';
+import { BlogPostSkeleton } from '@/src/components/skeletons/blog-page-skeleton';
+import { useBlogPostWithViews } from '@/src/hooks/react-query/blog';
 
 export default function BlogPostPage(): JSX.Element {
 	const { slug } = useParams();
@@ -13,7 +13,7 @@ export default function BlogPostPage(): JSX.Element {
 		data: post,
 		isPending,
 		error,
-	} = useBlogPost(slug as string);
+	} = useBlogPostWithViews(slug as string);
 
 	if (isPending) {
 		return <BlogPostSkeleton />;

@@ -1,20 +1,10 @@
-import { supabaseClient } from '../lib/supabaseClient';
+import { supabase } from "../lib/supabase/config";
 
-interface ProjectDocument {
-	id: string;
-	name: string;
-	category: string;
-	file_url: string;
-	file_type: string;
-	project_id: string;
-	uploader_id: string;
-	created_at: string;
-	profiles?: { username: string; full_name: string };
-}
+import type { ProjectDocument } from '../types/document.types';
 
 export const DocumentsDataAccess = {
 	async getAll(): Promise<ProjectDocument[]> {
-		const { data, error } = await supabaseClient
+		const { data, error } = await supabase
 			.from('project_documents')
 			.select('*, profiles(username, full_name)')
 			.order('created_at', { ascending: false })
@@ -28,14 +18,14 @@ export const DocumentsDataAccess = {
 		const fileName = `${Math.random()}.${fileExt}`;
 		const filePath = `${category}/${fileName}`;
 
-		const { error: uploadError } = await supabaseClient.storage
+		const { error: uploadError } = await supabase.storage
 			.from('documents')
 			.upload(filePath, file);
 
 		if (uploadError) throw new Error(uploadError.message);
 
 		// 2. Create database record
-		const { data, error: insertError } = await supabaseClient
+		const { data, error: insertError } = await supabase
 			.from('project_documents')
 			.insert({
 				name: file.name,

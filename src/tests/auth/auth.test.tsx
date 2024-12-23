@@ -2,9 +2,11 @@
 
 import { render, screen, fireEvent, renderHook } from '@testing-library/react';
 
-import { PasswordInput } from '@/src/components/auth/PasswordInput';
-import { usePasswordValidation } from '@/src/hooks/auth/usePasswordValidation';
-import { useRateLimit } from '@/src/hooks/auth/useRateLimit';
+import { PasswordInput } from '@/src/components/ui/password-input';
+import { usePasswordValidation } from '@/src/hooks/auth/use-password-validation';
+import { useRateLimit } from '@/src/hooks/auth/use-rate-limit';
+
+
 
 jest.mock('@/src/contexts/AuthContext');
 
@@ -36,18 +38,18 @@ describe('Authentication System', () => {
 
 	describe('Rate Limiting', () => {
 		it('enforces rate limits', async () => {
-			const config = { maxAttempts: 3, timeWindow: 60000 }; // 3 attempts per minute
+			const config = { limit: 3, windowMs: 60000 }; // 3 attempts per minute
 			const { result } = renderHook(() => useRateLimit(config));
 
 			// First three attempts should be allowed
 			for (let i = 0; i < 3; i++) {
-				result.current.recordAttempt();
+				result.current.increment();
 				const check = result.current.checkRateLimit();
 				expect(check.allowed).toBe(true);
 			}
 
 			// Fourth attempt should be blocked
-			result.current.recordAttempt();
+			result.current.increment();
 			const check = result.current.checkRateLimit();
 			expect(check.allowed).toBe(false);
 			expect(check.timeUntilReset).toBeGreaterThan(0);

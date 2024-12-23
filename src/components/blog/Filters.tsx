@@ -8,17 +8,19 @@ import {
 	SelectValue,
 } from '@/src/components/ui/select';
 
-type Props = {
-	sortBy: string;
-	setSortBy: (value: string) => void;
-};
+import type { Dispatch, SetStateAction } from 'react';
 
-export function Filters({ sortBy, setSortBy }: Props) {
+interface FiltersProps {
+	sortBy: 'newest' | 'oldest';
+	setSortBy: Dispatch<SetStateAction<'newest' | 'oldest'>>;
+}
+
+export function Filters({ sortBy, setSortBy }: FiltersProps) {
 	return (
 		<div className="mb-6 p-4 border rounded-lg">
 			<label htmlFor="sort-trigger" className="text-sm font-medium mb-1 block">
 				Sort by
-				<Select value={sortBy} onValueChange={setSortBy}>
+				<Select value={sortBy} onValueChange={(value: 'newest' | 'oldest') => setSortBy(value)}>
 					<SelectTrigger id="sort-trigger">
 						<SelectValue />
 					</SelectTrigger>

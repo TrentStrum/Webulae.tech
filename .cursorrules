@@ -1,38 +1,131 @@
 {
-  "typescript": {
-    "rules": {
-      "explicit-function-return-type": {
-        "enabled": true,
-        "description": "All functions must have an explicit return type annotation",
-        "severity": "warning"
-      },
-      "api-client-usage": {
-        "enabled": true,
-        "description": "Client-side code must use apiClient, server-side code must use supabase directly",
-        "clientPattern": "src/**/*.{ts,tsx}",
-        "serverPattern": "src/app/**/*.{ts,tsx}",
-        "rules": {
-          "client": {
-            "required": "apiClient",
-            "forbidden": "supabase"
-          },
-          "server": {
-            "required": "supabase",
-            "forbidden": "apiClient"
-          }
-        },
-        "severity": "warning"
-      },
-      "use-is-pending": {
-        "enabled": true,
-        "description": "Use isPending instead of isLoading (deprecated)",
-        "pattern": "src/**/*.{ts,tsx}",
-        "rules": {
-          "forbidden": "isLoading",
-          "required": "isPending"
-        },
-        "severity": "warning"
-      }
-    }
-  }
-} 
+	"typescript": {
+		"rules": {
+			"explicit-function-return-type": {
+				"enabled": true,
+				"description": "All functions must have an explicit return type annotation",
+				"severity": "warning",
+				"allowedNames": ["page", "layout", "loading", "error", "not-found"],
+				"examples": {
+					"correct": [
+						"function example(): void { }",
+						"const example = (): string => { return 'hello'; }",
+						"async function fetchData(): Promise<Data> { }"
+					],
+					"incorrect": [
+						"function example() { }",
+						"const example = () => { return 'hello'; }",
+						"async function fetchData() { }"
+					]
+				}
+			},
+			"no-explicit-any": {
+				"enabled": true,
+				"description": "Avoid using the 'any' type",
+				"severity": "warning",
+				"rules": {
+					"forbidden": "any",
+					"suggestions": [
+						"unknown",
+						"Record<string, unknown>",
+						"specific-type"
+					]
+				}
+			},
+			"consistent-type-imports": {
+				"enabled": true,
+				"description": "Use type imports consistently",
+				"severity": "error",
+				"examples": {
+					"correct": [
+						"import type { User } from '@/types';",
+						"import type { ReactNode } from 'react';"
+					],
+					"incorrect": [
+						"import { User } from '@/types';",
+						"import { type ReactNode } from 'react';"
+					]
+				}
+			},
+			"no-unused-vars": {
+				"enabled": true,
+				"description": "No unused variables",
+				"severity": "error",
+				"rules": {
+					"ignorePattern": "^_"
+				}
+			},
+			"no-console": {
+				"enabled": true,
+				"description": "No console statements except warn and error",
+				"severity": "warning",
+				"rules": {
+					"allowed": ["warn", "error"]
+				}
+			},
+			"prettier-format": {
+				"enabled": true,
+				"description": "Follow project's Prettier configuration",
+				"severity": "warning",
+				"rules": {
+					"useTabs": true,
+					"tabWidth": 1,
+					"singleQuote": true,
+					"semi": true,
+					"trailingComma": "es5",
+					"printWidth": 100,
+					"indentStyle": "tab"
+				}
+			},
+			"import-order": {
+				"enabled": true,
+				"description": "Enforce consistent import ordering",
+				"severity": "warning",
+				"rules": {
+					"groups": [
+						"builtin",
+						"external",
+						"internal",
+						"parent",
+						"sibling",
+						"index",
+						"object",
+						"type"
+					],
+					"newlines-between": "always",
+					"alphabetize": {
+						"order": "asc",
+						"caseInsensitive": true
+					}
+				},
+				"examples": {
+					"correct": [
+						"import { useState } from 'react';\n\nimport { Button } from '@/components/ui/button';\n\nimport { useUser } from './hooks';",
+						"import type { User } from '@/types';\nimport { auth } from '@clerk/nextjs';\n\nimport { db } from '@/lib/db';"
+					],
+					"incorrect": [
+						"import { db } from '@/lib/db';\nimport { useState } from 'react';",
+						"import { useUser } from './hooks';\nimport { Button } from '@/components/ui/button';"
+					]
+				}
+			},
+			"api-client-usage": {
+				"enabled": true,
+				"description": "Client-side code must use apiClient, server-side code must use supabase directly",
+				"clientPattern": "src/**/*.{ts,tsx}",
+				"serverPattern": "src/app/**/*.{ts,tsx}",
+				"rules": {
+					"client": {
+						"required": "apiClient",
+						"forbidden": "supabase"
+					},
+					"server": {
+						"required": "supabase",
+						"forbidden": "apiClient"
+					}
+				},
+				"severity": "warning"
+			}
+		}
+	}
+}

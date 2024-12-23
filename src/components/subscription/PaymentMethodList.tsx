@@ -3,11 +3,12 @@
 import { CreditCard, Trash2 } from 'lucide-react';
 
 import { Button } from '@/src/components/ui/button';
-import { useSubscriptionPayment } from '@/src/hooks/subscription/useSubscriptionPayment';
+import { useSubscriptionPayment } from '@/src/hooks/subscription/use-subscription-payment';
 
 import { Badge } from '../ui/badge';
 
 import type { PaymentMethod } from '@/src/types/subscription.types';
+
 
 interface Props {
 	paymentMethods: PaymentMethod[];

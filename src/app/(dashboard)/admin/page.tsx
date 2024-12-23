@@ -1,10 +1,12 @@
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 
+import { hasPermission } from '@/src/lib/auth/permissions';
+
 export default async function AdminDashboard() {
 	const { orgRole } = await auth();
 
-	if (orgRole !== 'org:admin') {
+	if (!hasPermission(orgRole ?? null, 'users:write')) {
 		redirect('/dashboard');
 	}
 

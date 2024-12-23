@@ -1,6 +1,12 @@
-export type AuthUser = {
+
+
+export interface AuthUser {
 	id: string;
-	email: string;
-	role: 'admin' | 'client' | 'developer';
-	avatar_url?: string;
-};
+	firstName: string | null;
+	lastName: string | null;
+	fullName: string | null;
+	imageUrl: string;
+	emailAddresses: Array<{
+		emailAddress: string;
+	}>;
+}

@@ -1,75 +1,32 @@
 'use client';
 
 import { Search, SlidersHorizontal, ChevronLeft, ChevronRight } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 import { BlogPostCard } from '@/src/components/blog/BlogPostCard';
 import { Filters } from '@/src/components/blog/Filters';
 import { BlogPostsSkeleton } from '@/src/components/skeletons/blogPosts-skeleton';
 import { Button } from '@/src/components/ui/button';
 import { Input } from '@/src/components/ui/input';
-import { useBlogPosts } from '@/src/hooks/react-query/useBlog';
+import { useBlogPosts } from '@/src/hooks/react-query/blog/queries';
 
-import type { BlogResponse } from '@/src/hooks/react-query/useBlog';
-import type { BlogPost } from '@/src/types/blog.types';
-
-export default function BlogPage() {
+export default function BlogPage(): JSX.Element {
 	const [searchTerm, setSearchTerm] = useState('');
-	const [sortBy, setSortBy] = useState('newest');
+	const [sortBy, setSortBy] = useState<'newest' | 'oldest'>('newest');
 	const [showFilters, setShowFilters] = useState(false);
+	const [page, setPage] = useState(1);
 
-	const {
-		data: blogPosts,
-		isLoading,
-		isFetchingNextPage,
-		hasNextPage,
-		fetchNextPage,
-		refetch,
-		error,
-	} = useBlogPosts({ searchTerm, sortBy });
+	const { data, isLoading, error } = useBlogPosts({ 
+		searchTerm, 
+		sortBy,
+		page
+	});
 
-	useEffect(() => {
-		if (error) {
-			console.error('Blog posts error:', error);
-		}
-	}, [error]);
 
-	console.log('Raw blogPosts data:', blogPosts);
+	const { featured, categories } = data?.data || { featured: null, categories: {} };
+	const { hasMore } = data?.pagination || { hasMore: false };
 
-	// Fix the type error by properly typing the data
-	const posts = blogPosts?.pages?.flatMap((page: BlogResponse) => {
-		const allPosts: BlogPost[] = [];
-		if (page.data.featured) allPosts.push(page.data.featured);
-		Object.values(page.data.categories).forEach(categoryPosts => {
-			allPosts.push(...categoryPosts);
-		});
-		return allPosts;
-	}) || [];
-	console.log('Flattened posts:', posts);
-
-	const featuredPost = blogPosts?.pages?.[0]?.data.featured;
-	console.log('Featured post:', featuredPost);
-
-	const remainingPosts = posts.slice(1);
-	console.log('Remaining posts:', remainingPosts);
-
-	// Fix the reduce function types
-	const postsByCategory = blogPosts?.pages?.reduce((acc, page) => {
-		Object.entries(page.data.categories).forEach(([category, posts]) => {
-			if (!acc[category]) acc[category] = [];
-			acc[category].push(...posts);
-		});
-		return acc;
-	}, {} as Record<string, BlogPost[]>) || {};
-
-	console.log('Posts grouped by category:', postsByCategory);
-
-	const handleSearch = (value: string) => {
-		setSearchTerm(value);
-		refetch();
-	};
-
-	const scrollCategory = (categoryId: string, direction: 'left' | 'right') => {
+	const scrollCategory = (categoryId: string, direction: 'left' | 'right'): void => {
 		const container = document.getElementById(`category-${categoryId}`);
 		if (container) {
 			const scrollAmount = direction === 'left' ? -400 : 400;
@@ -89,10 +46,14 @@ export default function BlogPage() {
 							placeholder="Search posts..."
 							className="pl-9 w-full"
 							value={searchTerm}
-							onChange={(e) => handleSearch(e.target.value)}
+							onChange={(e) => setSearchTerm(e.target.value)}
 						/>
 					</div>
-					<Button variant="outline" size="icon" onClick={() => setShowFilters(!showFilters)}>
+					<Button 
+						variant="outline" 
+						size="icon" 
+						onClick={() => setShowFilters(!showFilters)}
+					>
 						<SlidersHorizontal className="h-4 w-4" />
 					</Button>
 				</div>
@@ -100,24 +61,24 @@ export default function BlogPage() {
 
 			{showFilters && <Filters sortBy={sortBy} setSortBy={setSortBy} />}
 
-			{isLoading ? (
+			{error ? (
+				<p className="text-center text-destructive">Failed to load blog posts</p>
+			) : isLoading ? (
 				<BlogPostsSkeleton />
-			) : !posts.length ? (
+			) : !categories || Object.keys(categories).length === 0 ? (
 				<p className="text-center text-muted-foreground py-8">No posts found.</p>
 			) : (
 				<>
-					{/* Featured Post */}
-					{featuredPost && (
+					{featured && (
 						<section className="mb-12">
-							<BlogPostCard post={featuredPost} variant="featured" />
+							<BlogPostCard post={featured} variant="featured" />
 						</section>
 					)}
 
-					{/* Posts by Category */}
-					{(Object.entries(postsByCategory) as [string, BlogPost[]][]).map(([category, categoryPosts]) => (
+					{Object.entries(categories).map(([category, posts]) => (
 						<section key={category} className="space-y-4">
 							<div className="flex justify-between items-center">
-								<h2 className="text-2xl font-semibold">{category}</h2>
+								<h2 className="text-2xl font-semibold capitalize">{category}</h2>
 								<div className="flex gap-2">
 									<Button
 										variant="outline"
@@ -140,7 +101,7 @@ export default function BlogPage() {
 									id={`category-${category}`}
 									className="flex overflow-x-auto gap-6 pb-4 scrollbar-hide snap-x snap-mandatory"
 								>
-									{categoryPosts.map((post: BlogPost) => (
+									{posts.map((post) => (
 										<div key={post.id} className="min-w-[300px] md:min-w-[350px] snap-start">
 											<BlogPostCard post={post} />
 										</div>
@@ -150,15 +111,13 @@ export default function BlogPage() {
 						</section>
 					))}
 
-					{/* Load More Button */}
-					{hasNextPage && (
+					{hasMore && (
 						<div className="flex justify-center mt-8">
 							<Button
-								onClick={() => fetchNextPage()}
-								disabled={isFetchingNextPage}
+								onClick={() => setPage(p => p + 1)}
 								variant="outline"
 							>
-								{isFetchingNextPage ? 'Loading more...' : 'Load More'}
+								Load More
 							</Button>
 						</div>
 					)}

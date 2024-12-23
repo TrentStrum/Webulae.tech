@@ -17,6 +17,7 @@ const nextConfig = {
 	output: 'standalone',
 	experimental: {
 		serverActions: true,
+		middlewarePrefetch: 'flexible',
 	},
 };
 

@@ -3,9 +3,9 @@
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 
+import { useAuthState } from '@/src/hooks/auth/use-auth-state';
 import { apiClient } from '@/src/lib/apiClient';
 
-import { useAuthState } from '../auth/useAuthState';
 
 type Project = {
 	status: string;
@@ -26,7 +26,7 @@ export function useDashboardStats(): {
 	isLoading: boolean;
 	error: Error | null;
 } {
-	const { user, loading: isLoadingAuth } = useAuthState();
+	const { user, isPending: isLoadingAuth } = useAuthState();
 	const router = useRouter();
 
 	const { data, isLoading, error } = useQuery({
@@ -45,19 +45,19 @@ export function useDashboardStats(): {
 				apiClient.get<ApiResponse<Profile>>('/profiles'),
 			]);
 
-			if (projectsResult.error) throw projectsResult.error;
-			if (usersResult.error) throw usersResult.error;
+			if (!projectsResult.data || projectsResult.data.error) throw projectsResult.data?.error;
+			if (!usersResult.data || usersResult.data.error) throw usersResult.data?.error;
 
 			return {
 				projectStats: {
-					total: projectsResult.data?.length || 0,
-					active: projectsResult.data?.filter((p) => p.status !== 'completed').length || 0,
-					completed: projectsResult.data?.filter((p) => p.status === 'completed').length || 0,
+					total: projectsResult.data.data?.length || 0,
+					active: projectsResult.data.data?.filter((p) => p.status !== 'completed').length || 0,
+					completed: projectsResult.data.data?.filter((p) => p.status === 'completed').length || 0,
 				},
 				userStats: {
-					total: usersResult.data?.length || 0,
-					clients: usersResult.data?.filter((u) => u.role === 'client').length || 0,
-					developers: usersResult.data?.filter((u) => u.role === 'developer').length || 0,
+					total: usersResult.data.data?.length || 0,
+					clients: usersResult.data.data?.filter((u) => u.role === 'client').length || 0,
+					developers: usersResult.data.data?.filter((u) => u.role === 'developer').length || 0,
 				},
 			};
 		},

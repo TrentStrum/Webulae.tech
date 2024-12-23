@@ -1,14 +1,12 @@
 'use client';
 
-import { useUser } from '@clerk/nextjs';
+import { useAuth, useOrganization } from '@clerk/nextjs';
 import { usePathname, useRouter } from 'next/navigation';
 
 import type {
-	NavigationGuard,
 	NavigationOptions,
 	NavigationItem,
 } from '@/src/types/navigation.types';
-// import type { UserResource } from '@clerk/types';
 
 // Public navigation items shown to non-authenticated users
 const publicNavigation: NavigationItem[] = [
@@ -42,21 +40,52 @@ const adminNavigation: NavigationItem[] = [
 
 export function useNavigation(): NavigationOptions {
 	const pathname = usePathname();
-	const { user, isLoaded } = useUser();
+	const { isSignedIn, isLoaded: isAuthLoaded } = useAuth();
+	const { 
+		organization, 
+		membership,
+		memberships,
+		isLoaded: isOrgLoaded 
+	} = useOrganization();
 
 	const getNavigationItems = (): NavigationItem[] => {
-		if (!isLoaded || !user) return publicNavigation;
+		// Wait for both auth and org to load
+		if (!isAuthLoaded || !isOrgLoaded) {
+			return publicNavigation;
+		}
 
-		const role = (user.publicMetadata as { role?: string })?.role;
+		if (!isSignedIn) {
+			return publicNavigation;
+		}
+
+		if (!memberships?.data) {
+			return publicNavigation;
+		}
+
+		// Check if user has any organization memberships
+		const membershipCount = memberships.data.length;
+
+		// If user has memberships but no active organization
+		if (membershipCount > 0 && !organization) {
+			return publicNavigation;
+		}
+
+		// If user has no memberships at all
+		if (membershipCount === 0) {
+			return clientNavigation;
+		}
+		
+		const role = membership?.role;
+
 		switch (role) {
-			case 'admin':
+			case 'org:admin':
 				return adminNavigation;
-			case 'developer':
+			case 'org:developer':
 				return developerNavigation;
-			case 'client':
+			case 'org:member':
 				return clientNavigation;
 			default:
-				return publicNavigation;
+				return clientNavigation;
 		}
 	};
 
@@ -96,14 +125,15 @@ export function useNavigation(): NavigationOptions {
 	};
 }
 
-export function useNavigationGuard(path: string, guard: NavigationGuard): void {
-	const { user } = useUser();
+export type AuthGuard = (isAuthenticated: boolean) => boolean;
+
+export function useNavigationGuard(path: string, guard: AuthGuard): void {
+	const { isSignedIn } = useAuth();
 	const pathname = usePathname();
 	const router = useRouter();
 
-	// React Query will handle this automatically when the auth state changes
 	if (pathname === path) {
-		const canAccess = guard(user);
+		const canAccess = guard(!!isSignedIn);
 		if (!canAccess) {
 			router.push('/');
 		}

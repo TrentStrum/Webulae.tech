@@ -3,7 +3,7 @@
 import { LoadingSpinner } from '@/src/components/loading/LoadingSpinner';
 import { Button } from '@/src/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/src/components/ui/card';
-import { useSubscription } from '@/src/hooks/useSubscription';
+import { useCurrentSubscription } from '@/src/hooks/react-query/subscription/queries';
 
 const plans = [
 	{
@@ -27,7 +27,7 @@ const plans = [
 ];
 
 export default function BillingPage() {
-	const { subscription, isLoading } = useSubscription();
+	const { data: subscription, isLoading } = useCurrentSubscription();
 
 	if (isLoading) return <LoadingSpinner />;
 
@@ -65,7 +65,7 @@ export default function BillingPage() {
 
 			{subscription && (
 				<div className="mb-6">
-					<h2 className="text-lg font-semibold">Current Plan: {subscription.plan}</h2>
+					<h2 className="text-lg font-semibold">Current Plan: {subscription.data.planName}</h2>
 					<Button onClick={handleManageBilling}>Manage Billing</Button>
 				</div>
 			)}
@@ -86,9 +86,9 @@ export default function BillingPage() {
 							<Button
 								className="mt-4 w-full"
 								onClick={() => handleUpgrade(plan.priceId!)}
-								disabled={subscription?.plan === plan.name}
+								disabled={subscription?.data.planName === plan.name}
 							>
-								{subscription?.plan === plan.name ? 'Current Plan' : 'Upgrade'}
+								{subscription?.data.planName === plan.name ? 'Current Plan' : 'Upgrade'}
 							</Button>
 						</CardContent>
 					</Card>

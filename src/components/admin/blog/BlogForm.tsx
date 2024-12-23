@@ -7,11 +7,12 @@ import { useForm } from 'react-hook-form';
 import { Button } from '@/src/components/ui/button';
 import { Input } from '@/src/components/ui/input';
 import { useToast } from '@/src/hooks/helpers/use-toast';
-import { useBlogPost, useCreateBlogPost, useUpdateBlogPost } from '@/src/hooks/react-query/useBlog';
+import { useBlogPost, useCreateBlogPost, useUpdateBlogPost } from '@/src/hooks/react-query/blog';
 
 import { EnhancedRichTextEditor } from '../../editor/enhanced-rich-text-editor';
 
 import type { BlogPostFormData } from '@/src/types/blog.types';
+
 
 interface BlogFormProps {
 	action: 'create' | 'edit';

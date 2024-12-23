@@ -26,3 +26,12 @@ export const projectSchema = z
 	);
 
 export type ProjectFormData = z.infer<typeof projectSchema>;
+
+export const validateProject = (data: unknown): Result<Project> => {
+	try {
+		const validated = projectSchema.parse(data);
+		return { ok: true, data: validated };
+	} catch (error) {
+		return { ok: false, error: error as Error };
+	}
+};

@@ -4,7 +4,7 @@ import { Moon, Sun } from 'lucide-react';
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
 
-import UserMenu from '@/src/components/menu/UserMenu';
+import { UserMenu } from '@/src/components/menu/UserMenu';
 import { Button } from '@/src/components/ui/button';
 
 import type { AuthUser } from '@/src/types/authUser.types';

@@ -3,8 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/src/components/ui/button';
 import { subscriptionService } from '@/src/services/subscriptionService';
 
-import { PaymentMethodCard } from '../../components/PaymentMethodCard';
-import { UsageCard } from '../../components/UsageCard';
+import { PaymentMethodCard } from '../billing/PaymentMethodCard';
+import { UsageCard } from '../billing/UsageCard';
 
 import type { Subscription, PaymentMethod } from '@/src/types/subscription.types';
 

@@ -2,55 +2,44 @@
 
 import { useOrganization } from '@clerk/nextjs';
 
-import { Card, CardHeader, CardContent, CardTitle } from '@/src/components/ui/card';
-import { usePermissions } from '@/src/hooks/usePermissions';
+import { Badge } from '@/src/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/src/components/ui/card';
+import { usePermissions } from '@/src/hooks/auth/usePermissions';
 
-export function RoleSettings() {
-	const { organization } = useOrganization();
-	const { role, can } = usePermissions();
+export function RoleSettings(): JSX.Element {
+	const { organization, membership } = useOrganization();
+	const { can } = usePermissions();
 
-	const roleCapabilities = {
-		'org:admin': [
-			'Manage organization settings',
-			'Invite and remove members',
-			'Access billing and subscription',
-			'View all reports and analytics',
-		],
-		'org:developer': ['Access development tools', 'View team members', 'Access basic reports'],
-		'org:member': ['Access basic dashboard', 'View own profile', 'Submit support requests'],
-	};
+	if (!organization || !membership) return <></>;
+
+	const permissions = [
+		{ name: 'User Management', permission: 'users:write' },
+		{ name: 'Settings Management', permission: 'settings:write' },
+		{ name: 'Analytics Access', permission: 'analytics:read' },
+		{ name: 'Billing Management', permission: 'billing:write' },
+	] as const;
 
 	return (
 		<Card>
 			<CardHeader>
 				<CardTitle>Role & Permissions</CardTitle>
+				<CardDescription>
+					Your current role is: <Badge variant="outline">{membership.role}</Badge>
+				</CardDescription>
 			</CardHeader>
 			<CardContent>
 				<div className="space-y-4">
-					<div>
-						<h3 className="font-medium">Current Role</h3>
-						<p className="text-sm text-gray-600">{role || 'No role assigned'}</p>
-					</div>
-
-					<div>
-						<h3 className="font-medium mb-2">Your Capabilities</h3>
-						<ul className="list-disc list-inside space-y-1">
-							{roleCapabilities[role as keyof typeof roleCapabilities]?.map((capability) => (
-								<li key={capability} className="text-sm text-gray-600">
-									{capability}
-								</li>
-							))}
-						</ul>
-					</div>
-
-					{can('manage:settings') && (
-						<div className="mt-6">
-							<h3 className="font-medium mb-2">Organization</h3>
-							<p className="text-sm text-gray-600">
-								{organization?.name} ({organization?.id})
-							</p>
-						</div>
-					)}
+					<h3 className="text-sm font-medium">Your Permissions:</h3>
+					<ul className="space-y-2">
+						{permissions.map((item) => (
+							<li key={item.permission} className="flex items-center gap-2">
+								<Badge variant={can(item.permission) ? 'default' : 'secondary'}>
+									{can(item.permission) ? '✓' : '×'}
+								</Badge>
+								{item.name}
+							</li>
+						))}
+					</ul>
 				</div>
 			</CardContent>
 		</Card>

@@ -1,8 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-
-import { Button } from '@/src/components/ui/button';
+import { PermissionGate } from '@/src/components/auth/PermissionGate';
+import { SettingsForm } from '@/src/components/settings/SettingsForm';
 import {
 	Card,
 	CardHeader,
@@ -10,52 +9,42 @@ import {
 	CardDescription,
 	CardContent,
 } from '@/src/components/ui/card';
-import { useToast } from '@/src/hooks';
 
-import { NotificationSetting } from './components/NotificationSettings';
 
 export default function SettingsPage() {
-	const [emailNotifications, setEmailNotifications] = useState(true);
-	const [marketingEmails, setMarketingEmails] = useState(false);
-	const { toast } = useToast();
-
-	const handleSaveSettings = () => {
-		// Handle saving settings logic (e.g., call an API or save locally)
-		toast({
-			title: 'Settings saved',
-			description: 'Your preferences have been updated successfully.',
-		});
-	};
-
 	return (
 		<div className="container max-w-4xl py-8">
 			<h1 className="text-3xl font-bold mb-8">Settings</h1>
 
 			<div className="space-y-6">
-				<Card>
-					<CardHeader>
-						<CardTitle>Notifications</CardTitle>
-						<CardDescription>Configure how you receive notifications.</CardDescription>
-					</CardHeader>
-					<CardContent className="space-y-4">
-						<NotificationSetting
-							label="Email Notifications"
-							description="Receive notifications about your account activity."
-							checked={emailNotifications}
-							onCheckedChange={setEmailNotifications}
-						/>
-						<NotificationSetting
-							label="Marketing Emails"
-							description="Receive emails about new features and updates."
-							checked={marketingEmails}
-							onCheckedChange={setMarketingEmails}
-						/>
-					</CardContent>
-				</Card>
+				{/* Read-only settings */}
+				<PermissionGate permission="settings:read">
+					<Card>
+						<CardHeader>
+							<CardTitle>Organization Settings</CardTitle>
+							<CardDescription>View your organization settings.</CardDescription>
+						</CardHeader>
+						<CardContent>
+							{/* Organization settings display */}
+						</CardContent>
+					</Card>
+				</PermissionGate>
 
-				<div className="flex justify-end">
-					<Button onClick={handleSaveSettings}>Save Changes</Button>
-				</div>
+				{/* Editable settings */}
+				<PermissionGate 
+					permission="settings:write"
+					fallback={<p className="text-muted-foreground">You don&apos;t have permission to edit settings</p>}
+				>
+					<Card>
+						<CardHeader>
+							<CardTitle>Notifications</CardTitle>
+							<CardDescription>Configure how you receive notifications.</CardDescription>
+						</CardHeader>
+						<CardContent>
+							<SettingsForm />
+						</CardContent>
+					</Card>
+				</PermissionGate>
 			</div>
 		</div>
 	);
