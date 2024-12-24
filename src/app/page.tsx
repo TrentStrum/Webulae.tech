@@ -1,11 +1,12 @@
 import { auth } from '@clerk/nextjs/server';
 
-import AdminDashboard from '@/src/app/(dashboard)/admin/page';
-import ClientDashboard from '@/src/app/(dashboard)/client/page';
-import DeveloperDashboard from '@/src/app/(dashboard)/developer/page';
 import { Features } from '@/src/components/sections/features';
 import { Hero } from '@/src/components/sections/hero';
 import { Pricing } from '@/src/components/sections/pricing';
+
+import AdminDashboardPage from './(roles)/admin/dashboard/page';
+import ClientDashboardPage from './(roles)/client/dashboard/page';
+import DeveloperDashboardPage from './(roles)/developer/dashboard/page';
 
 export default async function Home() {
 	const { userId, sessionClaims } = await auth();
@@ -15,12 +16,12 @@ export default async function Home() {
 	if (userId && orgRole) {
 		switch (orgRole) {
 			case 'org:admin':
-				return <AdminDashboard />;
+				return <AdminDashboardPage />;
 			case 'org:developer':
-				return <DeveloperDashboard />;
+				return <DeveloperDashboardPage />;
 			case 'org:member':
 			default:
-				return <ClientDashboard />;
+				return <ClientDashboardPage />;
 		}
 	}
 

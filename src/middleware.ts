@@ -1,51 +1,116 @@
 import { authMiddleware } from '@clerk/nextjs';
-import { clerkClient } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 
-import type { NextRequest } from 'next/server';
-
 export default authMiddleware({
-	async afterAuth(auth, req: NextRequest) {
-		// Allow public access to blog API
-		if (req.nextUrl.pathname.startsWith('/api/blog')) {
-			return; // Allow the request to proceed
-		}
+	afterAuth(auth, req) {
+		const publicRoutes = [
+			'/',
+			'/about',
+			'/blog(.*)',
+			'/contact',
+			'/sign-in(.*)',
+			'/sign-up(.*)',
+			'/organization/select',
+			'/organization/create',
+			'/api/webhooks(.*)',
+			'/(landing)(.*)'
+		];
 
-		// Handle other private API routes
-		if (!auth.userId && req.nextUrl.pathname.startsWith('/api')) {
-			return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-		}
+		console.log('Middleware: Auth state -', {
+			userId: auth.userId,
+			orgId: auth.orgId,
+			orgRole: auth.orgRole,
+			path: req.nextUrl.pathname
+		});
 
-		// Check organization access
-		if (auth.userId && req.nextUrl.pathname.startsWith('/api/organizations')) {
-			const orgId = req.nextUrl.pathname.split('/')[3];
-			const memberships = await clerkClient.organizations.getOrganizationMembershipList({
-				organizationId: orgId,
-			});
-
-			if (!memberships.filter(m => m.publicUserData?.userId === auth.userId).length) {
-				return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+		// If authenticated and on root, dashboard, or projects, redirect based on role
+		if (auth.userId && auth.orgId && auth.orgRole && 
+			(req.nextUrl.pathname === '/' || 
+			 req.nextUrl.pathname === '/dashboard' ||
+			 req.nextUrl.pathname === '/projects')) {
+			switch (auth.orgRole) {
+				case 'org:admin':
+					return NextResponse.redirect(new URL('/admin/dashboard', req.url));
+				case 'org:developer':
+					return NextResponse.redirect(new URL('/developer/dashboard', req.url));
+				case 'org:member':
+					return NextResponse.redirect(new URL('/client/dashboard', req.url));
+				default:
+					return NextResponse.redirect(new URL('/client/dashboard', req.url));
 			}
 		}
 
-		// Check permissions for protected routes
-		if (auth.userId && req.nextUrl.pathname.startsWith('/api/admin')) {
-			const user = await clerkClient.users.getUser(auth.userId);
-			const role = user.publicMetadata.role as string;
+		// Handle public routes in (landing)
+		if (req.nextUrl.pathname.startsWith('/(landing)')) {
+			return NextResponse.next();
+		}
 
-			if (!role || !['admin'].includes(role)) {
-				return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+		// If not authenticated, only allow public routes
+		if (!auth.userId) {
+			const isPublicRoute = publicRoutes.some(pattern => 
+				req.nextUrl.pathname.match(new RegExp(`^${pattern}`))
+			);
+			
+			if (!isPublicRoute) {
+				return NextResponse.redirect(new URL('/sign-in', req.url));
+			}
+			return NextResponse.next();
+		}
+
+		// If authenticated but no org selected, redirect to org select
+		if (auth.userId && !auth.orgId && 
+			!req.nextUrl.pathname.startsWith('/organization')) {
+			return NextResponse.redirect(new URL('/organization/select', req.url));
+		}
+
+		// Handle role-based routing and protection
+		if (auth.userId && auth.orgId && auth.orgRole) {
+			const path = req.nextUrl.pathname;
+
+			// Protect admin routes
+			if (path.startsWith('/admin') && auth.orgRole !== 'org:admin') {
+				return NextResponse.redirect(new URL('/dashboard', req.url));
+			}
+
+			// Protect developer routes
+			if (path.startsWith('/developer') && auth.orgRole !== 'org:developer') {
+				return NextResponse.redirect(new URL('/dashboard', req.url));
+			}
+
+			// Protect blog management routes
+			if (path.startsWith('/blog/manage') && auth.orgRole !== 'org:admin') {
+				return NextResponse.redirect(new URL('/blog', req.url));
+			}
+
+			// Role-based dashboard routing
+			if (path === '/dashboard') {
+				const dashboardRoutes = {
+					'org:admin': '/admin/dashboard',
+					'org:developer': '/developer/dashboard',
+					'org:member': '/client/dashboard'
+				};
+				const redirectUrl = dashboardRoutes[auth.orgRole as keyof typeof dashboardRoutes] || '/client/dashboard';
+				return NextResponse.redirect(new URL(redirectUrl, req.url));
 			}
 		}
+
+		return NextResponse.next();
 	},
+
 	publicRoutes: [
-		"/", 
-		"/api/webhooks(.*)",
-		"/api/blog(.*)",
-		"/blog(.*)",
-	],
+		'/',
+		'/about',
+		'/blog(.*)',
+		'/contact',
+		'/sign-in(.*)',
+		'/sign-up(.*)',
+		'/organization/select',
+		'/organization/create',
+		'/api/webhooks(.*)',
+		'/(landing)(.*)'
+	]
 });
 
 export const config = {
-	matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
+	matcher: ['/((?!.+\\.[\\w]+$|_next).*)', '/', '/(api|trpc)(.*)'],
 };

@@ -5,7 +5,7 @@ import { hasPermission } from '@/src/lib/permissions';
 import type { Permission } from '@/src/lib/permissions';
 
 
-export default async function DeveloperDashboard(): Promise<JSX.Element> {
+export default async function DeveloperDashboardPage(): Promise<JSX.Element> {
 	const orgRole = 'org:developer';
 
 	if (!hasPermission(orgRole ?? null, 'developer:access' as Permission)) {

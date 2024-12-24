@@ -1,3 +1,4 @@
+/** @type {import('next').NextConfig} */
 const nextConfig = {
 	productionBrowserSourceMaps: true,
 	images: {
@@ -16,7 +17,6 @@ const nextConfig = {
 	},
 	output: 'standalone',
 	experimental: {
-		serverActions: true,
 		middlewarePrefetch: 'flexible',
 	},
 };

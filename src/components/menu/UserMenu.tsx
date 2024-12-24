@@ -12,7 +12,13 @@ import {
 	DropdownMenuSubTrigger,
 	DropdownMenuSubContent,
 } from '@radix-ui/react-dropdown-menu';
-import { Building, ChevronDown, LogOut, Settings, User, Users, BarChart, Plus, Mail } from 'lucide-react';
+import {
+	Building,
+	ChevronDown,
+	LogOut,
+	Plus,
+	Mail,
+} from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 
@@ -21,11 +27,12 @@ import { InviteMemberDialog } from '@/src/components/organization/InviteMemberDi
 import { Avatar, AvatarFallback, AvatarImage } from '@/src/components/ui/avatar';
 import { Badge } from '@/src/components/ui/badge';
 import { Button } from '@/src/components/ui/button';
+import { menuItems } from '@/src/config/menu.config';
 import { usePermissions } from '@/src/lib/permissions';
 import { cn } from '@/src/lib/utils';
 
-import type { Permission } from '@/src/lib/permissions';
 import type { AuthUser } from '@/src/types/authUser.types';
+
 
 type OrganizationMembership = {
 	organization: {
@@ -35,49 +42,6 @@ type OrganizationMembership = {
 	};
 	role: string;
 };
-
-interface MenuItem {
-	name: string;
-	href: string;
-	icon: React.ElementType;
-	permission: Permission;
-	badge?: string;
-}
-
-const menuItems: MenuItem[] = [
-	{
-		name: 'Profile',
-		href: '/profile',
-		icon: User,
-		permission: 'settings:read' as const,
-	},
-	{
-		name: 'Settings',
-		href: '/settings',
-		icon: Settings,
-		permission: 'settings:write' as const,
-	},
-	{
-		name: 'User Management',
-		href: '/admin/users',
-		icon: Users,
-		permission: 'users:write' as const,
-		badge: 'Admin',
-	},
-	{
-		name: 'Analytics',
-		href: '/admin/analytics',
-		icon: BarChart,
-		permission: 'analytics:read' as const,
-		badge: 'Pro',
-	},
-	{
-		name: 'Invite Members',
-		href: '/members/invite',
-		icon: Mail,
-		permission: 'members:invite',
-	}
-];
 
 interface UserMenuProps {
 	user: AuthUser;
@@ -91,6 +55,7 @@ export function UserMenu({ user }: UserMenuProps): JSX.Element {
 	const { organization } = useOrganization();
 	const [showCreateOrg, setShowCreateOrg] = useState(false);
 	const [showInvite, setShowInvite] = useState(false);
+	const [open, setOpen] = useState(false);
 
 	const getInitial = (): string => {
 		if (!userId) return 'U';
@@ -101,17 +66,11 @@ export function UserMenu({ user }: UserMenuProps): JSX.Element {
 		return 'U';
 	};
 
-	const filteredMenuItems = menuItems.filter((item) => can(item.permission));
-
 	return (
 		<>
-			<DropdownMenu>
+			<DropdownMenu open={open} onOpenChange={setOpen}>
 				<DropdownMenuTrigger asChild>
-					<Button 
-						variant="ghost" 
-						className="relative h-8 w-8 rounded-full" 
-						aria-label="User menu"
-					>
+					<Button variant="ghost" className="relative h-8 w-8 rounded-full" aria-label="User menu">
 						<Avatar className="h-8 w-8 ring-2 ring-primary/20">
 							<AvatarImage
 								src={user?.imageUrl}
@@ -124,19 +83,17 @@ export function UserMenu({ user }: UserMenuProps): JSX.Element {
 						</Avatar>
 					</Button>
 				</DropdownMenuTrigger>
-				<DropdownMenuContent className="w-56" align="end" forceMount>
+				<DropdownMenuContent className="w-56" align="end">
 					<div className="flex items-center justify-start gap-2 p-2">
 						<div className="flex flex-col space-y-1">
-							<p className="text-sm font-medium leading-none">
-								{user?.fullName || 'User'}
-							</p>
+							<p className="text-sm font-medium leading-none">{user?.fullName || 'User'}</p>
 							<p className="text-xs leading-none text-muted-foreground">
-								{user?.primaryEmailAddress?.emailAddress}
+								{user?.emailAddresses?.[0]?.emailAddress}
 							</p>
 						</div>
 					</div>
 					<DropdownMenuSeparator />
-					
+
 					{/* Organization Management */}
 					<DropdownMenuSub>
 						<DropdownMenuSubTrigger className="w-full">
@@ -150,9 +107,11 @@ export function UserMenu({ user }: UserMenuProps): JSX.Element {
 							{userMemberships?.data?.map((membership: OrganizationMembership) => (
 								<DropdownMenuItem
 									key={membership.organization.id}
-									onClick={() => setActive?.({ 
-										organization: membership.organization.id 
-									})}
+									onClick={() =>
+										setActive?.({
+											organization: membership.organization.id,
+										})
+									}
 									className={cn(
 										'cursor-pointer',
 										membership.organization.id === organization?.id && 'bg-secondary'
@@ -161,16 +120,15 @@ export function UserMenu({ user }: UserMenuProps): JSX.Element {
 									<Avatar className="mr-2 h-4 w-4">
 										<AvatarImage
 											src={membership.organization.imageUrl}
-												alt={membership.organization.name}
+											alt={membership.organization.name}
 										/>
-										<AvatarFallback>
-											{membership.organization.name[0]}
-										</AvatarFallback>
+										<AvatarFallback>{membership.organization.name[0]}</AvatarFallback>
 									</Avatar>
 									{membership.organization.name}
 									{membership.role && (
 										<Badge variant="outline" className="ml-2">
-											{membership.role}
+											{membership.role.replace('org:', '').charAt(0).toUpperCase() +
+												membership.role.replace('org:', '').slice(1)}
 										</Badge>
 									)}
 								</DropdownMenuItem>
@@ -188,11 +146,11 @@ export function UserMenu({ user }: UserMenuProps): JSX.Element {
 							)}
 						</DropdownMenuSubContent>
 					</DropdownMenuSub>
-					
+
 					<DropdownMenuSeparator />
-					
+
 					{/* Role-specific Menu Items */}
-					{filteredMenuItems.map((item) => (
+					{menuItems.map((item) => (
 						<DropdownMenuItem key={item.href} asChild>
 							<Link href={item.href} className="flex items-center">
 								<item.icon className="mr-2 h-4 w-4" />
@@ -205,7 +163,7 @@ export function UserMenu({ user }: UserMenuProps): JSX.Element {
 							</Link>
 						</DropdownMenuItem>
 					))}
-					
+
 					<DropdownMenuSeparator />
 					<DropdownMenuItem
 						className="text-destructive focus:text-destructive"
@@ -220,13 +178,10 @@ export function UserMenu({ user }: UserMenuProps): JSX.Element {
 				</DropdownMenuContent>
 			</DropdownMenu>
 
-			<CreateOrganizationDialog 
-				open={showCreateOrg} 
-				onOpenChange={setShowCreateOrg} 
-			/>
-			
-			<InviteMemberDialog 
-				open={showInvite} 
+			<CreateOrganizationDialog open={showCreateOrg} onOpenChange={setShowCreateOrg} />
+
+			<InviteMemberDialog
+				open={showInvite}
 				onOpenChange={setShowInvite}
 				organizationId={organization?.id}
 			/>

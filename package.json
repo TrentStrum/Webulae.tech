@@ -13,7 +13,8 @@
     "test:coverage": "jest --coverage",
     "format": "prettier --write .",
     "check-format": "prettier --check .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf .next && rm -rf node_modules/.cache"
   },
   "dependencies": {
     "@clerk/clerk-sdk-node": "^5.1.4",
